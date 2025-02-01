@@ -54,14 +54,14 @@ function Main({
     getLayout();
   }, []);
 
-  const getLevel: (xp: number) => number = (score: number) => {
-    if (score <= 352) {
-      return Math.sqrt(score + 9) - 3;
+  function getLevel(xp: number)  {
+    if (xp <= 352) {
+      return Math.sqrt(xp + 9) - 3;
     }
-    if (score <= 1507) {
-      return 81 / 10 + Math.sqrt((2 / 5) * (score - 7839 / 40));
+    if (xp <= 1507) {
+      return 81 / 10 + Math.sqrt((2 / 5) * (xp - 7839 / 40));
     }
-    return 325 / 18 + Math.sqrt((2 / 9) * (score - 54215 / 72));
+    return 325 / 18 + Math.sqrt((2 / 9) * (xp - 54215 / 72));
   };
 
   return (
