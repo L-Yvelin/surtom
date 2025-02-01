@@ -1,0 +1,27 @@
+.tab {
+  display: flex;
+  flex-direction: column;
+  gap: .2vh;
+  overflow: scroll;
+  max-height: calc(0.4vh + (20 * (1em + 0.2vh)));
+  min-width: 16em;
+  max-width: 98vw;
+  background-color: rgba(0, 0, 0, 0.7);
+  min-height: 10rem;
+  position: fixed;
+  top: 25vh;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  padding: 0.2vh;
+  text-shadow: 0.2vh 0.2vh rgba(0, 0, 0, 0.7);
+  font-size: 2vh;
+  font-family: "Chinese", "Twemoji", minecraft-chat;
+}
+
+.tab.hidden {
+  display: none;
+}
+
+.tab::-webkit-scrollbar {
+  display: none;
+}

@@ -1,0 +1,77 @@
+.main {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+  background-image: url("/src/assets/images/blocks/dirt_256.png");
+  background-repeat: repeat;
+  background-size: 17dvmin 17dvmin;
+  image-rendering: pixelated;
+  flex-grow: 1;
+  transition: background-image ease 1s;
+}
+
+.dark {
+  background-image: url("/src/assets/images/blocks/netherrack_256.png");
+}
+
+.main :not([data-backdrop]) {
+  z-index: 1;
+}
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25));
+  z-index: 0;
+}
+
+.chestLabel {
+  color: #555;
+  font-size: 2vh;
+  display: block;
+  padding: 0.5vh 0 0.2vh 0;
+}
+
+.coffre {
+  display: flex;
+  justify-content: center;
+}
+
+.coffreUi {
+  --box-size: 1vh;
+  padding: 1.5vmin;
+  margin: 0.75vmin;
+  padding-top: 0;
+  background-color: #c6c6c6;
+  box-shadow: calc(0.5 * var(--box-size)) 0 0 0 #555555,
+    0 calc(0.5 * var(--box-size)) 0 0 #555555,
+    calc(0.25 * var(--box-size)) calc(0.25 * var(--box-size)) 0 0 #555555,
+    calc(-0.5 * var(--box-size)) 0 0 0 #e8e8e8,
+    0 calc(-0.5 * var(--box-size)) 0 0 #e8e8e8,
+    calc(-0.25 * var(--box-size)) calc(-0.25 * var(--box-size)) 0 0 #e8e8e8,
+    0 0 0 calc(0.25 * var(--box-size)) #b5b4b5,
+    calc(0.25 * var(--box-size)) calc(0.5 * var(--box-size)) 0 0 #555,
+    calc(0.5 * var(--box-size)) calc(0.25 * var(--box-size)) 0 0 #555,
+    calc(-0.25 * var(--box-size)) calc(-0.5 * var(--box-size)) 0 0 #e8e8e8,
+    calc(-0.5 * var(--box-size)) calc(-0.25 * var(--box-size)) 0 0 #e8e8e8,
+    calc(0.5 * var(--box-size)) calc(-0.25 * var(--box-size)) 0 0 #000,
+    calc(0.25 * var(--box-size)) calc(-0.5 * var(--box-size)) 0 0 #000,
+    calc(-0.5 * var(--box-size)) calc(0.25 * var(--box-size)) 0 0 #000,
+    calc(-0.25 * var(--box-size)) calc(0.5 * var(--box-size)) 0 0 #000,
+    calc(-0.5 * var(--box-size)) calc(-0.5 * var(--box-size)) 0 0 #000,
+    calc(0.5 * var(--box-size)) calc(0.5 * var(--box-size)) 0 0 #000,
+    calc(-0.75 * var(--box-size)) 0 0 0 #000,
+    calc(-0.75 * var(--box-size)) calc(-0.25 * var(--box-size)) 0 0 #000,
+    calc(0.75 * var(--box-size)) 0 0 0 #000,
+    calc(0.75 * var(--box-size)) calc(0.25 * var(--box-size)) 0 0 #000,
+    0 calc(-0.75 * var(--box-size)) 0 0 #000,
+    calc(-0.25 * var(--box-size)) calc(-0.75 * var(--box-size)) 0 0 #000,
+    0 calc(0.75 * var(--box-size)) 0 0 #000,
+    calc(0.25 * var(--box-size)) calc(0.75 * var(--box-size)) 0 0 #000;
+}

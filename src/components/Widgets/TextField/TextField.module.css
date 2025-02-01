@@ -1,0 +1,27 @@
+.textField {
+  all: unset;
+  color: white;
+  height: 100%;
+  width: 100%;
+  aspect-ratio: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-image: url("/src/assets/images/ui/text_field.png");
+  background-size: 100%;
+  container-type: size;
+}
+
+.textField:hover {
+  background-image: url("/src/assets/images/ui/text_field_highlighted.png");
+}
+
+.text {
+  all: unset;
+  width: 100%;
+  height: 100%;
+  font-size: 45cqh;
+  text-align: left;
+  margin: 0 2%;
+}

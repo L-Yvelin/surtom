@@ -1,0 +1,48 @@
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: var(--startPosition);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: var(--startPosition);
+  }
+}
+
+.slideInOut {
+  animation-duration: var(--transitionDuration);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+}
+
+.slideIn {
+  animation-name: slideIn;
+}
+
+.slideOut {
+  animation-name: slideOut;
+}
+
+.top {
+  --startPosition: translateY(-100%);
+}
+.bottom {
+  --startPosition: translateY(100%);
+}
+.left {
+  --startPosition: translateX(-100%);
+}
+.right {
+  --startPosition: translateX(100%);
+}

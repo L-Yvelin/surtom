@@ -1,0 +1,15 @@
+.icon {
+  height: 1em;
+  object-fit: contain;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4vh;
+}
+
+.message {
+  cursor: pointer;
+}

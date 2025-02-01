@@ -1,0 +1,42 @@
+.experienceBar {
+  --size: 1.5;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: calc(var(--size) * 1.1vh);
+}
+
+.content {
+  position: relative;
+  display: flex;
+}
+
+.background {
+  width: calc(var(--size) * 36dvh);
+  max-width: 95vw;
+}
+
+.progress {
+  --percentage: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(0% 0%, var(--percentage) 0%, var(--percentage) 100%, 0% 100%);
+}
+
+.level {
+  position: absolute;
+  left: 50%;
+  bottom: 60%;
+  transform: translateX(-50%);
+  color: #73e51d;
+  font-size: calc( var(--size) * 1.5vh);
+  --shadow: .2vh;
+  text-shadow: calc(var(--size) * calc(-1 * var(--shadow))) 0 0 #000,
+  calc(var(--size) * var(--shadow)) 0 0 #000,
+  0 calc(var(--size) * calc(-1 * var(--shadow))) 0 #000,
+  0 calc(var(--size) * var(--shadow)) 0 #000;
+}

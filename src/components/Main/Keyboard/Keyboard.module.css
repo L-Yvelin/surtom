@@ -1,0 +1,42 @@
+.keyboardWrapper {
+  font-family: minecraft;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keyboard {
+  --keySize: min(6vh, calc((100vw / 10) - 0.5vh));
+  display: grid;
+  grid-template-columns: repeat(10, var(--keySize));
+  grid-template-rows: repeat(3, var(--keySize));
+  gap: 0.4vh;
+}
+
+.qwerty {
+  grid-template-areas:
+    "q w e r t y u i o p"
+    "a s d f g h j k l E"
+    "z x c v b n m R R E";
+}
+
+.azerty {
+  grid-template-areas:
+    "a z e r t y u i o p"
+    "q s d f g h j k l m"
+    "w x c v b n E E R R";
+}
+
+.key {
+  all: unset;
+  font-size: calc(var(--keySize) - 3.5vmin);
+  border-radius: 0.5vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a4c51;
+  cursor: pointer;
+  box-shadow: 0.12vh 0.12vh 0.24vh 0 black, -0.12vh -0.12vh 0.24vh 0 grey;
+  text-transform: uppercase;
+  background-color: rgba(240, 240, 240, 0.9);
+}

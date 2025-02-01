@@ -1,0 +1,79 @@
+.achievement {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 0.5vh;
+  background-color: rgb(33 33 33);
+  aspect-ratio: 7;
+  height: 6.6vh;
+  max-width: 100vw;
+
+  --size: 0.6vh;
+  margin: calc(var(--size) * 2);
+  box-shadow:
+  /* Background outline */ calc(-0.5 * var(--size)) 0 0 0
+      rgb(33 33 33),
+    0 calc(-0.5 * var(--size)) 0 0 rgb(33 33 33),
+    calc(0.5 * var(--size)) 0 0 0 rgb(33 33 33),
+    0 calc(0.5 * var(--size)) 0 0 rgb(33 33 33),
+    /* Gray border */ calc(-1.5 * var(--size)) 0 0 0 #555555,
+    0 calc(-1.5 * var(--size)) 0 0 #555555,
+    calc(1.5 * var(--size)) 0 0 0 #555555, 0 calc(1.5 * var(--size)) 0 0 #555555,
+    /* Black border */ calc(-2 * var(--size)) 0 0 0 black,
+    0 calc(-2 * var(--size)) 0 0 black, calc(2 * var(--size)) 0 0 0 black,
+    0 calc(2 * var(--size)) 0 0 black,
+    /* Gray angles */ calc(var(--size) * 1) calc(-1 * var(--size)) 0 0 #555555,
+    calc(1.5 * var(--size)) calc(-0.5 * var(--size)) 0 0 #555555,
+    calc(0.5 * var(--size)) calc(-1.5 * var(--size)) 0 0 #555555,
+    calc(-1 * var(--size)) calc(-1 * var(--size)) 0 0 #555555,
+    calc(-1.5 * var(--size)) calc(-0.5 * var(--size)) 0 0 #555555,
+    calc(-0.5 * var(--size)) calc(-1.5 * var(--size)) 0 0 #555555,
+    calc(1 * var(--size)) calc(1 * var(--size)) 0 0 #555555,
+    calc(1.5 * var(--size)) calc(0.5 * var(--size)) 0 0 #555555,
+    calc(0.5 * var(--size)) calc(1.5 * var(--size)) 0 0 #555555,
+    calc(-1 * var(--size)) calc(1 * var(--size)) 0 0 #555555,
+    calc(-1.5 * var(--size)) calc(0.5 * var(--size)) 0 0 #555555,
+    calc(-0.5 * var(--size)) calc(1.5 * var(--size)) 0 0 #555555,
+    /* Black outline */ calc(0.5 * var(--size)) calc(-2 * var(--size)) 0 0 black,
+    calc(1 * var(--size)) calc(-1.5 * var(--size)) 0 0 black,
+    calc(1.5 * var(--size)) calc(-1 * var(--size)) 0 0 black,
+    calc(2 * var(--size)) calc(-0.5 * var(--size)) 0 0 black,
+    calc(-0.5 * var(--size)) calc(-2 * var(--size)) 0 0 black,
+    calc(-1 * var(--size)) calc(-1.5 * var(--size)) 0 0 black,
+    calc(-1.5 * var(--size)) calc(-1 * var(--size)) 0 0 black,
+    calc(-2 * var(--size)) calc(-0.5 * var(--size)) 0 0 black,
+    calc(0.5 * var(--size)) calc(2 * var(--size)) 0 0 black,
+    calc(1 * var(--size)) calc(1.5 * var(--size)) 0 0 black,
+    calc(1.5 * var(--size)) calc(1 * var(--size)) 0 0 black,
+    calc(2 * var(--size)) calc(0.5 * var(--size)) 0 0 black,
+    calc(-0.5 * var(--size)) calc(2 * var(--size)) 0 0 black,
+    calc(-1 * var(--size)) calc(1.5 * var(--size)) 0 0 black,
+    calc(-1.5 * var(--size)) calc(1 * var(--size)) 0 0 black,
+    calc(-2 * var(--size)) calc(0.5 * var(--size)) 0 0 black;
+}
+
+.icon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  height: 85%;
+  padding: 1vh;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: start;
+  height: 100%;
+  padding: 1vh;
+  gap: auto;
+  font-size: 2.5vh;
+}
+
+.title {
+  color: #ffff00;
+}
+
+.description {
+  color: white;
+}

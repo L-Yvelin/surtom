@@ -1,0 +1,22 @@
+.button {
+  all: unset;
+  color: white;
+  height: 100%;
+  width: 100%;
+  aspect-ratio: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-image: url("/src/assets/images/ui/button.png");
+  background-size: 100%;
+  container-type: size;
+}
+
+.button:hover {
+  background-image: url("/src/assets/images/ui/button_highlighted.png");
+}
+
+.text {
+  font-size: 45cqh;
+}

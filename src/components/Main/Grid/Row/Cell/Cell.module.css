@@ -1,0 +1,52 @@
+.td {
+  padding: 0;
+}
+
+.cell {
+  font-family: minecraft;
+  text-transform: capitalize;
+  --border-size: 0.3vh;
+  text-align: center;
+  font-size: clamp(0vh, 5vh, calc((100vw / (var(--squares) + 1)) - 1vh));
+  width: 6vh;
+  height: 6vh;
+  max-width: calc(100vw / (var(--squares) + 1) - 4vh / var(--squares));
+  max-height: calc(100vw / (var(--squares) + 1) - 4vh / var(--squares));
+  background-color: #8b8b8b;
+  border-bottom: var(--border-size) white solid;
+  border-right: var(--border-size) white solid;
+  border-top: var(--border-size) rgb(55 55 55 / 80%) solid;
+  border-left: var(--border-size) rgb(55 55 55 / 80%) solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell:hover {
+  background-color: #a1a1a1;
+}
+
+
+.correct {
+  color: #16617a;
+  background-image: url("/src/assets/images/blocks/diamond_block.png");
+  background-size: cover;
+  image-rendering: pixelated;
+  /* background-color: #DD2E44; */
+}
+
+.misplaced {
+  color: #6e6e23;
+  background-image: url("/src/assets/images/blocks/gold_block.png");
+  background-size: cover;
+  image-rendering: pixelated;
+  /* background-color:#FDCB58;
+	border-radius: 50%; */
+}
+
+.missed {
+  color: #313232;
+  background-image: url("/src/assets/images/blocks/stone.png");
+  background-size: cover;
+  image-rendering: pixelated;
+}
