@@ -86,12 +86,6 @@ const App: React.FC = () => {
           setShowStats={setShowStats}
           statsButtonRef={statsButtonRef}
         />
-        <Tab
-          playerList={players}
-          display={showTab}
-          setShowTab={setShowTab}
-          tabButtonRef={tabButtonRef}
-        />
         <AchievementsStack
           achievements={achievements}
           setAchievements={setAchievements}
@@ -103,6 +97,12 @@ const App: React.FC = () => {
           setShowCustomWord={setShowCustomWord}
           customWordButtonRef={customWordButtonRef}
           showAchievement={addAchievement}
+        />
+        <Tab
+          playerList={players}
+          display={showTab}
+          setShowTab={setShowTab}
+          tabButtonRef={tabButtonRef}
         />
       </div>
     </div>
