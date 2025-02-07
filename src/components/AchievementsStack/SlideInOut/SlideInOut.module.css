@@ -1,21 +1,17 @@
 @keyframes slideIn {
   from {
-    opacity: 0;
     transform: var(--startPosition);
   }
   to {
-    opacity: 1;
     transform: translate(0, 0);
   }
 }
 
 @keyframes slideOut {
   from {
-    opacity: 1;
     transform: translate(0, 0);
   }
   to {
-    opacity: 0;
     transform: var(--startPosition);
   }
 }
@@ -24,6 +20,7 @@
   animation-duration: var(--transitionDuration);
   animation-timing-function: ease-in-out;
   animation-fill-mode: both;
+  transform: var(--startPosition);
 }
 
 .slideIn {

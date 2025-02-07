@@ -1,4 +1,4 @@
-import { LetterState, Word } from "../components/Main/Grid/types";
+import { LetterState, Word } from "../components/Main/Game/Grid/types";
 
 export function isGuessValid(guess: string, solution: string): boolean {
   return guess.length === solution.length;

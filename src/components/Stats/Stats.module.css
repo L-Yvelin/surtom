@@ -17,7 +17,11 @@
   align-items: center;
   gap: 1vh;
   padding: 2vh;
-  text-shadow: 0.2vh 0.2vh black;
+  text-shadow: .25cqh .25cqh 0 rgba(0, 0, 0, 0.5);
+}
+
+.stats.hidden {
+  visibility: hidden;
 }
 
 .title {

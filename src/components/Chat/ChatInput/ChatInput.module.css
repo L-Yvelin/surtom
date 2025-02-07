@@ -1,0 +1,27 @@
+.chatInput {
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: stretch;
+  container-type: size;
+  height: 3.2vh;
+  flex-shrink: 0;
+}
+
+.button {
+  all: unset;
+  color: white;
+  aspect-ratio: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.input {
+  all: unset;
+  color: white;
+  padding: .7vh;
+  flex-grow: 1;
+  font-size: 1.8vh;
+}

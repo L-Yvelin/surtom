@@ -1,13 +1,22 @@
-import { JSX } from "react";
+import { JSX, ReactNode } from "react";
 import classes from "./Button.module.css";
 import buttonSound from "../../../assets/sounds/menu_stereo.mp3";
+import classNames from "classnames";
+import Marquee from "../Marquee/Marquee";
 
 interface ButtonProps {
-  text: string;
+  text: ReactNode;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  className?: string;
+  size?: "normal" | "square";
 }
 
-function Button({ text, onClick }: ButtonProps): JSX.Element {
+function Button({
+  text,
+  onClick,
+  className = "",
+  size = "normal",
+}: ButtonProps): JSX.Element {
   function handleOnClick(e: React.MouseEvent<HTMLButtonElement>) {
     try {
       new Audio(buttonSound).play();
@@ -16,8 +25,11 @@ function Button({ text, onClick }: ButtonProps): JSX.Element {
   }
 
   return (
-    <button className={classes.button} onClick={handleOnClick}>
-      <span className={classes.text}>{text}</span>
+    <button
+      className={classNames(classes.button, classes[size], className)}
+      onClick={handleOnClick}
+    >
+      <Marquee text={text} className={classes.text} />
     </button>
   );
 }

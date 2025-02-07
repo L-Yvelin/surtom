@@ -8,7 +8,6 @@ export function useLevelAnimation(
   const previousLevelRef = useRef(level);
 
   useEffect(() => {
-    console.log(level);
     if (level > previousLevelRef.current) {
       let start = previousLevelRef.current;
       const target = level;

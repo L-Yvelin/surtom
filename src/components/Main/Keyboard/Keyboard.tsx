@@ -1,38 +1,46 @@
-import classes from "./Keyboard.module.css";
 import { JSX, useEffect, useState } from "react";
 import classNames from "classnames";
-import {
-  getKeyboardClass,
-  getKeyboardLayout,
-  getKeyClassName,
-  getKeyStyle,
-  KeyboardLayouts,
-} from "./utils";
+import classes from "./Keyboard.module.css";
+import useGameStore from "../../../stores/useGameStore";
+import { getKeyboardClass, getKeyboardLayout, KeyboardLayouts } from "./utils";
+import { LetterState } from "../Game/Grid/types";
+import Key from "./Key";
 
 interface KeyboardProps {
   layout: KeyboardLayouts;
 }
 
 function Keyboard({ layout }: KeyboardProps): JSX.Element {
-  const [keys, setKeys] = useState<string[][]>(getKeyboardLayout(layout));
-  const [keyboardClass, setKeyboardClass] = useState<string>(classes.qwerty);
+  const { tries } = useGameStore();
+  const [keys, setKeys] = useState(() => getKeyboardLayout(layout));
+  const [keyboardClass, setKeyboardClass] = useState(() =>
+    getKeyboardClass(layout)
+  );
+  const [keyColors, setKeyColors] = useState<Record<string, LetterState>>({});
 
   useEffect(() => {
     setKeys(getKeyboardLayout(layout));
     setKeyboardClass(getKeyboardClass(layout));
   }, [layout]);
 
+  useEffect(() => {
+    setKeyColors(
+      tries.reduce((acc, t) => {
+        t.forEach(({ letter, state }) => {
+          if (state !== undefined && (!acc[letter] || acc[letter] < state)) {
+            acc[letter] = state;
+          }
+        });
+        return acc;
+      }, {} as Record<string, LetterState>)
+    );
+  }, [tries]);
+
   return (
     <div className={classes.keyboardWrapper}>
       <div className={classNames(classes.keyboard, keyboardClass)}>
         {keys.flat().map((key, index) => (
-          <button
-            key={index}
-            className={classNames(classes.key, getKeyClassName(key))}
-            style={getKeyStyle(key)}
-          >
-            {key}
-          </button>
+          <Key key={index} keyLabel={key} keyColor={keyColors[key]} />
         ))}
       </div>
     </div>

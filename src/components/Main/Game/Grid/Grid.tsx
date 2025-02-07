@@ -1,11 +1,16 @@
 import { JSX } from "react";
-import { GridProps } from "./types";
 import Row from "./Row/Row";
 import classes from "./Grid.module.css";
+import { Tries } from "./types";
+
+interface GridProps {
+  solution: string;
+  tries: Tries;
+}
 
 function Grid({ solution, tries }: GridProps): JSX.Element {
-  const size = solution.length;
   const height = 6;
+  const size = solution.length;
 
   const rows = [
     ...tries.map((word, trIndex) => (

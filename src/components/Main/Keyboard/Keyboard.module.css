@@ -26,17 +26,3 @@
     "q s d f g h j k l m"
     "w x c v b n E E R R";
 }
-
-.key {
-  all: unset;
-  font-size: calc(var(--keySize) - 3.5vmin);
-  border-radius: 0.5vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #4a4c51;
-  cursor: pointer;
-  box-shadow: 0.12vh 0.12vh 0.24vh 0 black, -0.12vh -0.12vh 0.24vh 0 grey;
-  text-transform: uppercase;
-  background-color: rgba(240, 240, 240, 0.9);
-}

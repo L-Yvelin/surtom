@@ -5,15 +5,27 @@ import ExperienceProgress from "../../../assets/images/ui/experience_bar_progres
 import { useLevelAnimation } from "./useLevelAnimation";
 
 interface ExperienceBarProps {
-  level: number;
+  xp: number;
 }
 
-function ExperienceBar({ level }: ExperienceBarProps): JSX.Element {
+function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
+  const level = getLevel(xp);
+  
   const [realtimeLevel, setRealtimeLevel] = useState<number>(level);
   const integerPart = Math.floor(realtimeLevel);
   const decimalPart = String(Math.ceil(realtimeLevel * 100)).slice(-2);
 
   useLevelAnimation(level, setRealtimeLevel);
+
+  function getLevel(xp: number) {
+    if (xp <= 352) {
+      return Math.sqrt(xp + 9) - 3;
+    }
+    if (xp <= 1507) {
+      return 81 / 10 + Math.sqrt((2 / 5) * (xp - 7839 / 40));
+    }
+    return 325 / 18 + Math.sqrt((2 / 9) * (xp - 54215 / 72));
+  }
 
   return (
     <div className={classes.experienceBar}>

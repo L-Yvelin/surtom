@@ -1,69 +1,70 @@
-import React, { JSX, useState } from "react";
+import { JSX, useMemo, useRef } from "react";
 import classes from "./EndPage.module.css";
+import classNames from "classnames";
+import { getLetterColor, LetterState } from "../Main/Game/Grid/types";
+import useClickOutside from "../../hooks/useClickOutside";
+import Button from "../Widgets/Button/Button";
+import copyIcon from "../../assets/images/ui/copy-icon.png";
+import useGameStore from "../../stores/useGameStore";
+import useUIStore from "../../stores/useUIStore";
 
-function EndPage(): JSX.Element {
-  const [isCopied, setIsCopied] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const resultText = "Pas de résultat pour le moment";
+interface EndPageProps {
+  endPageButtonRef: React.RefObject<HTMLButtonElement | null>;
+}
 
-  const handleClose = () => setIsVisible(false);
+function EndPage({ endPageButtonRef }: EndPageProps): JSX.Element {
+  const tries = useGameStore((state) => state.tries);
+  const { showEndPage: display, setVisibility } = useUIStore();
 
-  const handleCopy = () => {
-    const copyText = `Mon score sur ${window.location.href}\n${resultText}`;
+  const endPageRef = useRef<HTMLDivElement | null>(null);
+  const emojiScore = useMemo(() => {
+    return tries
+      .map((word) =>
+        word
+          .map(({ state }) => getLetterColor(state ?? LetterState.Miss))
+          .join("")
+      )
+      .join("\n");
+  }, [tries]);
+
+  useClickOutside(endPageRef, () => setVisibility("showEndPage", false), [
+    endPageButtonRef,
+  ]);
+
+  function handleCopy() {
+    const copyText = `Mon score sur ${window.location.href}\n${emojiScore}`;
     navigator.clipboard.writeText(copyText);
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 1000);
-  };
+  }
 
-  if (!isVisible) {
-    return <></>;
+  function shareInTchat() {
+    return;
   }
 
   return (
-    <div className={classes.pageFin}>
-      <div className={classes.close} onClick={handleClose}>
-        x
-      </div>
-      <div className={classes.crown}></div>
-      <h1>Résumé de la partie 😢</h1>
-      <div className={classes.copier}>{resultText}</div>
-      <p className={classes.solution}></p>
+    <div
+      className={classNames(classes.pageFin, { [classes.hidden]: !display })}
+      ref={endPageRef}
+    >
+      <div className={classes.emojiScore}>{emojiScore}</div>
       <div className={classes.boutonsFlex}>
-        <div className={classes.bouton}>PARTAGER DANS LE TCHAT</div>
-        <div className={classes.boutonCopier} onClick={handleCopy}>
-          <img src="images/copy-icon.png" alt="copy-icon" />
-          {isCopied && <div className={classes.copyChecked}>✓</div>}
-        </div>
+        <Button
+          text={"Partager le score dans le tchat"}
+          onClick={() => shareInTchat()}
+          className={classes.shareInTchat}
+        />
+        <Button
+          text={
+            <img src={copyIcon} alt="Copy icon" className={classes.copyIcon} />
+          }
+          onClick={() => handleCopy()}
+          className={classes.copyScore}
+          size="square"
+        />
       </div>
-      <div className={classes.lesCopains}>
-        Du (trop de) temps libre ?
-        <div className={classes.linksFlex}>
-          <a
-            href="https://dpt.piemontaise.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              className={classes.imageIcon}
-              src="https://dpt.piemontaise.com/favicon.ico"
-              alt="Départementdle"
-            />
-            Départementdle
-          </a>
-          <a
-            href="https://fish.embuscade.tech/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              className={classes.imageIcon}
-              src="images/fish.webp"
-              alt="Fish"
-            />
-            Fish
-          </a>
-        </div>
-      </div>
+      <Button
+        text={"Fermer"}
+        onClick={() => setVisibility("showEndPage", false)}
+      />
     </div>
   );
 }

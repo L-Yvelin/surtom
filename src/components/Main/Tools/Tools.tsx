@@ -4,13 +4,14 @@ import tabImage from "../../../assets/images/tools/multiplayer.png";
 import tabScore from "../../../assets/images/tools/stats2.png";
 import tabLectern from "../../../assets/images/tools/lectern.webp";
 import tabChat from "../../../assets/images/tools/chat.webp";
-import tabChatCrossed from "../../../assets/images/tools/chat_crossed.webp";
 import tabBook from "../../../assets/images/tools/book_and_quill.webp";
 import tabLampOff from "../../../assets/images/tools/lamp-off.webp";
 import tabLampOn from "../../../assets/images/tools/lamp-on.webp";
 import MinecraftTooltip from "../../Tooltip/MinecraftTooltip/MinecraftTooltip";
 import Tooltip from "../../Tooltip/Tooltip";
 import classNames from "classnames";
+import useGameStore from "../../../stores/useGameStore";
+import useUIStore from "../../../stores/useUIStore";
 
 export enum Theme {
   DARK = "DARK",
@@ -20,30 +21,27 @@ export enum Theme {
 interface ToolsProps {
   theme: Theme;
   setTheme: (newTheme: Theme) => void;
-  nbUsers: number;
-  gameFinished: boolean;
-  isChatOpen: boolean;
-  setShowTab: (value: (prev: boolean) => boolean) => void;
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
   statsButtonRef: React.RefObject<HTMLButtonElement | null>;
-  setShowStats: (value: (prev: boolean) => boolean) => void;
-  setShowCustomWord: (value: (prev: boolean) => boolean) => void;
   customWordButtonRef: React.RefObject<HTMLButtonElement | null>;
+  endPageButtonRef: React.RefObject<HTMLButtonElement | null>;
+  chatButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 function Tools({
   theme,
   setTheme,
-  nbUsers,
-  gameFinished,
-  isChatOpen,
-  setShowTab,
   tabButtonRef,
   statsButtonRef,
-  setShowStats,
-  setShowCustomWord,
+  endPageButtonRef,
+  chatButtonRef,
   customWordButtonRef,
 }: ToolsProps): JSX.Element {
+  const { playerList, gameFinished } = useGameStore();
+  const { toggle } = useUIStore();
+
+  const nbUsers = playerList.length;
+
   const changeTheme = () =>
     setTheme(theme === Theme.DARK ? Theme.LIGHT : Theme.DARK);
 
@@ -55,7 +53,7 @@ function Tools({
             <button
               className={classNames(classes.tool, classes.voirTab)}
               data-user-count={nbUsers}
-              onClick={() => setShowTab((prev) => !prev)}
+              onClick={() => toggle("showTab")}
               ref={tabButtonRef}
             >
               <img
@@ -77,7 +75,7 @@ function Tools({
             <button
               className={classes.tool}
               ref={statsButtonRef}
-              onClick={() => setShowStats((prev) => !prev)}
+              onClick={() => toggle("showStats")}
             >
               <img
                 src={tabScore}
@@ -102,10 +100,12 @@ function Tools({
                 !gameFinished ? classes.disabled : undefined,
                 classes.tool
               )}
+              ref={endPageButtonRef}
+              onClick={() => gameFinished && toggle("showEndPage")}
             >
               <img
                 src={tabLectern}
-                alt="Score page icon"
+                alt="End page icon"
                 className={classes.toolImage}
               />
             </button>
@@ -119,10 +119,14 @@ function Tools({
         />
         <Tooltip
           element={
-            <button className={classes.tool}>
+            <button
+              className={classes.tool}
+              ref={chatButtonRef}
+              onClick={() => toggle("showChat")}
+            >
               <div id="chat-notification-circle"></div>
               <img
-                src={isChatOpen ? tabChatCrossed : tabChat}
+                src={tabChat}
                 alt="Chat page icon"
                 className={classes.toolImage}
               />
@@ -139,7 +143,7 @@ function Tools({
           element={
             <button
               className={classes.tool}
-              onClick={() => setShowCustomWord((prev) => !prev)}
+              onClick={() => toggle("showCustomWord")}
               ref={customWordButtonRef}
             >
               <img

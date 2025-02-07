@@ -3,20 +3,37 @@
   color: white;
   height: 100%;
   width: 100%;
-  aspect-ratio: 10;
+  flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-image: url("/src/assets/images/ui/button.png");
   background-size: 100%;
+  background-repeat: no-repeat;
   container-type: size;
-}
-
-.button:hover {
-  background-image: url("/src/assets/images/ui/button_highlighted.png");
+  text-shadow: .25cqh .25cqh 0 rgba(0, 0, 0, 0.5);
+  padding: .5cqh;
+  box-sizing: border-box;
 }
 
 .text {
   font-size: 45cqh;
+}
+
+.normal {
+  aspect-ratio: 10;
+  background-image: url("/src/assets/images/ui/button.png");
+}
+
+.normal:hover {
+  background-image: url("/src/assets/images/ui/button_highlighted.png");
+}
+
+.square {
+  aspect-ratio: 1;
+  background-image: url("/src/assets/images/ui/button_square.png");
+}
+
+.square:hover {
+  background-image: url("/src/assets/images/ui/button_highlighted_square.png");
 }

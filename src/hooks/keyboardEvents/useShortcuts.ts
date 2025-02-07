@@ -1,25 +1,41 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import useGameStore from "../../stores/useGameStore";
+import useUIStore from "../../stores/useUIStore";
 
 const useShortcuts = () => {
-  const [showTab, setShowTab] = useState(false);
-  const [showStats, setShowStats] = useState<boolean>(false);
-  const [showCustomWord, setShowCustomWord] = useState<boolean>(false);
+  const { setVisibility } = useUIStore();
+
+  const { gameFinished } = useGameStore();
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Tab") {
-      event.preventDefault();
-      setShowTab(true);
-    } else if (event.key === "Escape") {
-      setShowTab(false);
-      setShowStats(false);
-      setShowCustomWord(false);
+    switch (event.key) {
+      case "Tab":
+        event.preventDefault();
+        setVisibility("showTab", true);
+        break;
+      case "Escape":
+        setVisibility("showTab", false);
+        setVisibility("showStats", false);
+        setVisibility("showCustomWord", false);
+        setVisibility("showEndPage", false);
+        setVisibility("showChat", false);
+        break;
+      case "/":
+        setVisibility("showChat", true);
+        break;
+      case "t":
+        if (gameFinished) {
+          setVisibility("showChat", true);
+          event.preventDefault();
+        }
+        break;
     }
   };
 
   const handleKeyUp = (event: KeyboardEvent) => {
     if (event.key === "Tab") {
       event.preventDefault();
-      setShowTab(false);
+      setVisibility("showTab", false);
     }
   };
 
@@ -33,7 +49,7 @@ const useShortcuts = () => {
     };
   }, []);
 
-  return { showTab, setShowTab, showStats, setShowStats, showCustomWord, setShowCustomWord, handleKeyDown };
+  return { handleKeyDown };
 };
 
 export default useShortcuts;

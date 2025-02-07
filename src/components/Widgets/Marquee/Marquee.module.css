@@ -1,0 +1,13 @@
+.marquee {
+  white-space: nowrap;
+  position: relative;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 1% 0;
+}
+
+.text {
+  display: block;
+  max-width: 100%;
+  transform: translateX(var(--transform, 0));
+}

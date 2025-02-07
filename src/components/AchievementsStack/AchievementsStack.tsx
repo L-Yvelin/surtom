@@ -1,25 +1,21 @@
 import React from "react";
 import classes from "./AchievementsStack.module.css";
-import AchievementCard, { AchievementProps } from "./Achievement/Achievement";
+import AchievementCard from "./Achievement/Achievement";
 import SlideInOut from "./SlideInOut/SlideInOut";
+import useGameStore from "../../stores/useGameStore";
 
 interface AchievementsStackProps {
-  achievements: AchievementProps[];
-  setAchievements: React.Dispatch<React.SetStateAction<AchievementProps[]>>;
   lifeTime: number;
   transitionDuration: number;
 }
 
 const AchievementsStack: React.FC<AchievementsStackProps> = ({
-  achievements,
-  setAchievements,
   lifeTime,
   transitionDuration,
 }) => {
-  const handleSlideOutEnd = (id: string | number) => {
-    setAchievements((prevAchievements) =>
-      prevAchievements.filter((item) => item.id !== id)
-    );
+  const { achievements, removeAchievement } = useGameStore();
+  const handleSlideOutEnd = (id: string) => {
+    removeAchievement(id);
   };
 
   return (

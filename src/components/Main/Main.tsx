@@ -1,46 +1,35 @@
 import { JSX, useEffect, useState } from "react";
-import Grid from "./Grid/Grid";
-import { Tries } from "./Grid/types";
 import classes from "./Main.module.css";
-import { getChestLabel } from "./Grid/utils";
 import Tools, { Theme } from "./Tools/Tools";
 import Credits from "./Credits/Credits";
 import Keyboard from "./Keyboard/Keyboard";
-import { Player } from "../Tab/Tab";
 import classNames from "classnames";
 import { detectKeyboardLayout, KeyboardLayouts } from "./Keyboard/utils";
 import ExperienceBar from "./ExperienceBar/ExperienceBar";
+import Game from "./Game/Game";
+import useGameStore from "../../stores/useGameStore";
 
 interface MainProps {
-  solution: string;
-  tries: Tries;
-  player: Player;
-  players: Player[];
   theme: Theme;
   setTheme: (newTheme: Theme) => void;
-  setShowTab: (value: (prev: boolean) => boolean) => void;
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
-  setShowStats: (value: (prev: boolean) => boolean) => void;
   statsButtonRef: React.RefObject<HTMLButtonElement | null>;
-  setShowCustomWord: (value: (prev: boolean) => boolean) => void;
   customWordButtonRef: React.RefObject<HTMLButtonElement | null>;
+  endPageButtonRef: React.RefObject<HTMLButtonElement | null>;
+  chatButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 function Main({
-  solution,
-  tries,
-  players,
-  player,
   theme,
   setTheme,
-  setShowTab,
   tabButtonRef,
-  setShowStats,
   statsButtonRef,
-  setShowCustomWord,
   customWordButtonRef,
+  endPageButtonRef,
+  chatButtonRef,
 }: MainProps): JSX.Element {
   const [layout, setLayout] = useState<KeyboardLayouts>(KeyboardLayouts.AZERTY);
+  const { player } = useGameStore();
 
   useEffect(() => {
     const getLayout = async () => {
@@ -54,16 +43,6 @@ function Main({
     getLayout();
   }, []);
 
-  function getLevel(xp: number)  {
-    if (xp <= 352) {
-      return Math.sqrt(xp + 9) - 3;
-    }
-    if (xp <= 1507) {
-      return 81 / 10 + Math.sqrt((2 / 5) * (xp - 7839 / 40));
-    }
-    return 325 / 18 + Math.sqrt((2 / 9) * (xp - 54215 / 72));
-  };
-
   return (
     <main
       className={classNames(classes.main, {
@@ -74,23 +53,14 @@ function Main({
       <Tools
         theme={theme}
         setTheme={setTheme}
-        nbUsers={players.length}
-        gameFinished={false}
-        isChatOpen={false}
-        setShowTab={setShowTab}
         tabButtonRef={tabButtonRef}
         statsButtonRef={statsButtonRef}
-        setShowStats={setShowStats}
-        setShowCustomWord={setShowCustomWord}
         customWordButtonRef={customWordButtonRef}
+        endPageButtonRef={endPageButtonRef}
+        chatButtonRef={chatButtonRef}
       />
-      <div className={classes.coffre}>
-        <div className={classes.coffreUi}>
-          <p className={classes.chestLabel}>{getChestLabel(solution.length)}</p>
-          <Grid solution={solution} tries={tries} />
-        </div>
-      </div>
-      <ExperienceBar level={getLevel(player.xp)} />
+      <Game />
+      <ExperienceBar xp={player?.xp ?? 0} />
       <Keyboard layout={layout} />
       <Credits />
     </main>

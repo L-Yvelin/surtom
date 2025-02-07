@@ -1,0 +1,47 @@
+import { JSX } from "react";
+import classes from "./Game.module.css";
+import Grid from "./Grid/Grid";
+import useGameStore from "../../../stores/useGameStore";
+import { LetterState } from "./Grid/types";
+
+function Game(): JSX.Element {
+  const { solution, tries, letters } = useGameStore();
+  const loadingWord = "CHARGEMENT";
+
+  function getChestLabel(length: number): string {
+    if (
+      [24, 25].includes(new Date().getDate()) &&
+      new Date().getMonth() === 11
+    ) {
+      return "Coffre de noël";
+    } else if (length < 7) {
+      return "Coffre de l'Ender";
+    } else {
+      return "Grand coffre";
+    }
+  }
+
+  return (
+    <div className={classes.coffre}>
+      <div className={classes.coffreUi}>
+        <p className={classes.chestLabel}>
+          {getChestLabel(solution?.length ?? loadingWord.length)}
+        </p>
+        <Grid
+          solution={solution ?? loadingWord}
+          tries={
+            solution
+              ? [...tries, letters]
+              : [
+                  loadingWord
+                    .split("")
+                    .map((l) => ({ letter: l, status: LetterState.Correct })),
+                ]
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+export default Game;

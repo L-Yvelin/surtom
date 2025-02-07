@@ -3,14 +3,14 @@ import classes from "./Achievement.module.css";
 import { AchievementIcon } from "./utils";
 
 export interface AchievementProps {
-  id: string | number;
+  id: string;
   title: string;
   description: string;
   icon?: string;
 }
 
 export class Achievement {
-  id: string | number;
+  id: string;
   title: string;
   description: string;
   icon: string;

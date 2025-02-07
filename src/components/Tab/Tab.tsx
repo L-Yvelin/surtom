@@ -4,30 +4,22 @@ import TabItem from "./TabItem/TabItem";
 import { useRef } from "react";
 import useClickOutside from "../../hooks/useClickOutside";
 import { JSX } from "react";
+import useGameStore from "../../stores/useGameStore";
+import useUIStore from "../../stores/useUIStore";
 
 interface TabProps {
-  playerList: Player[];
-  display: boolean;
-  setShowTab: (value: (prev: boolean) => boolean) => void;
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
-export interface Player {
-  name: string;
-  xp: number;
-  isModerator: number;
-  isMobile: boolean;
-}
+function Tab({ tabButtonRef }: TabProps): JSX.Element {
+  const { playerList } = useGameStore();
+  const { setVisibility, showTab: display } = useUIStore();
 
-function Tab({
-  playerList,
-  display,
-  setShowTab,
-  tabButtonRef,
-}: TabProps): JSX.Element {
   const tabRef = useRef<HTMLDivElement>(null);
 
-  useClickOutside(tabRef, () => setShowTab(() => false), [tabButtonRef]);
+  useClickOutside(tabRef, () => setVisibility("showTab", false), [
+    tabButtonRef,
+  ]);
 
   return (
     <div

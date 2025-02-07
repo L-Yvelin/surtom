@@ -1,32 +1,21 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import useShortcuts from "./useShortcuts";
 import useGameLogic from "./useGameLogic";
-import { AchievementProps } from "../../components/AchievementsStack/Achievement/Achievement";
+import useGameStore from "../../stores/useGameStore";
+import useUIStore from "../../stores/useUIStore";
 
-const useKeyPress = (
-  addAchievement: (achievement: AchievementProps) => void,
-  solution: string
-) => {
-  const [gameFinished, setGameFinished] = useState<boolean>(false);
+const useKeyPress = () => {
+  const { gameFinished } = useGameStore();
+  const { isAnyInterfaceOpen } = useUIStore();
 
   const shortcutsState = useShortcuts();
-  const gameLogicState = useGameLogic(
-    addAchievement,
-    solution,
-    gameFinished,
-    setGameFinished
-  );
+  const gameLogicState = useGameLogic();
 
   useEffect(() => {
-    const isAnyInterfaceOpen: boolean =
-      shortcutsState.showTab ||
-      shortcutsState.showStats ||
-      shortcutsState.showCustomWord;
-
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (gameFinished || event.metaKey || event.ctrlKey || event.altKey) {
+      if (gameFinished || event.metaKey || event.altKey) {
         shortcutsState.handleKeyDown(event);
-      } else if (!isAnyInterfaceOpen) {
+      } else if (!isAnyInterfaceOpen()) {
         gameLogicState.handleKeyDown(event);
       }
     };
@@ -35,12 +24,11 @@ const useKeyPress = (
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [gameFinished, gameLogicState, shortcutsState]);
+  }, [gameFinished, gameLogicState, shortcutsState, isAnyInterfaceOpen]);
 
   return {
     ...shortcutsState,
     ...gameLogicState,
-    setGameFinished,
   };
 };
 

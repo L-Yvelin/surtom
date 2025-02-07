@@ -39,6 +39,14 @@ export function getKeyClassName(key: string): string {
   }
 }
 
+export function getButtonKeyEvent(key: string): string {
+  const keyEvents: { [key: string]: string } = {
+    "↲": "Enter",
+    "⌫": "Backspace",
+  };
+  return keyEvents[key] || key;
+}
+
 export function getKeyboardClass(layout: KeyboardLayouts) {
   switch (layout) {
     case KeyboardLayouts.AZERTY:

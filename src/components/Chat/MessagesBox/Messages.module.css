@@ -1,0 +1,15 @@
+.messages {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: .2vh;
+  gap: .2vh;
+  max-height: 100%;
+  overflow: scroll;
+}
+
+.messages::-webkit-scrollbar {
+  display: none;
+}

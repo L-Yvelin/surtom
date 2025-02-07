@@ -17,7 +17,7 @@ function SlideInOut({
   side = "bottom",
   onComplete,
 }: SlideInOutProps): JSX.Element {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     setIsVisible(true);
@@ -37,10 +37,10 @@ function SlideInOut({
   return (
     <div
       className={classNames(
+        classes[side],
         classes.slideInOut,
         { [classes.slideIn]: isVisible },
-        { [classes.slideOut]: !isVisible },
-        classes[side]
+        { [classes.slideOut]: !isVisible }
       )}
       style={
         {

@@ -1,0 +1,44 @@
+.chestLabel {
+  color: #555;
+  font-size: 2vh;
+  display: block;
+  padding: 0.5vh 0 0.2vh 0;
+}
+
+.coffre {
+  display: flex;
+  justify-content: center;
+}
+
+.coffreUi {
+  --box-size: 1vh;
+  padding: 1.5vmin;
+  margin: 0.75vmin;
+  padding-top: 0;
+  background-color: #c6c6c6;
+  box-shadow: calc(0.5 * var(--box-size)) 0 0 0 #555555,
+    0 calc(0.5 * var(--box-size)) 0 0 #555555,
+    calc(0.25 * var(--box-size)) calc(0.25 * var(--box-size)) 0 0 #555555,
+    calc(-0.5 * var(--box-size)) 0 0 0 #e8e8e8,
+    0 calc(-0.5 * var(--box-size)) 0 0 #e8e8e8,
+    calc(-0.25 * var(--box-size)) calc(-0.25 * var(--box-size)) 0 0 #e8e8e8,
+    0 0 0 calc(0.25 * var(--box-size)) #b5b4b5,
+    calc(0.25 * var(--box-size)) calc(0.5 * var(--box-size)) 0 0 #555,
+    calc(0.5 * var(--box-size)) calc(0.25 * var(--box-size)) 0 0 #555,
+    calc(-0.25 * var(--box-size)) calc(-0.5 * var(--box-size)) 0 0 #e8e8e8,
+    calc(-0.5 * var(--box-size)) calc(-0.25 * var(--box-size)) 0 0 #e8e8e8,
+    calc(0.5 * var(--box-size)) calc(-0.25 * var(--box-size)) 0 0 #000,
+    calc(0.25 * var(--box-size)) calc(-0.5 * var(--box-size)) 0 0 #000,
+    calc(-0.5 * var(--box-size)) calc(0.25 * var(--box-size)) 0 0 #000,
+    calc(-0.25 * var(--box-size)) calc(0.5 * var(--box-size)) 0 0 #000,
+    calc(-0.5 * var(--box-size)) calc(-0.5 * var(--box-size)) 0 0 #000,
+    calc(0.5 * var(--box-size)) calc(0.5 * var(--box-size)) 0 0 #000,
+    calc(-0.75 * var(--box-size)) 0 0 0 #000,
+    calc(-0.75 * var(--box-size)) calc(-0.25 * var(--box-size)) 0 0 #000,
+    calc(0.75 * var(--box-size)) 0 0 0 #000,
+    calc(0.75 * var(--box-size)) calc(0.25 * var(--box-size)) 0 0 #000,
+    0 calc(-0.75 * var(--box-size)) 0 0 #000,
+    calc(-0.25 * var(--box-size)) calc(-0.75 * var(--box-size)) 0 0 #000,
+    0 calc(0.75 * var(--box-size)) 0 0 #000,
+    calc(0.25 * var(--box-size)) calc(0.75 * var(--box-size)) 0 0 #000;
+}
