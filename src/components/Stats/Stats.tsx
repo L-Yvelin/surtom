@@ -18,7 +18,9 @@ function Stats({ statsButtonRef }: StatsProps): JSX.Element {
   const { setVisibility, showStats: display } = useUIStore();
   const { total, increaseFactor } = calculateStats(scores);
 
-  useClickOutside(statsRef, () => setVisibility("showStats", false), [statsButtonRef]);
+  useClickOutside(statsRef, () => setVisibility("showStats", false), [
+    statsButtonRef,
+  ]);
 
   return (
     <div
@@ -33,7 +35,10 @@ function Stats({ statsButtonRef }: StatsProps): JSX.Element {
         total={total}
         increaseFactor={increaseFactor}
       />
-      <Button text={"Fermer"} onClick={() => setVisibility("showStats", false)} />
+      <Button
+        text={"Fermer"}
+        onClick={() => setVisibility("showStats", false)}
+      />
     </div>
   );
 }

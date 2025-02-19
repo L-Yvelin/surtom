@@ -12,6 +12,8 @@ import EndPage from "./components/EndPage/EndPage";
 import Chat from "./components/Chat/Chat";
 import useGameStore from "./stores/useGameStore";
 import Loading from "./components/Loading/Loading";
+import { useWebSocketStore } from "./stores/useWebSocketStore";
+import WebSocketPingHandler from "./utils/webSocketPingHandler";
 
 const App: React.FC = () => {
   const tabButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -22,14 +24,23 @@ const App: React.FC = () => {
 
   const { theme, setTheme } = useTheme();
   const { hasLoaded, setHasLoaded } = useGameStore();
+  const { connect } = useWebSocketStore();
 
   useKeyPress();
 
   useEffect(() => {
+    console.log("hey");
+    
+    connect(); // Connect on mount
+
     setTimeout(() => {
       setHasLoaded(true);
     }, 1000);
-  });
+
+    return () => {
+      useWebSocketStore.getState().disconnect(); // Clean up on unmount
+    };
+  }, []);
 
   return (
     <div id="root-container">
@@ -55,6 +66,8 @@ const App: React.FC = () => {
         <EndPage endPageButtonRef={endPageButtonRef} />
         <Tab tabButtonRef={tabButtonRef} />
       </div>
+
+      <WebSocketPingHandler />
     </div>
   );
 };

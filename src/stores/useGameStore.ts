@@ -22,7 +22,7 @@ interface GameState {
   addPlayer: (player: Player) => void;
   removePlayer: (playerName: string) => void;
   scores: ScoreStats;
-  setScores: (scores: Partial<ScoreStats>) => void;
+  setScores: (scores: ScoreStats) => void;
   messages: Message[];
   setMessages: (messages: Message[]) => void;
   removeMessage: (messageId: string) => void;
@@ -81,7 +81,7 @@ const useGameStore = create<GameState>((set) => ({
       playerList: state.playerList?.filter((p) => p.name !== playerName) || [],
     })),
   scores: {},
-  setScores: (scores) => set((state) => ({ ...state.scores, ...scores })),
+  setScores: (scores) => set({ scores }),
   messages: [defaultMessage],
   setMessages: (messages) => set({ messages }),
   removeMessage: (messageId) =>

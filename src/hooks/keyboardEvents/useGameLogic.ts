@@ -27,18 +27,20 @@ const useGameLogic = () => {
   }, [solution, setLetters]);
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (/^[a-zA-Z]$/.test(event.key)) {
+    if (event.key === "Backspace") {
+      if (event.ctrlKey || event.metaKey) {
+        setLetters(letters.slice(0, 1));
+      } else {
+        setLetters(letters.length > 1 ? letters.slice(0, -1) : letters);
+      }
+    } else if (event.metaKey) {
+      return;
+    } else if (/^[a-zA-Z]$/.test(event.key)) {
       setLetters(
         letters.length < solution.length
           ? [...letters, { letter: event.key.toLowerCase() }]
           : letters
       );
-    } else if (event.key === "Backspace") {
-      if (event.ctrlKey) {
-        setLetters(letters.slice(0, 1));
-      } else {
-        setLetters(letters.length > 1 ? letters.slice(0, -1) : letters);
-      }
     } else if (event.key === "Enter") {
       processGuess();
     }

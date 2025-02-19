@@ -13,7 +13,7 @@ const useKeyPress = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (gameFinished || event.metaKey || event.altKey) {
+      if (gameFinished || event.altKey) {
         shortcutsState.handleKeyDown(event);
       } else if (!isAnyInterfaceOpen()) {
         gameLogicState.handleKeyDown(event);
