@@ -1,0 +1,46 @@
+#root {
+  height: 100%;
+}
+
+html {
+  background-color: #6eb1ff;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  height: 100vh;
+  -webkit-overflow-scrolling: touch;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+  overflow-y: visible;
+  overflow-x: hidden;
+  image-rendering: pixelated;
+  font-family: "Chinese", "Twemoji", "minecraft-chat";
+  font-size: 1.5dvh;
+}
+
+p {
+  all: unset;
+}
+
+@font-face {
+  font-family: "minecraft";
+  src: url("/src/assets/fonts/MinecraftRegular.otf");
+  /* src: url("fonts/F77-Minecraft.ttf"); */
+}
+
+@font-face {
+  font-family: "minecraft-chat";
+  /* src: url("fonts/MinecraftRegular.otf"); */
+  src: url("/src/assets/fonts/F77-Minecraft.ttf");
+}
+
+@font-face {
+  font-family: "Chinese";
+  src: local("SimKai"), local("KaiTi"), local("KaiU"), local("STKaiti"),
+    local("Microsoft YaHei"), local("Songti"), local("MS Yi-Bai Ti"),
+    local("BiauKai"), local("Heiti SC"), local("FangSong"), "STHeitiSC-Medium", "cursive";
+  unicode-range: U+4E00-9FFF;
+}

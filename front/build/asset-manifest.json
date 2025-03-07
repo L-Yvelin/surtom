@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/static/css/main.b1d111f8.css",
+    "main.js": "/static/js/main.bdfec2b8.js",
+    "static/media/TwemojiMozilla-Regular.ttf?v=1": "/static/media/TwemojiMozilla-Regular.ead00812d1c6ec76626f.ttf",
+    "static/media/F77-Minecraft.ttf": "/static/media/F77-Minecraft.84739bb040356b935841.ttf",
+    "static/media/logo_ann.png": "/static/media/logo_ann.20ebfcf2108fb0d019dd.png",
+    "static/media/logo.png": "/static/media/logo.6dd3a9e0cf42baf62c72.png",
+    "static/media/item_frame.png": "/static/media/item_frame.e67efd6acdf5e4754346.png",
+    "static/media/lectern.webp": "/static/media/lectern.6765feda0db38ec04168.webp",
+    "static/media/MinecraftRegular.otf": "/static/media/MinecraftRegular.82ba08919dc2add9422f.otf",
+    "static/media/book_and_quill.webp": "/static/media/book_and_quill.6a36c30e50d2f3062a5b.webp",
+    "static/media/lamp-off.webp": "/static/media/lamp-off.38353b1a7ada965968f8.webp",
+    "static/media/lamp-on.webp": "/static/media/lamp-on.aa4b36dd900d2a76f248.webp",
+    "static/media/chat_crossed.webp": "/static/media/chat_crossed.b1fc10c16f87344625cc.webp",
+    "static/media/chat.webp": "/static/media/chat.78b44d8f34e0755ca20f.webp",
+    "index.html": "/index.html",
+    "main.b1d111f8.css.map": "/static/css/main.b1d111f8.css.map",
+    "main.bdfec2b8.js.map": "/static/js/main.bdfec2b8.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b1d111f8.css",
+    "static/js/main.bdfec2b8.js"
+  ]
+}

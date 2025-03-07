@@ -1,0 +1,38 @@
+.header {
+  box-shadow: 0 0.5vh 1.5vh black;
+  -webkit-backdrop-filter: saturate(125%);
+  backdrop-filter: saturate(125%);
+  background-color: var(--couleur2);
+  background-image: url("/src/assets/images/blocks/grass_256.png");
+  background-repeat: repeat-x;
+  image-rendering: pixelated;
+  display: flex;
+  justify-content: center;
+  height: 17dvmin;
+  width: 100%;
+  background-size: 17dvmin 17dvmin;
+  transition: background-image ease 1s;
+  z-index: 2;
+}
+
+.logoLink {
+  cursor: default;
+  max-height: 100%;
+  /* padding: 3.5vmin 0; */
+  padding: 2vmin 0;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  cursor: default;
+  image-rendering: auto;
+  filter: drop-shadow(0 0.5vh 0.4vh rgb(0, 0, 0, 0.8));
+  max-height: 100%;
+  max-width: 80vw;
+  object-fit: contain;
+}
+
+.dark {
+  background-image: url("/src/assets/images/blocks/nylium_256.png");
+}
