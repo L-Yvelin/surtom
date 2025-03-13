@@ -66,7 +66,7 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
     if (ws) return;
     console.warn("Connecting WebSocket...");
 
-    const url = process.env.REACT_APP_WEBSOCKET_URL;
+    const url = import.meta.env.VITE_WEBSOCKET_URL;
     if (!url) {
       console.error("WebSocket URL is not defined!");
       return;
