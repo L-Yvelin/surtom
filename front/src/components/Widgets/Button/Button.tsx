@@ -18,10 +18,12 @@ function Button({
   size = "normal",
 }: ButtonProps): JSX.Element {
   function handleOnClick(e: React.MouseEvent<HTMLButtonElement>) {
+    onClick?.(e);
     try {
       new Audio(buttonSound).play();
-    } catch {}
-    onClick && onClick(e);
+    } catch {
+      return;
+    }
   }
 
   return (

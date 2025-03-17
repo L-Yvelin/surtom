@@ -2,12 +2,19 @@
   white-space: nowrap;
   position: relative;
   max-width: 100%;
-  overflow-x: hidden;
+  max-height: 100%;
+  overflow: hidden;
   padding: 1% 0;
+  display: flex;
+}
+
+.marquee::-webkit-scrollbar {
+  display: none;
 }
 
 .text {
   display: block;
-  max-width: 100%;
+  max-width: 98%;
+  max-height: 100%;
   transform: translateX(var(--transform, 0));
 }

@@ -131,7 +131,6 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
             };
           })
         );
-        console.log(usersList.users);
         break;
       case "lastTimeMessage":
         const lastTimeMessage: LastTimeMessage = data;

@@ -1,4 +1,4 @@
-import { JSX, useEffect, useRef } from "react";
+import { JSX, useCallback, useEffect, useRef } from "react";
 import { Message } from "../Chat";
 import MessageLine from "./Message/Message";
 import classes from "./Messages.module.css";
@@ -12,22 +12,39 @@ function MessagesBox({ messages }: MessagesBoxProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const setScrollToBottom = useChatStore((state) => state.setScrollToBottom);
 
-  useEffect(() => {
-    setScrollToBottom(() => () => {
-      containerRef.current?.scrollTo({
-        top: containerRef.current.scrollHeight,
-        behavior: "smooth",
-      });
+  const scrollToBottomFunction = useCallback(() => {
+    containerRef.current?.scrollTo({
+      top: containerRef.current.scrollHeight,
+      behavior: "instant",
     });
-  }, [setScrollToBottom]);
+  }, []);
+
+  useEffect(() => {
+    setScrollToBottom(scrollToBottomFunction);
+  }, [setScrollToBottom, scrollToBottomFunction]);
 
   let lastDate: string | null = null;
 
   const elements = messages
     .toReversed()
     .reduce<JSX.Element[]>((acc, message) => {
+      acc.push(
+        <MessageLine
+          key={message.id}
+          id={message.id}
+          type={message.type}
+          player={message.player}
+          text={message.content.text}
+        />
+      );
+
       if (message.date) {
-        const messageDate = new Date(message.date).toLocaleDateString("fr", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const messageDate = new Date(message.date).toLocaleDateString("fr", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
         if (messageDate !== lastDate) {
           acc.push(
             <div key={`date-${message.id}`} className={classes.date}>
@@ -39,16 +56,6 @@ function MessagesBox({ messages }: MessagesBoxProps): JSX.Element {
           lastDate = messageDate;
         }
       }
-
-      acc.push(
-        <MessageLine
-          key={message.id}
-          id={message.id}
-          type={message.type}
-          player={message.player}
-          text={message.content.text}
-        />
-      );
 
       return acc;
     }, []);

@@ -23,8 +23,6 @@ function Marquee({
       if (textRef.current) {
         const overflow =
           textRef.current.scrollWidth - textRef.current.offsetWidth;
-          console.log(overflow);
-          
 
         if (overflow === 0) return;
 

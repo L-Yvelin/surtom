@@ -1,12 +1,14 @@
 .messages {
   display: flex;
   flex-direction: column-reverse;
-  flex-grow: 1;
-  overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 0.2vh;
-  gap: 0.2vh;
+  flex: 1;
   max-height: 100%;
+  min-height: 0;
+  flex-shrink: 1;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(1px);
+  padding: 0.4vh;
+  gap: 0.2vh;
   overflow: scroll;
   user-select: text;
 }
@@ -16,13 +18,13 @@
 }
 
 .date {
-  color: #b7b7b7;
-  margin: 0.2vh 0;
+  color: #cacaca;
   display: flex;
-  gap: .5vh;
-  justify-content: center;
+  gap: 1vh;
+  justify-content: space-around;
   align-items: center;
   text-transform: capitalize;
+  padding: 1vh 1vh;
 }
 
 .dateLeftBar,

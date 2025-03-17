@@ -1,6 +1,13 @@
 .message {
+  position: relative;
   color: white;
   width: 100%;
   font-size: 1.8vh;
   text-shadow: 0.25cqh 0.25cqh 0 rgba(0, 0, 0, 0.5);
+}
+
+.tool {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
 }
