@@ -32,7 +32,7 @@ interface GameState {
 export const defaultPlayer: Player = {
   name: "",
   isMobile: false,
-  isModerator: 0,
+  isModerator: 3,
   xp: 0,
 };
 

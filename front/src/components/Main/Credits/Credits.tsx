@@ -21,7 +21,7 @@ function Credits(): JSX.Element {
         tooltipContent={
           <MinecraftTooltip
             title={"Suivi en justice par France TV"}
-            content={"Me fais pas le même coup stp"}
+            children={"Me fais pas le même coup stp"}
           />
         }
       />
@@ -33,7 +33,7 @@ function Credits(): JSX.Element {
         tooltipContent={
           <MinecraftTooltip
             title={"Hammond Sus"}
-            content={"The empire is pretty chill"}
+            children={"The empire is pretty chill"}
           />
         }
       />
@@ -45,7 +45,7 @@ function Credits(): JSX.Element {
         tooltipContent={
           <MinecraftTooltip
             title={"WAWAWAWAWA"}
-            content={"笨蛋"}
+            children={"笨蛋"}
           />
         }
       />
@@ -57,7 +57,7 @@ function Credits(): JSX.Element {
         tooltipContent={
           <MinecraftTooltip
             title={"Un repère Galiléen"}
-            content={"tah gros"}
+            children={"tah gros"}
           />
         }
       />

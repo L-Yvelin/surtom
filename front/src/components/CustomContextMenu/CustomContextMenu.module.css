@@ -1,0 +1,24 @@
+.wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+}
+
+.menu {
+  position: fixed;
+  z-index: 1000;
+}
+
+.visible {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}

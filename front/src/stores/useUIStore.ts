@@ -6,7 +6,8 @@ type UIKeys =
   | "showStats"
   | "showCustomWord"
   | "showEndPage"
-  | "showChat";
+  | "showChat"
+  | "showCustomRightClick";
 
 interface UIState {
   showTab: boolean;
@@ -14,6 +15,7 @@ interface UIState {
   showCustomWord: boolean;
   showEndPage: boolean;
   showChat: boolean;
+  showCustomRightClick: boolean;
 }
 
 interface UIHandlers {
@@ -30,6 +32,7 @@ const useUIStore = create<
     showCustomWord: false,
     showEndPage: false,
     showChat: false,
+    showCustomRightClick: false,
     toggle: (key) =>
       set((state) => {
         state[key] = !state[key];

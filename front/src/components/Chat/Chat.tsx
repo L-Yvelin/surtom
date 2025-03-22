@@ -46,13 +46,19 @@ export interface Message {
   date?: string;
 }
 
-function Chat(): JSX.Element {
+interface ChatProps {
+  chatButtonRef: React.RefObject<HTMLButtonElement | null>;
+}
+
+function Chat({ chatButtonRef }: ChatProps): JSX.Element {
   const chatRef = useRef<HTMLDivElement>(null);
   const { messages } = useChatStore();
   const { showChat: display, setVisibility } = useUIStore();
   const scrollToBottom = useChatStore((state) => state.scrollToBottom);
 
-  useClickOutside(chatRef, () => setVisibility("showChat", false));
+  useClickOutside(chatRef, () => setVisibility("showChat", false), [
+    chatButtonRef,
+  ]);
 
   return (
     <div

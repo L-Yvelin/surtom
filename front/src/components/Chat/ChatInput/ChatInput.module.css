@@ -5,6 +5,7 @@
   container-type: size;
   height: 3.2vh;
   flex-shrink: 0;
+  position: relative;
 }
 
 .button {
@@ -21,7 +22,33 @@
 .input {
   all: unset;
   color: white;
-  padding: .7vh;
+  padding: 0.7vh;
   flex-grow: 1;
   font-size: 1.8vh;
+}
+
+.answering {
+  width: 100%;
+  position: absolute;
+  bottom: 100%;
+  background-color: rgba(81, 81, 81, 0.7);
+  color: white;
+  padding: .5vh;
+  box-sizing: border-box;
+  border-radius: 0.5vh 0.5vh 0 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.answering.hidden {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.answeringMessage {
+  display: flex;
+  align-items: center;
 }

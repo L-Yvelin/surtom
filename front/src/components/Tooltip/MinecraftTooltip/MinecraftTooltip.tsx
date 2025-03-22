@@ -3,17 +3,17 @@ import classes from "./MinecraftTooltip.module.css";
 
 interface MinecraftTooltipProps {
   title: string;
-  content: string;
+  children: string | JSX.Element;
 }
 
 function MinecraftTooltip({
   title,
-  content,
+  children,
 }: MinecraftTooltipProps): JSX.Element {
   return (
     <div className={classes.tooltip}>
       <div className={classes.title}>{title}</div>
-      <div className={classes.content}>{content}</div>
+      <div className={classes.content}>{children}</div>
     </div>
   );
 }

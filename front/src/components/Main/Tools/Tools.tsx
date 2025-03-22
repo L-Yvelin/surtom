@@ -66,7 +66,7 @@ function Tools({
           tooltipContent={
             <MinecraftTooltip
               title="Joueurs connectés"
-              content="Envoyez des messages privés en cliquant sur la bulle"
+              children="Envoyez des messages privés en cliquant sur la bulle"
             />
           }
         />
@@ -87,7 +87,7 @@ function Tools({
           tooltipContent={
             <MinecraftTooltip
               title="Statistiques"
-              content="Combien de temps avez-vous perdu sur ce site ?"
+              children="Combien de temps avez-vous perdu sur ce site ?"
             />
           }
         />
@@ -113,7 +113,7 @@ function Tools({
           tooltipContent={
             <MinecraftTooltip
               title="Voir le score"
-              content="Veuillez d'abord finir la partie"
+              children="Veuillez d'abord finir la partie"
             />
           }
         />
@@ -135,7 +135,7 @@ function Tools({
           tooltipContent={
             <MinecraftTooltip
               title="Tchat en direct"
-              content="Discutez avec la communauté et partagez votre score"
+              children="Discutez avec la communauté et partagez votre score"
             />
           }
         />
@@ -156,7 +156,7 @@ function Tools({
           tooltipContent={
             <MinecraftTooltip
               title="Mot personnalisé"
-              content="Faites jouer vos amis avec votre propre mot"
+              children="Faites jouer vos amis avec votre propre mot"
             />
           }
         />
@@ -173,7 +173,7 @@ function Tools({
           tooltipContent={
             <MinecraftTooltip
               title="Changeur de thème"
-              content="Customisez votre interface"
+              children="Customisez votre interface"
             />
           }
         />

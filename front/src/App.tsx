@@ -72,7 +72,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
 
       {/* Floating interfaces */}
       <div className="windows">
-        <Chat />
+        <Chat chatButtonRef={chatButtonRef}/>
         <Stats statsButtonRef={statsButtonRef} />
         <AchievementsStack lifeTime={4} transitionDuration={0.5} />
         <CustomWord customWordButtonRef={customWordButtonRef} />
