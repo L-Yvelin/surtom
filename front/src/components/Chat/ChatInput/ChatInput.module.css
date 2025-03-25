@@ -33,13 +33,13 @@
   bottom: 100%;
   background-color: rgba(81, 81, 81, 0.7);
   color: white;
-  padding: .5vh;
+  padding: 0.5vh;
   box-sizing: border-box;
   border-radius: 0.5vh 0.5vh 0 0;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
   cursor: pointer;
 }
 

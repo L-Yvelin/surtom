@@ -1,4 +1,4 @@
-import { store } from "../store";
+import { store } from "../store.js";
 import bcrypt from "bcrypt";
 import {
   validateUsername,
@@ -6,10 +6,10 @@ import {
   passwordInHashArray,
   generateRandomHash,
   handleIsBanned,
-} from "../utils/helpers";
-import databaseService from "../services/databaseService";
-import Constants from "../utils/constants";
-import User from "../models/User";
+} from "../utils/helpers.js";
+import databaseService from "../services/databaseService.js";
+import Constants from "../utils/constants.js";
+import FullUser from "../models/User.js";
 
 interface Command {
   [key: string]: string;
@@ -41,7 +41,7 @@ function getAvailableCommands(moderateur = false): Command {
   return commandes;
 }
 
-async function handleCommand(user: User, command: string): Promise<void> {
+async function handleCommand(user: FullUser, command: string): Promise<void> {
   const commandParts = command.split(" ");
   const commandName = commandParts[0].toLowerCase();
 
@@ -94,7 +94,7 @@ async function handleCommand(user: User, command: string): Promise<void> {
 }
 
 async function handleNickCommand(
-  user: User,
+  user: FullUser,
   commandParts: string[]
 ): Promise<void> {
   user.connection.send(
@@ -134,7 +134,7 @@ async function handleNickCommand(
 }
 
 async function loginUserAndSendSession(
-  user: User,
+  user: FullUser,
   username: string,
   password: string
 ): Promise<boolean> {
@@ -187,7 +187,7 @@ async function loginUserAndSendSession(
 }
 
 async function handleLoginCommand(
-  user: User,
+  user: FullUser,
   commandParts: string[]
 ): Promise<void> {
   if (commandParts.length === 3) {
@@ -205,7 +205,7 @@ async function handleLoginCommand(
 }
 
 async function handleRegisterCommand(
-  user: User,
+  user: FullUser,
   commandParts: string[]
 ): Promise<void> {
   if (commandParts.length === 3) {
@@ -247,7 +247,7 @@ async function handleRegisterCommand(
 }
 
 async function handleMsgCommand(
-  user: User,
+  user: FullUser,
   commandParts: string[]
 ): Promise<void> {
   if (commandParts.length >= 3) {
@@ -304,7 +304,7 @@ async function handleMsgCommand(
 }
 
 async function handleEvalCommand(
-  user: User,
+  user: FullUser,
   commandParts: string[]
 ): Promise<void> {
   if (user.isModerator) {
@@ -367,14 +367,14 @@ async function handleEvalCommand(
 }
 
 async function handleAddTypeCommand(
-  user: User,
+  user: FullUser,
   commandParts: string[]
 ): Promise<void> {
   if (commandParts.length === 2) {
     const type = commandParts[1];
 
     if (validateUsername(type)) {
-      user.listeningTypes.add(type);
+      user.listeningTypes.push(type);
 
       user.connection.send(JSON.stringify({ Type: "portAdded", port: type }));
       user.connection.send(
@@ -411,17 +411,17 @@ async function handleAddTypeCommand(
   }
 }
 
-async function handleUnknownCommand(user: User): Promise<void> {
+async function handleUnknownCommand(user: FullUser): Promise<void> {
   user.connection.send(
     JSON.stringify({ Type: "commandError", message: "Commande invalide !" })
   );
 }
 
 async function handleRefreshCommand(
-  user: User,
+  user: FullUser,
   commandParts: string[]
 ): Promise<void> {
-  let targetedUsers: User[] = [];
+  let targetedUsers: FullUser[] = [];
 
   if (commandParts.length === 1) {
     targetedUsers.push(user);
@@ -480,7 +480,7 @@ async function handleRefreshCommand(
   );
 }
 
-function handleHelpCommand(user: User, commandParts: string[]): void {
+function handleHelpCommand(user: FullUser, commandParts: string[]): void {
   let formattedCommands: { text: string; color: string }[] = [];
   if (commandParts.length === 1) {
     const availableCommands = getAvailableCommands(!!user.isModerator);
@@ -606,7 +606,7 @@ function isJson(string: string): boolean {
 }
 
 async function handleTellrawCommand(
-  user: User,
+  user: FullUser,
   commandParts: string[]
 ): Promise<void> {
   if (!user.isModerator) {
@@ -644,7 +644,7 @@ async function handleTellrawCommand(
     return;
   }
 
-  let targetedUsers: User[], message: string;
+  let targetedUsers: FullUser[], message: string;
   if (commandParts.length === 2) {
     const users = store.getState().users;
     targetedUsers = Object.values(users);
@@ -693,9 +693,9 @@ async function handleTellrawCommand(
   });
 }
 
-function getTargetedUsers(targetUsername: string, user: User): User[] {
+function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
   const users = store.getState().users;
-  let targetedUsers: User[] = [];
+  let targetedUsers: FullUser[] = [];
 
   if (/^@[aers]{1}/.test(targetUsername)) {
     switch (targetUsername[1]) {

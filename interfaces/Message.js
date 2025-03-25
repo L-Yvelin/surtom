@@ -1,0 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MessageType = void 0;
+var MessageType;
+(function (MessageType) {
+    MessageType["MESSAGE"] = "message";
+    MessageType["SCORE"] = "score";
+    MessageType["USER"] = "user";
+    MessageType["STATS"] = "stats";
+    MessageType["USER_LIST"] = "usersList";
+    MessageType["GET_MESSAGES"] = "getMessages";
+    MessageType["SET_USERNAME"] = "setUsername";
+    MessageType["LAST_TIME_MESSAGE"] = "lastTimeMessage";
+    MessageType["MAIL_ALL"] = "mailAll";
+    MessageType["SCORE_TO_CHAT"] = "scoreToChat";
+    MessageType["DELETE_MESSAGE"] = "deleteMessage";
+    MessageType["IS_TYPING"] = "isTyping";
+    MessageType["PING"] = "ping";
+    MessageType["PRIVATE_MESSAGE"] = "privateMessage";
+    MessageType["SUCCESS"] = "success";
+    MessageType["ERROR"] = "error";
+    MessageType["ENHANCED_MESSAGE"] = "enhancedMessage";
+    MessageType["LOG"] = "log";
+})(MessageType || (exports.MessageType = MessageType = {}));

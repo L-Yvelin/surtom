@@ -2,9 +2,8 @@ import path from "path";
 import { createPool, Pool } from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import FrontUser from "../models/User";
-import store from "../store";
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 export interface User {

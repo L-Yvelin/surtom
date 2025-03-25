@@ -1,16 +1,16 @@
-import { WebSocket } from "ws";
+import WS from "ws";
 
-class User {
+class FullUser {
   id: string;
   name: string;
   isModerator: number;
-  connection: WebSocket;
+  connection: WS;
   messageCount: number;
   lastMessageTimestamp: string | null;
   messageCooldown: number;
   cooldownMultiplier: number;
   sentTheScore: boolean;
-  listeningTypes: Set<string>;
+  listeningTypes: string[];
   ip: string;
   isLoggedIn: boolean;
   mobileDevice: boolean;
@@ -20,7 +20,7 @@ class User {
     id: string,
     name: string,
     isModerator: number,
-    connection: WebSocket,
+    connection: WS,
     ip: string = "unknown",
     isLoggedIn: boolean = false,
     mobileDevice: boolean = false,
@@ -35,7 +35,7 @@ class User {
     this.messageCooldown = 1;
     this.cooldownMultiplier = 2;
     this.sentTheScore = false;
-    this.listeningTypes = new Set();
+    this.listeningTypes = [];
     this.ip = ip;
     this.isLoggedIn = isLoggedIn;
     this.mobileDevice = mobileDevice;
@@ -43,4 +43,4 @@ class User {
   }
 }
 
-export default User;
+export default FullUser;

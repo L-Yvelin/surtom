@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import useGameStore from "./useGameStore";
-import { MessageType } from "../components/Chat/Chat";
+import {
+  Message as ServerMessage,
+} from "../../../interfaces/Message";
 import useChatStore from "./useChatStore";
 
 interface UserData {
@@ -10,40 +12,6 @@ interface UserData {
   name: string;
   sentTheScore: boolean;
   mots: string[];
-}
-
-type Stats = Record<string, number>;
-
-interface SetUsername {
-  Pseudo: string;
-}
-
-interface UsersList {
-  users: { name: string; isModerator: number; isMobile: boolean }[];
-}
-
-interface LastTimeMessage {
-  lastMessageTimestamp: string;
-}
-
-interface GetMessages {
-  messages: ServerMessage[];
-}
-
-interface ServerMessage {
-  ID: string;
-  Pseudo: string;
-  Texte: string;
-  Date: string;
-  Moderator: number;
-  Type: MessageType;
-  Supprime: number;
-  Reply: string | undefined;
-  Couleurs: string | undefined;
-  Mots: string[] | undefined;
-  Answer: string | undefined;
-  Attempts: number | undefined;
-  ImageData: string | undefined;
 }
 
 interface WebSocketState {
@@ -62,9 +30,29 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
   let ws: WebSocket | null = null;
   let reconnectTimer: NodeJS.Timeout | null = null;
 
+  window.addEventListener("beforeunload", () => {
+    if (ws && ws.OPEN) {
+      ws.close();
+    }
+  });
+
+  window.addEventListener("unload", () => {
+    if (ws && ws.OPEN) {
+      ws.close();
+    }
+  });
+
   const connect = () => {
-    if (ws) return;
-    console.warn("Connecting WebSocket...");
+    if (ws && ws.readyState !== WebSocket.CLOSED) {
+      console.warn(
+        "Can't connect: WebSocket is already in",
+        ws?.readyState,
+        "state."
+      );
+      return;
+    }
+
+    console.warn("Connecting WebSocket...", ws?.readyState);
 
     const url = import.meta.env.VITE_WEBSOCKET_URL;
     if (!url) {
@@ -75,6 +63,7 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
     ws = new WebSocket(url);
 
     ws.onopen = () => {
+      console.warn("WebSocket connected!");
       set({ isConnected: true });
     };
 
@@ -83,6 +72,11 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
       console.log(data);
 
       handleMessage(data);
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      ws?.close();
     };
 
     ws.onclose = () => {
@@ -94,63 +88,58 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
 
   const disconnect = () => {
     if (ws) {
+      ws.onclose = null;
+      ws.onerror = null;
       console.warn("Disconnecting WebSocket...");
       ws.close();
       ws = null;
     }
   };
 
-  const sendMessage = (message: any, type: string) => {
+  const sendMessage = (message: any, type: MessageType) => {
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ Type: type, ...message }));
     }
   };
 
-  const handleMessage = (data: any) => {
-    switch (data.Type) {
-      case "userData":
-        const userData: UserData = data.Texte;
+  const handleMessage = (data: ServerMessage) => {
+    switch (data.type) {
+      case MessageType.USER: {
+        console.log("GOT USER!");
         break;
-      case "stats":
-        const stats: Stats = JSON.parse(data.Texte);
+      }
+      case MessageType.STATS: {
+        const stats = data.content;
         setScores(stats);
         break;
-      case "setUsername":
-        const setUsernameData: SetUsername = data;
-        useGameStore.getState().setPlayer({ name: setUsernameData.Pseudo });
-        break;
-      case "usersList":
-        const usersList: UsersList = data;
+      }
+      case MessageType.USER_LIST: {
+        const usersList = data.content;
         setPlayerList(
-          usersList.users.map((user) => {
-            return {
-              name: user.name,
-              isMobile: user.isMobile,
-              isModerator: user.isModerator,
-              xp: 0,
-            };
+          usersList.map((user) => {
+            return { ...user, xp: 0 };
           })
         );
         break;
-      case "lastTimeMessage":
-        const lastTimeMessage: LastTimeMessage = data;
-        set({ lastMessageTimestamp: lastTimeMessage.lastMessageTimestamp });
+      }
+      case MessageType.LAST_TIME_MESSAGE: {
+        const lastTimeMessage = data.content;
+        set({ lastMessageTimestamp: lastTimeMessage });
         break;
-      case "getMessages":
-        const getMessages: GetMessages = data;
+      }
+      case MessageType.GET_MESSAGES: {
+        const getMessages = data.content;
         setMessages(
-          getMessages.messages.map((message) => {
+          getMessages.map((message) => {
             return {
-              id: message.ID ?? Math.random().toString(),
+              id: message.id ?? Math.random().toString(),
               player: {
-                name: message.Pseudo,
-                isMobile: message.Moderator === 1,
-                isModerator: message.Moderator,
+                name: message.user,
+                isModerator: message.isModerator,
                 xp: 0,
               },
               content: {
-                text: message.Texte,
-                color: message.Couleurs,
+                text: message.text,
                 words: message.Mots,
                 answer: message.Answer,
                 attempts: message.Attempts,
@@ -165,6 +154,7 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
         );
         scrollToBottom?.();
         break;
+      }
       default:
         console.warn("Unknown message type:", data.Type);
     }

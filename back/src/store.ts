@@ -1,7 +1,7 @@
-import User from "./models/User";
+import FullUser from "./models/User.js";
 
 interface State {
-  users: { [key: string]: User };
+  users: { [key: string]: FullUser };
 }
 
 class Store {

@@ -3,7 +3,7 @@ import classes from "./ChatInput.module.css";
 import useGameStore from "../../../stores/useGameStore";
 import useChatStore from "../../../stores/useChatStore";
 import classNames from "classnames";
-import MessageLine, { MessageContent } from "../MessagesBox/Message/Message";
+import { MessageContent } from "../MessagesBox/Message/Message";
 
 interface ChatInputProps {
   onSend: () => void;

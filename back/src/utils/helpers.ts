@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import Constants from "./constants";
-import User from "../models/User";
-import { User as BackUser } from "../services/databaseService";
-import store from "../store";
+import Constants from "./constants.js";
+import FullUser from "src/models/User.js";
+import { User as BackUser } from "../services/databaseService.js";
+import store from "../store.js";
 
 export function passwordInHashArray(
   password: string,
@@ -32,11 +32,11 @@ export function validateText(text: string): boolean {
   return textPattern.test(text);
 }
 
-export function getUserRank(user: User): string | null {
+export function getUserRank(user: FullUser): string | null {
   return user.isModerator ? "moderator" : user.isLoggedIn ? "loggedIn" : null;
 }
 
-export function handleIsBanned(user: User): void {
+export function handleIsBanned(user: FullUser): void {
   const createPrivateMessage = (Pseudo = "¿¿¿", Type = "eval") => ({
     Pseudo,
     Moderator: user.isModerator,
@@ -52,7 +52,7 @@ export function handleIsBanned(user: User): void {
 
 export function mapDatabaseUserToMemoryUser(
   user: BackUser | null
-): User | null {
+): FullUser | null {
   if (!user) return null;
   return (
     Object.values(store.getState().users).find((u) => u.name === user.Pseudo) ??

@@ -37,24 +37,17 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
   const customWordButtonRef = React.useRef<HTMLButtonElement>(null);
   const endPageButtonRef = React.useRef<HTMLButtonElement>(null);
   const chatButtonRef = React.useRef<HTMLButtonElement>(null);
-
+  
   const { theme, setTheme } = useTheme();
-  const { connect } = useWebSocketStore();
+  const { connect } = useWebSocketStore.getState();
+  connect();
 
   use(twemojiPromise);
 
   useKeyPress();
 
   useEffect(() => {
-    connect(); // Connect on mount
-
-    return () => {
-      useWebSocketStore.getState().disconnect(); // Clean up on unmount
-    };
-  }, [connect]);
-
-  useEffect(() => {
-    onLoad();
+    onLoad?.();
   }, [onLoad]);
 
   return (
@@ -72,7 +65,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
 
       {/* Floating interfaces */}
       <div className="windows">
-        <Chat chatButtonRef={chatButtonRef}/>
+        <Chat chatButtonRef={chatButtonRef} />
         <Stats statsButtonRef={statsButtonRef} />
         <AchievementsStack lifeTime={4} transitionDuration={0.5} />
         <CustomWord customWordButtonRef={customWordButtonRef} />

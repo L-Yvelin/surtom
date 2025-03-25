@@ -1,10 +1,10 @@
-import WebSocket from "ws";
-import readline from "readline";
-import { store } from "./store";
-import User from "./models/User";
-import databaseService from "./services/databaseService";
-import Constants from "./utils/constants";
-import { handleCommand, subscribe } from "./handlers/commandHandler";
+import WS, { WebSocketServer } from "ws";
+import { store } from "./store.js";
+import { User as SimpleUser } from "@interfaces/Message.js";
+import FullUser from "./models/User.js";
+import databaseService from "./services/databaseService.js";
+import Constants from "./utils/constants.js";
+import { handleCommand, subscribe } from "./handlers/commandHandler.js";
 import {
   generateRandomHash,
   getRandomFunnyName,
@@ -12,15 +12,25 @@ import {
   mapDatabaseUserToMemoryUser,
   validateText,
   validateUsername,
-} from "./utils/helpers";
+} from "./utils/helpers.js";
 
 subscribe("updateUsersList", updateUsersList);
 
 console.log("SERVER STARTING...");
 
-const wss = new WebSocket.Server({ port: 27020 });
+const wss = new WebSocketServer({ port: 27020 });
+
+wss.on("error", (err) => {
+  console.error("Websocket error:", err);
+});
+
+wss.on("listening", () => {
+  console.log("Websocket server listening on port 27020");
+});
 
 wss.on("connection", async (connection, req) => {
+  console.log("New connection");
+
   try {
     const cookies = req.headers?.cookie
       ?.split(";")
@@ -30,7 +40,7 @@ wss.on("connection", async (connection, req) => {
         return acc;
       }, {});
 
-    let sessionUser: User | null = null;
+    let sessionUser: FullUser | null = null;
     const sessionHash = (cookies && cookies.modHash) || undefined;
     const usesMobileDevice = !!(cookies && cookies.mobileDevice);
     if (sessionHash)
@@ -42,7 +52,7 @@ wss.on("connection", async (connection, req) => {
       req.headers["x-forwarded-for"] || req.socket.remoteAddress
     )?.toString();
 
-    const user = new User(
+    const user = new FullUser(
       generateRandomHash(),
       sessionUser?.name || getRandomFunnyName(),
       sessionUser?.isModerator || 0,
@@ -102,7 +112,23 @@ wss.on("connection", async (connection, req) => {
       JSON.stringify({ Type: "setUsername", Pseudo: user.name })
     );
 
+    let isAlive = true;
+
+    const isDeadInterval = setInterval(() => {
+      if (!isAlive) {
+        console.log("Connection is dead, closing");
+        connection.terminate();
+        updateUsersList();
+        clearInterval(isDeadInterval);
+      }
+
+      isAlive = false;
+      connection.ping();
+    }, 30000);
+
     connection.on("message", (message: string) => {
+      isAlive = true;
+
       message = JSON.parse(message);
       if ((message as any)?.Type !== "ping") {
         const type = (message as any)?.Type ?? "Unknown Type";
@@ -122,7 +148,8 @@ wss.on("connection", async (connection, req) => {
 
     connection.on("close", () => {
       console.log("Connection closed");
-
+      
+      clearInterval(isDeadInterval);
       const currentState = store.getState();
       delete currentState.users[user.id];
       store.setState(currentState);
@@ -136,7 +163,7 @@ wss.on("connection", async (connection, req) => {
   }
 });
 
-function initializeConnection(user: User): void {
+function initializeConnection(user: FullUser): void {
   updateUsersList();
 
   console.log(`New connection: [${user.ip}] ${user.name}`);
@@ -178,7 +205,7 @@ function initializeConnection(user: User): void {
     });
 }
 
-function logMessage(message: string, user: User): void {
+function logMessage(message: string, user: FullUser): void {
   const logMessage = `${new Date().toISOString()} (${user.id}) <${
     user.name
   }> ${message}`;
@@ -195,7 +222,7 @@ function logMessage(message: string, user: User): void {
   });
 }
 
-async function handleMessage(user: User, message: any): Promise<void> {
+async function handleMessage(user: FullUser, message: any): Promise<void> {
   const messageType = message.Type || "";
   const messageText = message.Texte || "";
   const messageImage = message.ImageData ?? null;
@@ -343,16 +370,16 @@ async function handleMessage(user: User, message: any): Promise<void> {
   } else if (messageType === "isTyping") {
     sendMessagesAll({ Texte: user.name }, !!user.isModerator, "isTyping");
   } else if (messageType === "ping") {
-    user.connection.send(JSON.stringify({ Type: "pong" }));
+    return;
   } else {
     const listeningTypes = Object.values(store.getState().users).reduce<{
-      [key: string]: WebSocket[];
+      [key: string]: WS[];
     }>((acc, user) => {
       user.listeningTypes.forEach((type) => {
         if (!acc[type]) {
           acc[type] = [];
         }
-        acc[type].push(user.connection);
+        acc[type].push(user.connection as WS);
       });
       return acc;
     }, {});
@@ -379,7 +406,7 @@ function updateUsersList(): void {
   const currentState = store.getState();
   const userList = Object.values(currentState.users)
     .filter((user) => user.name)
-    .reduce<Array<{ name: string; isModerator: number; isMobile: boolean }>>(
+    .reduce<Array<SimpleUser>>(
       (acc, user) => {
         const existingUser = acc.find((u) => u.name === user.name);
         if (!existingUser) {
@@ -404,7 +431,7 @@ function sendMessagesAll(
   messageType = "message"
 ): void {
   wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
+    if (client.readyState === WS.OPEN) {
       client.send(
         JSON.stringify({
           ...message,
