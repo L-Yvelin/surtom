@@ -2,21 +2,29 @@ export enum MessageType {
   MESSAGE = "message",
   SCORE = "score",
   USER = "user",
+  LOGIN = "login",
   STATS = "stats",
   USER_LIST = "usersList",
   GET_MESSAGES = "getMessages",
   SET_USERNAME = "setUsername",
   LAST_TIME_MESSAGE = "lastTimeMessage",
-  MAIL_ALL = "mailAll",
-  SCORE_TO_CHAT = "scoreToChat",
   DELETE_MESSAGE = "deleteMessage",
   IS_TYPING = "isTyping",
   PING = "ping",
-  PRIVATE_MESSAGE = "privateMessage",
+  LOG = "log",
   SUCCESS = "success",
   ERROR = "error",
+  PRIVATE_MESSAGE = "privateMessage",
+  // SavedMessageType
+  MAIL_ALL = "mailAll",
+  SCORE_TO_CHAT = "scoreToChat",
   ENHANCED_MESSAGE = "enhancedMessage",
-  LOG = "log",
+}
+
+export enum SavedMessageType {
+  SCORE = "score",
+  MAIL_ALL = "mailAll",
+  ENHANCED_MESSAGE = "enhancedMessage",
 }
 
 export type Message =
@@ -38,7 +46,7 @@ export type Message =
     }
   | {
       type: MessageType.USER;
-      content: string;
+      content: PrivateUser;
     }
   | {
       type: MessageType.GET_MESSAGES;
@@ -64,51 +72,59 @@ export type Message =
       type: MessageType.PING;
     }
   | {
+      type: MessageType.LOGIN;
+      content: string;
+    }
+  | {
       type: MessageType.LOG;
       content: string;
     };
-
-interface ScoreContent {
-  string: string;
-}
 
 export interface User {
   name: string;
   isModerator: number;
   isMobile: boolean;
+  isLoggedIn: boolean;
+}
+
+export interface PrivateUser {
+  name: string;
+  isModerator: number;
+  isLoggedIn: boolean;
+  isMobile: boolean;
+  sentTheScore: boolean;
+  words: string[];
+  isBanned: boolean;
 }
 
 export type ChatMessage =
   | {
       type: MessageType.MAIL_ALL;
-      content: ChatMessageContent;
+      content: UserMessageContent;
     }
   | {
       type: MessageType.SCORE_TO_CHAT;
-      content: {
-        tab_couleurs: string[];
-        liste_mots: string[];
-      };
+      content: ScoreContent;
     }
   | {
       type: MessageType.PRIVATE_MESSAGE;
-      content: ChatMessageContent;
+      content: UserMessageContent;
     }
   | {
       type: MessageType.SUCCESS;
-      content: Pick<ChatMessageContent, "text" | "timestamp">;
+      content: Pick<UserMessageContent, "text" | "timestamp">;
     }
   | {
       type: MessageType.ERROR;
-      content: Pick<ChatMessageContent, "text" | "timestamp">;
+      content: Pick<UserMessageContent, "text" | "timestamp">;
     }
   | {
       type: MessageType.ENHANCED_MESSAGE;
-      content: ChatMessageContent;
+      content: UserMessageContent;
     };
 
-interface ChatMessageContent {
-  id?: string;
+export interface UserMessageContent {
+  id: string;
   text: string;
   user: string;
   timestamp: string;
@@ -116,3 +132,11 @@ interface ChatMessageContent {
   imageData?: any;
   answer?: string | null;
 }
+
+export interface ScoreContent {
+  id: string;
+  solution: string;
+  attempts: string[];
+}
+
+export type ChatMessageContent = UserMessageContent | ScoreContent;

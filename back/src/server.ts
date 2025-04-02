@@ -1,6 +1,11 @@
 import WS, { WebSocketServer } from "ws";
 import { store } from "./store.js";
-import { User as SimpleUser } from "@interfaces/Message.js";
+import {
+  ChatMessage,
+  Message,
+  MessageType,
+  User as SimpleUser,
+} from "@interfaces/Message.js";
 import FullUser from "./models/User.js";
 import databaseService from "./services/databaseService.js";
 import Constants from "./utils/constants.js";
@@ -9,6 +14,7 @@ import {
   generateRandomHash,
   getRandomFunnyName,
   handleIsBanned,
+  mapDatabaseMessageToMemoryMessage,
   mapDatabaseUserToMemoryUser,
   validateText,
   validateUsername,
@@ -62,55 +68,37 @@ wss.on("connection", async (connection, req) => {
       usesMobileDevice
     );
 
-    if (sessionUser) {
-      if (sessionUser.banned) {
-        handleIsBanned(user);
-        return;
-      } else {
-        if (sessionUser.isModerator) {
-          user.connection.send(
-            JSON.stringify({
-              Type: "mod",
-              status: "success",
-              moderatorHash: sessionHash,
-            })
-          );
-        }
-      }
-    }
+    const userInfoMessage: Message = {
+      type: MessageType.USER,
+      content: {
+        name: user.name,
+        isModerator: user.isModerator,
+        isLoggedIn: user.isLoggedIn,
+        isMobile: user.mobileDevice,
+        sentTheScore: user.sentTheScore,
+        words: user.isLoggedIn
+          ? await databaseService.getDailyScore(user.name)
+          : [],
+        isBanned: user.banned,
+      },
+    };
+    user.connection.send(JSON.stringify(userInfoMessage));
 
-    user.connection.send(
-      JSON.stringify({
-        Type: "userData",
-        Texte: {
-          isLoggedIn: user.isLoggedIn,
-          isModerator: user.isModerator,
-          mobileDevice: user.mobileDevice,
-          name: user.name,
-          sentTheScore: user.sentTheScore,
-          mots: user.isLoggedIn
-            ? await databaseService.getDailyScore(user.name)
-            : [],
-        },
-      })
-    );
-
-    user.connection.send(
-      JSON.stringify({
-        Type: "stats",
-        Texte: JSON.stringify(
-          await databaseService.getScoreDistribution(user.name)
-        ),
-      })
-    );
+    const statsMessage: Message = {
+      type: MessageType.STATS,
+      content: await databaseService.getScoreDistribution(user.name),
+    };
+    user.connection.send(JSON.stringify(statsMessage));
 
     const currentState = store.getState();
     currentState.users[user.id] = user;
     store.setState(currentState);
 
-    user.connection.send(
-      JSON.stringify({ Type: "setUsername", Pseudo: user.name })
-    );
+    const userNameMessage: Message = {
+      type: MessageType.SET_USERNAME,
+      content: user.name,
+    };
+    user.connection.send(JSON.stringify(userNameMessage));
 
     let isAlive = true;
 
@@ -126,29 +114,31 @@ wss.on("connection", async (connection, req) => {
       connection.ping();
     }, 30000);
 
-    connection.on("message", (message: string) => {
+    connection.on("message", (stringMessage: string) => {
       isAlive = true;
 
-      message = JSON.parse(message);
-      if ((message as any)?.Type !== "ping") {
-        const type = (message as any)?.Type ?? "Unknown Type";
-        const texte = (message as any)?.Texte ?? "";
+      const message: Message = JSON.parse(stringMessage);
+      if (
+        message.type !== MessageType.PING &&
+        message.type !== MessageType.IS_TYPING
+      ) {
+        const text = JSON.stringify(message.content);
 
         const truncatedTexte =
-          texte.length > 100
-            ? texte.slice(0, 50) + "..." + texte.slice(-50)
-            : texte.length > 50
-            ? texte.slice(0, 50) + "..."
-            : texte;
+          JSON.stringify(message.content).length > 100
+            ? text.slice(0, 50) + "..." + text.slice(-50)
+            : text.length > 50
+            ? text.slice(0, 50) + "..."
+            : text;
 
-        console.log("Received message:", `${type}: ${truncatedTexte}`);
+        console.log("Received message:", `${message.type}: ${truncatedTexte}`);
       }
       handleMessage(user, message);
     });
 
     connection.on("close", () => {
       console.log("Connection closed");
-      
+
       clearInterval(isDeadInterval);
       const currentState = store.getState();
       delete currentState.users[user.id];
@@ -172,12 +162,11 @@ function initializeConnection(user: FullUser): void {
     .getLastMessageTimestamp()
     .then((timestamp) => {
       if (timestamp) {
-        user.connection.send(
-          JSON.stringify({
-            Type: "lastTimeMessage",
-            lastMessageTimestamp: timestamp,
-          })
-        );
+        const message: Message = {
+          type: MessageType.LAST_TIME_MESSAGE,
+          content: timestamp,
+        };
+        user.connection.send(JSON.stringify(message));
       }
     })
     .catch((err) => {
@@ -192,12 +181,14 @@ function initializeConnection(user: FullUser): void {
     )
     .then((messages) => {
       if (messages) {
-        user.connection.send(
-          JSON.stringify({
-            Type: "getMessages",
-            messages: messages,
-          })
-        );
+        const message: Message = {
+          type: MessageType.GET_MESSAGES,
+          content: messages.map((m) => ({
+            type: m.Type,
+            content: mapDatabaseMessageToMemoryMessage(m),
+          })),
+        };
+        user.connection.send(JSON.stringify(message));
       }
     })
     .catch((err) => {
@@ -222,13 +213,20 @@ function logMessage(message: string, user: FullUser): void {
   });
 }
 
-async function handleMessage(user: FullUser, message: any): Promise<void> {
-  const messageType = message.Type || "";
-  const messageText = message.Texte || "";
-  const messageImage = message.ImageData ?? null;
-  const answeringId = message.Answer ?? null;
+async function handleMessage(user: FullUser, message: Message): Promise<void> {
+  if (message.type === MessageType.PING) {
+    return;
+  }
 
-  if (!user.isModerator && !["ping", "isTyping"].includes(messageType)) {
+  // Handle command
+  if (typeof message.content === "string" && message.content.startsWith("/")) {
+    const command = message.content.substr(1).trim();
+    handleCommand(user, command);
+    return;
+  }
+
+  // Increment message count and handle rate limiting
+  if (!user.isModerator && message.type !== MessageType.IS_TYPING) {
     user.messageCount++;
 
     if (user.messageCount > 5) {
@@ -252,153 +250,204 @@ async function handleMessage(user: FullUser, message: any): Promise<void> {
     user.lastMessageTimestamp = new Date().toISOString();
   }
 
-  if (messageText?.length && messageText.startsWith("/")) {
-    const command = messageText.substr(1).trim();
-    handleCommand(user, command);
+  switch (message.type) {
+    case MessageType.MESSAGE:
+      await handleChatMessage(user, message.content);
+      break;
+    case MessageType.GET_MESSAGES:
+      await handleGetMessages(user);
+      break;
+    case MessageType.DELETE_MESSAGE:
+      await handleDeleteMessage(user, message.content);
+      break;
+    case MessageType.IS_TYPING:
+      sendMessagesAll(
+        { content: user.name },
+        !!user.isModerator,
+        MessageType.IS_TYPING
+      );
+      break;
+    default:
+      handleCustomMessageType(user, message.type, message.content);
+      break;
+  }
+}
+
+async function handleGetMessages(user: FullUser): Promise<void> {
+  try {
+    const messages = await databaseService.getMessages(
+      !!user.isModerator,
+      Constants.MAX_MESSAGES_LOADED,
+      !user.isLoggedIn
+    );
+
+    if (messages) {
+      user.connection.send(
+        JSON.stringify({
+          type: MessageType.GET_MESSAGES,
+          content: messages,
+        })
+      );
+      console.log(
+        `${new Date().toISOString()} (${user.id}) User got messages history: ${
+          user.name
+        }`
+      );
+    }
+  } catch (err) {
+    console.error("Error getting messages:", err);
+  }
+}
+
+async function handleChatMessage(
+  user: FullUser,
+  chatMessage: ChatMessage
+): Promise<void> {
+  const { content } = chatMessage;
+  const { text, imageData, answer } = content;
+
+  if (!text || text.trim().length === 0) return;
+
+  // Validate message
+  if (
+    (!user.isModerator && !validateText(text)) ||
+    !validateUsername(user.name) ||
+    (imageData && imageData.size > 110 * 1024)
+  ) {
     return;
   }
 
-  if (messageType === "getMessages") {
-    databaseService
-      .getMessages(
-        !!user.isModerator,
-        Constants.MAX_MESSAGES_LOADED,
-        !user.isLoggedIn
-      )
-      .then((messages) => {
-        const message = JSON.stringify({
-          Type: "getMessages",
-          messages: messages,
-        });
-        user.connection.send(message);
-        console.log(
-          `${new Date().toISOString()} (${
-            user.id
-          }) User got messages history: ${user.name}`
-        );
-      })
-      .catch((err) => {
-        console.error("Error getting messages:", err);
-      });
-  } else if (messageType === "mailAll" && messageText.trim().length > 0) {
-    const isModerator = user.isModerator;
+  try {
+    const message = await databaseService.saveMessage(
+      user.name,
+      text,
+      !!user.isModerator,
+      "message",
+      imageData,
+      answer
+    );
 
-    if (
-      (!user.isModerator && !validateText(messageText)) ||
-      !validateUsername(user.name) ||
-      (messageImage && messageImage.size > 110 * 1024)
-    )
-      return;
+    sendMessagesAll(message, !!user.isModerator, MessageType.MESSAGE);
+    logMessage(text, user);
+  } catch (err) {
+    console.error("Error saving message:", err);
+  }
+}
 
-    try {
-      const message = await databaseService.saveMessage(
-        user.name,
-        messageText,
-        !!isModerator,
-        "message",
-        messageImage,
-        answeringId
-      );
-      sendMessagesAll(message, !!isModerator);
-      logMessage(messageText, user);
-    } catch (err) {
-      console.error("Error saving message:", err);
-    }
-  } else if (
-    messageType === "scoreToChat" &&
-    messageText.trim().length > 0 &&
-    !user.sentTheScore
-  ) {
-    const motDuJour = await databaseService.getTodaysWord();
-    const decodedJson = JSON.parse(messageText);
+async function handleScoreToChat(user: FullUser, content: any): Promise<void> {
+  if (user.sentTheScore) return;
 
-    if (decodedJson && decodedJson.tab_couleurs && decodedJson.liste_mots) {
-      const mots = JSON.stringify({
-        couleurs: decodedJson.tab_couleurs,
-        mots: decodedJson.liste_mots,
-      });
-
-      try {
-        const message = await databaseService.saveMessage(
-          user.name,
-          mots,
-          !!user.isModerator,
-          "score"
-        );
-        sendMessagesAll(message, !!user.isModerator, "score");
-        user.sentTheScore = true;
-        console.log(
-          `${new Date().toISOString()} (${user.id}) ${user.name} sent their ${
-            decodedJson.tab_couleurs.length
-          } ${decodedJson.tab_couleurs.length === 1 ? "try" : "tries"} score`
-        );
-      } catch (err) {
-        console.error("Error saving score:", err);
-      }
-    } else {
-      console.error(
-        `${new Date().toISOString()} (${user.id}) ${
-          user.name
-        } Invalid JSON or missing 'tab_couleurs'`
-      );
-    }
-  } else if (messageType === "deleteMessage" && user.isModerator) {
-    const messageId = parseInt(messageText);
-    if (!isNaN(messageId)) {
-      databaseService
-        .deleteMessage(messageId, user.isModerator)
-        .then((deleted) => {
-          if (deleted) {
-            user.connection.send(
-              JSON.stringify({ Type: "log", status: "success" })
-            );
-            sendMessagesAll(
-              { ID: messageId },
-              !!user.isModerator,
-              "deleteMessage"
-            );
-          } else {
-            user.connection.send(
-              JSON.stringify({ Type: "log", status: "failure" })
-            );
-          }
-        })
-        .catch((err) => {
-          console.error("Error deleting message:", err);
-        });
-    }
-  } else if (messageType === "isTyping") {
-    sendMessagesAll({ Texte: user.name }, !!user.isModerator, "isTyping");
-  } else if (messageType === "ping") {
+  const { tab_couleurs, liste_mots } = content;
+  if (!tab_couleurs || !liste_mots) {
+    console.error(
+      `${new Date().toISOString()} (${user.id}) ${
+        user.name
+      } Invalid score data: missing tab_couleurs or liste_mots`
+    );
     return;
-  } else {
-    const listeningTypes = Object.values(store.getState().users).reduce<{
-      [key: string]: WS[];
-    }>((acc, user) => {
-      user.listeningTypes.forEach((type) => {
-        if (!acc[type]) {
-          acc[type] = [];
-        }
-        acc[type].push(user.connection as WS);
-      });
-      return acc;
-    }, {});
-    if (listeningTypes[messageType]) {
-      console.log(
-        `${new Date().toISOString()} (${user.id}) ${
-          user.name
-        } Sent to custom type (${messageType})`
+  }
+
+  const mots = JSON.stringify({
+    couleurs: tab_couleurs,
+    mots: liste_mots,
+  });
+
+  try {
+    const message = await databaseService.saveMessage(
+      user.name,
+      mots,
+      !!user.isModerator,
+      "score"
+    );
+
+    sendMessagesAll(message, !!user.isModerator, MessageType.SCORE);
+    user.sentTheScore = true;
+    console.log(
+      `${new Date().toISOString()} (${user.id}) ${user.name} sent their ${
+        tab_couleurs.length
+      } ${tab_couleurs.length === 1 ? "try" : "tries"} score`
+    );
+  } catch (err) {
+    console.error("Error saving score:", err);
+  }
+}
+
+async function handleDeleteMessage(
+  user: FullUser,
+  messageId: number
+): Promise<void> {
+  if (!user.isModerator || isNaN(messageId)) return;
+
+  try {
+    const deleted = await databaseService.deleteMessage(
+      messageId,
+      user.isModerator
+    );
+
+    if (deleted) {
+      user.connection.send(
+        JSON.stringify({
+          type: MessageType.LOG,
+          content: "success",
+        })
       );
-      listeningTypes[messageType].forEach((u) => {
-        u.send(JSON.stringify({ Type: messageType, Texte: messageText }));
-      });
+
+      sendMessagesAll(
+        { id: messageId },
+        !!user.isModerator,
+        MessageType.DELETE_MESSAGE
+      );
     } else {
-      console.log(
-        `${new Date().toISOString()} (${user.id}) ${
-          user.name
-        } Wrong message type or empty (${messageType})`
+      user.connection.send(
+        JSON.stringify({
+          type: MessageType.LOG,
+          content: "failure",
+        })
       );
     }
+  } catch (err) {
+    console.error("Error deleting message:", err);
+  }
+}
+
+function handleCustomMessageType(
+  user: FullUser,
+  messageType: string,
+  messageContent: any
+): void {
+  const listeningTypes = Object.values(store.getState().users).reduce<{
+    [key: string]: WS[];
+  }>((acc, user) => {
+    user.listeningTypes.forEach((type) => {
+      if (!acc[type]) {
+        acc[type] = [];
+      }
+      acc[type].push(user.connection as WS);
+    });
+    return acc;
+  }, {});
+
+  if (listeningTypes[messageType]) {
+    console.log(
+      `${new Date().toISOString()} (${user.id}) ${
+        user.name
+      } Sent to custom type (${messageType})`
+    );
+
+    listeningTypes[messageType].forEach((u) => {
+      u.send(
+        JSON.stringify({
+          type: messageType,
+          content: messageContent,
+        })
+      );
+    });
+  } else {
+    console.log(
+      `${new Date().toISOString()} (${user.id}) ${
+        user.name
+      } Wrong message type or empty (${messageType})`
+    );
   }
 }
 
@@ -406,20 +455,17 @@ function updateUsersList(): void {
   const currentState = store.getState();
   const userList = Object.values(currentState.users)
     .filter((user) => user.name)
-    .reduce<Array<SimpleUser>>(
-      (acc, user) => {
-        const existingUser = acc.find((u) => u.name === user.name);
-        if (!existingUser) {
-          acc.push({
-            name: user.name,
-            isModerator: user.isModerator,
-            isMobile: user.mobileDevice,
-          });
-        }
-        return acc;
-      },
-      []
-    );
+    .reduce<Array<SimpleUser>>((acc, user) => {
+      const existingUser = acc.find((u) => u.name === user.name);
+      if (!existingUser) {
+        acc.push({
+          name: user.name,
+          isModerator: user.isModerator,
+          isMobile: user.mobileDevice,
+        });
+      }
+      return acc;
+    }, []);
 
   const message = { users: userList };
   sendMessagesAll(message, false, "usersList");

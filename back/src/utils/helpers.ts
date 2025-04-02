@@ -2,8 +2,20 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import Constants from "./constants.js";
 import FullUser from "src/models/User.js";
-import { User as BackUser } from "../services/databaseService.js";
+import {
+  User as BackUser,
+  DatabaseMessage,
+} from "../services/databaseService.js";
 import store from "../store.js";
+import {
+  ChatMessage,
+  UserMessageContent,
+  Message,
+  MessageType,
+  ChatMessageContent,
+  SavedMessageType,
+  ScoreContent,
+} from "@interfaces/Message.js";
 
 export function passwordInHashArray(
   password: string,
@@ -57,5 +69,41 @@ export function mapDatabaseUserToMemoryUser(
   return (
     Object.values(store.getState().users).find((u) => u.name === user.Pseudo) ??
     null
+  );
+}
+
+export function mapDatabaseMessageToMemoryMessage(
+  message: DatabaseMessage
+): ChatMessageContent {
+  switch (message.Type) {
+    case SavedMessageType.MAIL_ALL:
+    case SavedMessageType.ENHANCED_MESSAGE:
+      return {
+        id: message.ID.toString(),
+        text: message.Texte,
+        user: message.Pseudo,
+        timestamp: message.Date,
+        isModerator: message.Moderator,
+        imageData: message.ImageData,
+        answer: message.Reply?.toString(),
+      };
+    case SavedMessageType.SCORE:
+      return {
+        id: message.ID.toString(),
+        solution: "",
+        attempts: message.Mots ? JSON.parse(message.Mots) : [],
+      };
+  }
+}
+
+export function isScoreContentCoherent(content: ScoreContent): boolean {
+  return (
+    content.attempts.length > 0 &&
+    content.attempts.length <= 6 &&
+    content.attempts.every(
+      (attempt) =>
+        attempt.length === content.solution.length &&
+        attempt[0] === content.solution[0]
+    )
   );
 }

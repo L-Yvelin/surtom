@@ -2,6 +2,7 @@ import path from "path";
 import { createPool, Pool } from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import { SavedMessageType } from "@interfaces/Message.js";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
@@ -14,12 +15,12 @@ export interface User {
   banned?: number;
 }
 
-interface Message {
+export interface DatabaseMessage {
   ID: number;
   Pseudo: string;
   Texte: string;
-  Moderator: boolean;
-  Type: string;
+  Moderator: number;
+  Type: SavedMessageType;
   Reply?: number;
   Date: string;
   Supprime?: number;
@@ -66,7 +67,7 @@ class DatabaseService {
     includeDeleted = false,
     max = 200,
     showHelp = false
-  ): Promise<Message[]> {
+  ): Promise<DatabaseMessage[]> {
     const whereClause = includeDeleted ? "" : "WHERE m.Supprime != ?";
     const queryParams = includeDeleted ? [] : ["1"];
     const query = `
@@ -95,16 +96,16 @@ class DatabaseService {
     return this.mapScoreData(results as any[]).reverse();
   }
 
-  getHelpMessage(): Message {
+  getHelpMessage(): DatabaseMessage {
     return {
       Texte:
         '[{"text":"Faites ","color":"LemonChiffon"},{"text":"/help","color":"DarkKhaki","clickable":"toggleChat(\'\');toggleChat(\'/help\')"},{"text":" pour plus d\'information","color":"LemonChiffon"}]',
       Type: "enhancedMessage",
       Date: new Date().toISOString(),
-    } as Message;
+    } as DatabaseMessage;
   }
 
-  mapScoreData(results: any[]): Message[] {
+  mapScoreData(results: any[]): DatabaseMessage[] {
     return results.map((row) => {
       if (row.Type === "score") {
         return {
@@ -127,7 +128,7 @@ class DatabaseService {
     type: string,
     imageData: Buffer | null = null,
     answerId?: number
-  ): Promise<Message | null> {
+  ): Promise<DatabaseMessage | null> {
     const [result] = await this.pool.query(
       "INSERT INTO Messages (Pseudo, Texte, Moderator, Type, Reply) VALUES (?, ?, ?, ?, ?)",
       [pseudo, type !== "score" ? texte : "", moderator, type, answerId]
@@ -176,7 +177,7 @@ class DatabaseService {
     );
   }
 
-  async getMessageById(messageId: number): Promise<Message | null> {
+  async getMessageById(messageId: number): Promise<DatabaseMessage | null> {
     const [rows]: [any[], any] = await this.pool.query(
       `
       SELECT
