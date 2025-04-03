@@ -2,7 +2,6 @@ import path from "path";
 import { createPool, Pool } from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import { SavedMessageType } from "@interfaces/Message.js";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
@@ -20,7 +19,7 @@ export interface DatabaseMessage {
   Pseudo: string;
   Texte: string;
   Moderator: number;
-  Type: SavedMessageType;
+  Type: DatabaseMessageType;
   Reply?: number;
   Date: string;
   Supprime?: number;
@@ -29,7 +28,10 @@ export interface DatabaseMessage {
   Answer?: string;
   Attempts?: number;
   ImageData?: Buffer;
+  Solution?: string;
 }
+
+export type DatabaseMessageType = "message" | "score" | "enhancedMessage";
 
 class DatabaseService {
   private pool!: Pool;
@@ -126,7 +128,7 @@ class DatabaseService {
     texte: string,
     moderator: boolean,
     type: string,
-    imageData: Buffer | null = null,
+    imageData?: Buffer,
     answerId?: number
   ): Promise<DatabaseMessage | null> {
     const [result] = await this.pool.query(

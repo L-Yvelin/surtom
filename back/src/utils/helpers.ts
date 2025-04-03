@@ -5,17 +5,10 @@ import FullUser from "src/models/User.js";
 import {
   User as BackUser,
   DatabaseMessage,
+  DatabaseMessageType,
 } from "../services/databaseService.js";
 import store from "../store.js";
-import {
-  ChatMessage,
-  UserMessageContent,
-  Message,
-  MessageType,
-  ChatMessageContent,
-  SavedMessageType,
-  ScoreContent,
-} from "@interfaces/Message.js";
+import { Server, Client } from "@interfaces/Message.js";
 
 export function passwordInHashArray(
   password: string,
@@ -71,39 +64,61 @@ export function mapDatabaseUserToMemoryUser(
     null
   );
 }
-
-export function mapDatabaseMessageToMemoryMessage(
+export function mapUserMessageToMemoryMessage(
   message: DatabaseMessage
-): ChatMessageContent {
-  switch (message.Type) {
-    case SavedMessageType.MAIL_ALL:
-    case SavedMessageType.ENHANCED_MESSAGE:
-      return {
-        id: message.ID.toString(),
-        text: message.Texte,
-        user: message.Pseudo,
-        timestamp: message.Date,
-        isModerator: message.Moderator,
-        imageData: message.ImageData,
-        answer: message.Reply?.toString(),
-      };
-    case SavedMessageType.SCORE:
-      return {
-        id: message.ID.toString(),
-        solution: "",
-        attempts: message.Mots ? JSON.parse(message.Mots) : [],
-      };
+): Server.TextChatMessageContent {
+  return {
+    id: message.ID.toString(),
+    user: { name: message.Pseudo, moderatorLevel: message.Moderator },
+    text: message.Texte,
+    timestamp: message.Date,
+    imageData: message.ImageData,
+    replyId: message.Reply?.toString(),
+  };
+}
+
+export function mapScoreMessageToMemoryMessage(
+  message: DatabaseMessage
+): Server.ScoreContent {
+  return {
+    id: message.ID.toString(),
+    user: { name: message.Pseudo, moderatorLevel: message.Moderator },
+    answer: message.Answer ?? "",
+    attempts: message.Mots ? JSON.parse(message.Mots) : [],
+  };
+}
+
+export function mapDatabaseTypeToMemoryType(
+  type: DatabaseMessageType
+): Server.SavedChatMessageType {
+  switch (type) {
+    case "score":
+      return Server.MessageType.SCORE;
+    case "enhancedMessage":
+      return Server.MessageType.ENHANCED_MESSAGE;
+    case "message":
+      return Server.MessageType.MAIL_ALL;
   }
 }
 
-export function isScoreContentCoherent(content: ScoreContent): boolean {
+export function mapDatabaseMessageToMemoryMessage(
+  message: DatabaseMessage
+): Server.ChatMessageContent {
+  switch (mapDatabaseTypeToMemoryType(message.Type)) {
+    case Server.MessageType.ENHANCED_MESSAGE:
+    case Server.MessageType.MAIL_ALL:
+      return mapUserMessageToMemoryMessage(message);
+    case Server.MessageType.SCORE:
+      return mapScoreMessageToMemoryMessage(message);
+  }
+}
+
+export function isScoreContentCoherent(content: Client.ScoreContent): boolean {
   return (
     content.attempts.length > 0 &&
     content.attempts.length <= 6 &&
     content.attempts.every(
-      (attempt) =>
-        attempt.length === content.solution.length &&
-        attempt[0] === content.solution[0]
+      (attempt) => attempt.length === content.attempts[0].length
     )
   );
 }

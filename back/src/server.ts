@@ -1,11 +1,6 @@
 import WS, { WebSocketServer } from "ws";
 import { store } from "./store.js";
-import {
-  ChatMessage,
-  Message,
-  MessageType,
-  User as SimpleUser,
-} from "@interfaces/Message.js";
+import { Server, Client } from "@interfaces/Message.js";
 import FullUser from "./models/User.js";
 import databaseService from "./services/databaseService.js";
 import Constants from "./utils/constants.js";
@@ -13,11 +8,12 @@ import { handleCommand, subscribe } from "./handlers/commandHandler.js";
 import {
   generateRandomHash,
   getRandomFunnyName,
-  handleIsBanned,
   mapDatabaseMessageToMemoryMessage,
+  mapDatabaseTypeToMemoryType,
   mapDatabaseUserToMemoryUser,
+  mapScoreMessageToMemoryMessage,
+  mapUserMessageToMemoryMessage,
   validateText,
-  validateUsername,
 } from "./utils/helpers.js";
 
 subscribe("updateUsersList", updateUsersList);
@@ -68,11 +64,11 @@ wss.on("connection", async (connection, req) => {
       usesMobileDevice
     );
 
-    const userInfoMessage: Message = {
-      type: MessageType.USER,
+    const userInfoMessage: Server.Message = {
+      type: Server.MessageType.LOGIN,
       content: {
         name: user.name,
-        isModerator: user.isModerator,
+        moderatorLevel: user.isModerator,
         isLoggedIn: user.isLoggedIn,
         isMobile: user.mobileDevice,
         sentTheScore: user.sentTheScore,
@@ -84,8 +80,8 @@ wss.on("connection", async (connection, req) => {
     };
     user.connection.send(JSON.stringify(userInfoMessage));
 
-    const statsMessage: Message = {
-      type: MessageType.STATS,
+    const statsMessage: Server.Message = {
+      type: Server.MessageType.STATS,
       content: await databaseService.getScoreDistribution(user.name),
     };
     user.connection.send(JSON.stringify(statsMessage));
@@ -94,14 +90,7 @@ wss.on("connection", async (connection, req) => {
     currentState.users[user.id] = user;
     store.setState(currentState);
 
-    const userNameMessage: Message = {
-      type: MessageType.SET_USERNAME,
-      content: user.name,
-    };
-    user.connection.send(JSON.stringify(userNameMessage));
-
     let isAlive = true;
-
     const isDeadInterval = setInterval(() => {
       if (!isAlive) {
         console.log("Connection is dead, closing");
@@ -117,10 +106,11 @@ wss.on("connection", async (connection, req) => {
     connection.on("message", (stringMessage: string) => {
       isAlive = true;
 
-      const message: Message = JSON.parse(stringMessage);
+      const message: Client.Message = JSON.parse(stringMessage);
+
       if (
-        message.type !== MessageType.PING &&
-        message.type !== MessageType.IS_TYPING
+        message.type !== Client.MessageType.PING &&
+        message.type !== Client.MessageType.IS_TYPING
       ) {
         const text = JSON.stringify(message.content);
 
@@ -133,6 +123,7 @@ wss.on("connection", async (connection, req) => {
 
         console.log("Received message:", `${message.type}: ${truncatedTexte}`);
       }
+
       handleMessage(user, message);
     });
 
@@ -159,34 +150,19 @@ function initializeConnection(user: FullUser): void {
   console.log(`New connection: [${user.ip}] ${user.name}`);
 
   databaseService
-    .getLastMessageTimestamp()
-    .then((timestamp) => {
-      if (timestamp) {
-        const message: Message = {
-          type: MessageType.LAST_TIME_MESSAGE,
-          content: timestamp,
-        };
-        user.connection.send(JSON.stringify(message));
-      }
-    })
-    .catch((err) => {
-      console.error("Error getting last message timestamp:", err);
-    });
-
-  databaseService
     .getMessages(
       !!user.isModerator,
       Constants.MAX_MESSAGES_LOADED,
       !user.isLoggedIn
     )
-    .then((messages) => {
-      if (messages) {
-        const message: Message = {
-          type: MessageType.GET_MESSAGES,
-          content: messages.map((m) => ({
-            type: m.Type,
+    .then((DBmessages) => {
+      if (DBmessages) {
+        const message: Server.Message = {
+          type: Server.MessageType.GET_MESSAGES,
+          content: DBmessages.map((m) => ({
+            type: mapDatabaseTypeToMemoryType(m.Type),
             content: mapDatabaseMessageToMemoryMessage(m),
-          })),
+          })) as Server.ChatMessage[],
         };
         user.connection.send(JSON.stringify(message));
       }
@@ -213,20 +189,26 @@ function logMessage(message: string, user: FullUser): void {
   });
 }
 
-async function handleMessage(user: FullUser, message: Message): Promise<void> {
-  if (message.type === MessageType.PING) {
+async function handleMessage(
+  user: FullUser,
+  message: Client.Message
+): Promise<void> {
+  if (message.type === Client.MessageType.PING) {
     return;
   }
 
   // Handle command
-  if (typeof message.content === "string" && message.content.startsWith("/")) {
-    const command = message.content.substr(1).trim();
+  if (
+    message.type === Client.MessageType.CHAT_MESSAGE &&
+    message.content.text.startsWith("/")
+  ) {
+    const command = message.content.text.slice(1).trim();
     handleCommand(user, command);
     return;
   }
 
   // Increment message count and handle rate limiting
-  if (!user.isModerator && message.type !== MessageType.IS_TYPING) {
+  if (!user.isModerator && message.type !== Client.MessageType.IS_TYPING) {
     user.messageCount++;
 
     if (user.messageCount > 5) {
@@ -251,84 +233,83 @@ async function handleMessage(user: FullUser, message: Message): Promise<void> {
   }
 
   switch (message.type) {
-    case MessageType.MESSAGE:
-      await handleChatMessage(user, message.content);
+    case Client.MessageType.CHAT_MESSAGE:
+    case Client.MessageType.SCORE_TO_CHAT:
+      await handleChatMessage(user, message);
       break;
-    case MessageType.GET_MESSAGES:
-      await handleGetMessages(user);
-      break;
-    case MessageType.DELETE_MESSAGE:
+    case Client.MessageType.DELETE_MESSAGE:
       await handleDeleteMessage(user, message.content);
       break;
-    case MessageType.IS_TYPING:
-      sendMessagesAll(
-        { content: user.name },
-        !!user.isModerator,
-        MessageType.IS_TYPING
-      );
+    case Client.MessageType.IS_TYPING:
+      sendMessagesAll({
+        type: Server.MessageType.IS_TYPING,
+        content: user.name,
+      });
       break;
     default:
+      // @ts-expect-error
       handleCustomMessageType(user, message.type, message.content);
       break;
   }
 }
 
-async function handleGetMessages(user: FullUser): Promise<void> {
-  try {
-    const messages = await databaseService.getMessages(
-      !!user.isModerator,
-      Constants.MAX_MESSAGES_LOADED,
-      !user.isLoggedIn
-    );
-
-    if (messages) {
-      user.connection.send(
-        JSON.stringify({
-          type: MessageType.GET_MESSAGES,
-          content: messages,
-        })
-      );
-      console.log(
-        `${new Date().toISOString()} (${user.id}) User got messages history: ${
-          user.name
-        }`
-      );
-    }
-  } catch (err) {
-    console.error("Error getting messages:", err);
+async function handleChatMessage(
+  user: FullUser,
+  chatMessage: Client.ChatMessage
+): Promise<void> {
+  switch (chatMessage.type) {
+    case Client.MessageType.SCORE_TO_CHAT:
+      await handleScoreToChat(user, chatMessage.content);
+      break;
+    case Client.MessageType.CHAT_MESSAGE:
+      if (
+        (!user.isModerator && !validateText(chatMessage.content.text.trim())) ||
+        (chatMessage.content.imageData &&
+          chatMessage.content.imageData.size > 110 * 1024)
+      ) {
+        return;
+      }
+      await handleMailAll(user, chatMessage);
+      break;
   }
 }
 
-async function handleChatMessage(
+async function handleMailAll(
   user: FullUser,
-  chatMessage: ChatMessage
-): Promise<void> {
-  const { content } = chatMessage;
-  const { text, imageData, answer } = content;
-
-  if (!text || text.trim().length === 0) return;
-
-  // Validate message
-  if (
-    (!user.isModerator && !validateText(text)) ||
-    !validateUsername(user.name) ||
-    (imageData && imageData.size > 110 * 1024)
-  ) {
-    return;
-  }
-
+  chatMessage: Extract<
+    Client.ChatMessage,
+    { type: Client.MessageType.CHAT_MESSAGE }
+  >
+) {
   try {
-    const message = await databaseService.saveMessage(
+    const savedMessage = await databaseService.saveMessage(
       user.name,
-      text,
+      chatMessage.content.text,
       !!user.isModerator,
       "message",
-      imageData,
-      answer
+      chatMessage.content.imageData,
+      parseInt(chatMessage.content.replyId ?? "") || undefined
     );
 
-    sendMessagesAll(message, !!user.isModerator, MessageType.MESSAGE);
-    logMessage(text, user);
+    if (!savedMessage) {
+      console.error(
+        `${new Date().toISOString()} (${user.id}) ${
+          user.name
+        } Failed to save message`
+      );
+      return;
+    }
+
+    const message: Server.ChatMessage = {
+      type: Server.MessageType.MAIL_ALL,
+      content: mapUserMessageToMemoryMessage(savedMessage),
+    };
+
+    sendMessagesAll({
+      type: Server.MessageType.MESSAGE,
+      content: message,
+    } as Server.Message);
+    logMessage(message.content.text, user);
   } catch (err) {
     console.error("Error saving message:", err);
   }
@@ -353,14 +334,31 @@ async function handleScoreToChat(user: FullUser, content: any): Promise<void> {
   });
 
   try {
-    const message = await databaseService.saveMessage(
+    const savedScore = await databaseService.saveMessage(
       user.name,
       mots,
       !!user.isModerator,
       "score"
     );
 
-    sendMessagesAll(message, !!user.isModerator, MessageType.SCORE);
+    if (!savedScore) {
+      console.error(
+        `${new Date().toISOString()} (${user.id}) ${
+          user.name
+        } Failed to save score message`
+      );
+      return;
+    }
+
+    const message: Server.ChatMessage = {
+      content: mapScoreMessageToMemoryMessage(savedScore),
+      type: Server.MessageType.SCORE,
+    };
+
+    sendMessagesAll({
+      type: Server.MessageType.MESSAGE,
+      content: message,
+    });
     user.sentTheScore = true;
     console.log(
       `${new Date().toISOString()} (${user.id}) ${user.name} sent their ${
@@ -387,21 +385,20 @@ async function handleDeleteMessage(
     if (deleted) {
       user.connection.send(
         JSON.stringify({
-          type: MessageType.LOG,
+          type: Server.MessageType.LOG,
           content: "success",
         })
       );
 
-      sendMessagesAll(
-        { id: messageId },
-        !!user.isModerator,
-        MessageType.DELETE_MESSAGE
-      );
+      sendMessagesAll({
+        type: Server.MessageType.DELETE_MESSAGE,
+        content: messageId,
+      });
     } else {
       user.connection.send(
         JSON.stringify({
-          type: MessageType.LOG,
-          content: "failure",
+          type: Server.MessageType.LOG,
+          content: `Failed to delete message with id ${messageId}`,
         })
       );
     }
@@ -434,8 +431,8 @@ function handleCustomMessageType(
       } Sent to custom type (${messageType})`
     );
 
-    listeningTypes[messageType].forEach((u) => {
-      u.send(
+    listeningTypes[messageType].forEach((connection) => {
+      connection.send(
         JSON.stringify({
           type: messageType,
           content: messageContent,
@@ -455,36 +452,30 @@ function updateUsersList(): void {
   const currentState = store.getState();
   const userList = Object.values(currentState.users)
     .filter((user) => user.name)
-    .reduce<Array<SimpleUser>>((acc, user) => {
+    .reduce<Array<Server.User>>((acc, user) => {
       const existingUser = acc.find((u) => u.name === user.name);
       if (!existingUser) {
         acc.push({
           name: user.name,
-          isModerator: user.isModerator,
+          moderatorLevel: user.isModerator,
           isMobile: user.mobileDevice,
+          isLoggedIn: user.isLoggedIn,
         });
       }
       return acc;
     }, []);
 
-  const message = { users: userList };
-  sendMessagesAll(message, false, "usersList");
+  const message: Server.Message = {
+    content: userList,
+    type: Server.MessageType.USER_LIST,
+  };
+  sendMessagesAll(message);
 }
 
-function sendMessagesAll(
-  message: any,
-  isModerator = false,
-  messageType = "message"
-): void {
+function sendMessagesAll(message: Server.Message): void {
   wss.clients.forEach((client) => {
     if (client.readyState === WS.OPEN) {
-      client.send(
-        JSON.stringify({
-          ...message,
-          Type: messageType,
-          Moderator: isModerator,
-        })
-      );
+      client.send(JSON.stringify(message));
     }
   });
 }
