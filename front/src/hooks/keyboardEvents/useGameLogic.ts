@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Achievement } from "../../components/AchievementsStack/Achievement/Achievement";
 import { AchievementIcon } from "../../components/AchievementsStack/Achievement/utils";
 import { LetterState } from "../../components/Main/Game/Grid/types";
@@ -21,6 +21,7 @@ const useGameLogic = () => {
   } = useGameStore();
 
   const { setVisibility } = useUIStore();
+  const skipFirstLetter = useRef(true);
 
   useEffect(() => {
     setLetters([{ letter: solution[0], state: LetterState.Correct }]);
@@ -36,11 +37,16 @@ const useGameLogic = () => {
     } else if (event.metaKey) {
       return;
     } else if (/^[a-zA-Z]$/.test(event.key)) {
+      if (event.key === solution[0] && letters.length === 1 && skipFirstLetter.current) {
+        skipFirstLetter.current = false;
+        return;
+      }
       setLetters(
         letters.length < solution.length
           ? [...letters, { letter: event.key.toLowerCase() }]
           : letters
       );
+      skipFirstLetter.current = true;
     } else if (event.key === "Enter") {
       processGuess();
     }
