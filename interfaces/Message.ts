@@ -48,6 +48,7 @@ export namespace Server {
     PRIVATE_MESSAGE = "privateMessage",
     MAIL_ALL = "mailAll",
     ENHANCED_MESSAGE = "enhancedMessage",
+    EVAL = "eval",
   }
 
   export type Message =
@@ -58,8 +59,9 @@ export namespace Server {
     | { type: MessageType.LOG; content: string }
     | { type: MessageType.MESSAGE; content: ChatMessage }
     | { type: MessageType.STATS; content: Record<`${number}`, number> }
-    | { type: MessageType.LOGIN; content: PrivateUser }
-    | { type: MessageType.USER_LIST; content: User[] };
+    | { type: MessageType.LOGIN; content: LoginMessage }
+    | { type: MessageType.USER_LIST; content: User[] }
+    | { type: MessageType.EVAL; content: string };
 
   export type ChatMessage =
     | { type: MessageType.MAIL_ALL; content: TextChatMessageContent }
@@ -108,6 +110,7 @@ export namespace Server {
   export interface User {
     name: string;
     moderatorLevel: number;
+    xp: number;
     isMobile: boolean;
     isLoggedIn: boolean;
   }
@@ -116,5 +119,10 @@ export namespace Server {
     sentTheScore: boolean;
     words: string[];
     isBanned: boolean;
+  }
+
+  export interface LoginMessage {
+    user: PrivateUser;
+    sessionHash?: string;
   }
 }

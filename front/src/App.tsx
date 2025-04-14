@@ -37,10 +37,13 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
   const customWordButtonRef = React.useRef<HTMLButtonElement>(null);
   const endPageButtonRef = React.useRef<HTMLButtonElement>(null);
   const chatButtonRef = React.useRef<HTMLButtonElement>(null);
-  
+
   const { theme, setTheme } = useTheme();
   const { connect } = useWebSocketStore.getState();
-  connect();
+
+  useEffect(() => {
+    connect();
+  }, [connect]);
 
   use(twemojiPromise);
 

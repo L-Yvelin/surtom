@@ -1,7 +1,7 @@
+import { Server } from "../../../interfaces/Message";
 import { AchievementProps } from "../components/AchievementsStack/Achievement/Achievement";
 import { Tries, Word } from "../components/Main/Game/Grid/types";
 import { ScoreStats } from "../components/Stats/utils";
-import { Player } from "../interfaces/Player";
 import { create } from "zustand";
 
 interface GameState {
@@ -14,11 +14,11 @@ interface GameState {
   setLetters: (letters: Word) => void;
   gameFinished: boolean;
   setGameFinished: (gameFinished: boolean) => void;
-  player: Player;
-  setPlayer: (updatedPlayer: Partial<Player>) => void;
-  playerList: Player[];
-  setPlayerList: (players: Player[]) => void;
-  addPlayer: (player: Player) => void;
+  player: Server.User;
+  setPlayer: (updatedPlayer: Partial<Server.User>) => void;
+  playerList: Server.User[];
+  setPlayerList: (players: Server.User[]) => void;
+  addPlayer: (player: Server.User) => void;
   removePlayer: (playerName: string) => void;
   scores: ScoreStats;
   setScores: (scores: ScoreStats) => void;
@@ -29,10 +29,11 @@ interface GameState {
   setHasLoaded: (hasLoaded: boolean) => void;
 }
 
-export const defaultPlayer: Player = {
+export const defaultPlayer: Server.User = {
   name: "",
   isMobile: false,
-  isModerator: 3,
+  isLoggedIn: true,
+  moderatorLevel: 3,
   xp: 0,
 };
 

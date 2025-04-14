@@ -1,23 +1,12 @@
 import { create } from "zustand";
 import useGameStore from "./useGameStore";
-import {
-  Message as ServerMessage,
-} from "../../../interfaces/Message";
 import useChatStore from "./useChatStore";
-
-interface UserData {
-  isLoggedIn: boolean;
-  isModerator: boolean;
-  mobileDevice: boolean;
-  name: string;
-  sentTheScore: boolean;
-  mots: string[];
-}
+import { Client, Server } from "../../../interfaces/Message";
 
 interface WebSocketState {
   isConnected: boolean;
   lastMessageTimestamp: string;
-  sendMessage: (message: any, type: string) => void;
+  sendMessage: (message: Client.Message, type: string) => void;
   connect: () => void;
   disconnect: () => void;
 }
@@ -68,7 +57,7 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
     };
 
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      const data: Server.Message = JSON.parse(event.data);
       console.log(data);
 
       handleMessage(data);
@@ -96,38 +85,34 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
     }
   };
 
-  const sendMessage = (message: any, type: MessageType) => {
+  const sendMessage = (message: Client.Message) => {
     if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ Type: type, ...message }));
+      ws.send(JSON.stringify(message));
     }
   };
 
-  const handleMessage = (data: ServerMessage) => {
+  const handleMessage = (data: Server.Message) => {
     switch (data.type) {
-      case MessageType.USER: {
+      case Server.MessageType.LOGIN: {
         console.log("GOT USER!");
         break;
       }
-      case MessageType.STATS: {
+      case Server.MessageType.STATS: {
         const stats = data.content;
         setScores(stats);
         break;
       }
-      case MessageType.USER_LIST: {
+      case Server.MessageType.USER_LIST: {
         const usersList = data.content;
-        setPlayerList(
-          usersList.map((user) => {
-            return { ...user, xp: 0 };
-          })
-        );
+        setPlayerList(usersList);
         break;
       }
-      case MessageType.LAST_TIME_MESSAGE: {
+      case Server.MessageType.LAST_TIME_MESSAGE: {
         const lastTimeMessage = data.content;
         set({ lastMessageTimestamp: lastTimeMessage });
         break;
       }
-      case MessageType.GET_MESSAGES: {
+      case Server.MessageType.GET_MESSAGES: {
         const getMessages = data.content;
         setMessages(
           getMessages.map((message) => {

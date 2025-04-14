@@ -67,15 +67,17 @@ wss.on("connection", async (connection, req) => {
     const userInfoMessage: Server.Message = {
       type: Server.MessageType.LOGIN,
       content: {
-        name: user.name,
-        moderatorLevel: user.isModerator,
-        isLoggedIn: user.isLoggedIn,
-        isMobile: user.mobileDevice,
-        sentTheScore: user.sentTheScore,
-        words: user.isLoggedIn
-          ? await databaseService.getDailyScore(user.name)
-          : [],
-        isBanned: user.banned,
+        user: {
+          name: user.name,
+          moderatorLevel: user.isModerator,
+          isLoggedIn: user.isLoggedIn,
+          isMobile: user.mobileDevice,
+          sentTheScore: user.sentTheScore,
+          words: user.isLoggedIn
+            ? await databaseService.getDailyScore(user.name)
+            : [],
+          isBanned: user.banned,
+        },
       },
     };
     user.connection.send(JSON.stringify(userInfoMessage));
@@ -386,7 +388,7 @@ async function handleDeleteMessage(
       user.connection.send(
         JSON.stringify({
           type: Server.MessageType.LOG,
-          content: "success",
+          content: `Successfully deleted message with id ${messageId}`,
         })
       );
 
