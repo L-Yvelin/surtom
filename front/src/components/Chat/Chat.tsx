@@ -3,7 +3,7 @@ import classes from "./Chat.module.css";
 import classNames from "classnames";
 import ChatInput from "./ChatInput/ChatInput";
 import MessagesBox from "./MessagesBox/Messages";
-import { Player } from "../../interfaces/Player";
+import { Server } from "../../../../interfaces/Message";
 import useUIStore from "../../stores/useUIStore";
 import useClickOutside from "../../hooks/useClickOutside";
 import useChatStore from "../../stores/useChatStore";
@@ -19,28 +19,13 @@ interface MessageContent {
   image?: string;
 }
 
-export type MessageType =
-  | "message"
-  | "score"
-  | "tellraw"
-  | "enhancedMessage"
-  | "commandError"
-  | "commandSuccess"
-  | "privateMessage"
-  | "privateMessageSent";
-export type AnswerableMessageType =
-  | "message"
-  | "score"
-  | "tellraw"
-  | "enhancedMessage";
-
-export type ChatPlayer = Pick<Player, "name" | "isModerator">;
+export type ChatPlayer = Pick<Server.User, "name" | "moderatorLevel">;
 
 export interface Message {
   id: string;
   player: ChatPlayer;
   content: MessageContent;
-  type: MessageType;
+  type: Server.ChatMessage.Type;
   deleted?: number;
   reply?: string;
   date?: string;

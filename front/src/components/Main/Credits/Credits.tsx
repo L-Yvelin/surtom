@@ -8,7 +8,7 @@ function Credits(): JSX.Element {
     <div className={classes.credits}>
       CREDITS:{" "}
       <Tooltip
-        element={
+        children={
           <a
             href="https://sutom.nocle.fr"
             target="_blank"
@@ -27,7 +27,7 @@ function Credits(): JSX.Element {
       />
       ,{" "}
       <Tooltip
-        element={
+        children={
           <span className={classes.lowrd}>Lowrd</span>
         }
         tooltipContent={
@@ -39,7 +39,7 @@ function Credits(): JSX.Element {
       />
       ,{" "}
       <Tooltip
-        element={
+        children={
           <span className={classes.anxton}>Anxton</span>
         }
         tooltipContent={
@@ -51,7 +51,7 @@ function Credits(): JSX.Element {
       />
       ,{" "}
       <Tooltip
-        element={
+        children={
           <span className={classes.embuscade}>Embuscade</span>
         }
         tooltipContent={

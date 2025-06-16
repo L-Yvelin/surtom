@@ -20,7 +20,7 @@ export namespace Client {
 
   export interface TextChatMessageContent {
     text: string;
-    imageData?: any;
+    imageData?: string;
     replyId?: string;
   }
 
@@ -51,61 +51,77 @@ export namespace Server {
     EVAL = "eval",
   }
 
+  export enum SavedMessageType {
+    MAIL_ALL = 'mailAll',
+    PRIVATE_MESSAGE = 'privateMessage',
+    ENHANCED_MESSAGE = 'enhancedMessage',
+    SCORE = 'score',
+  };
+
   export type Message =
     | { type: MessageType.DELETE_MESSAGE; content: number }
-    | { type: MessageType.GET_MESSAGES; content: ChatMessage[] }
+    | { type: MessageType.GET_MESSAGES; content: ChatMessage.User[] }
     | { type: MessageType.IS_TYPING; content: string }
     | { type: MessageType.LAST_TIME_MESSAGE; content: string }
     | { type: MessageType.LOG; content: string }
-    | { type: MessageType.MESSAGE; content: ChatMessage }
+    | { type: MessageType.MESSAGE; content: ChatMessage.User | ChatMessage.Score | ChatMessage.Status }
     | { type: MessageType.STATS; content: Record<`${number}`, number> }
     | { type: MessageType.LOGIN; content: LoginMessage }
     | { type: MessageType.USER_LIST; content: User[] }
-    | { type: MessageType.EVAL; content: string };
+    | { type: MessageType.EVAL; content: string }
+    | { type: MessageType.SUCCESS; content: ChatMessage.Status }
+    | { type: MessageType.ERROR; content: ChatMessage.Status };
 
-  export type ChatMessage =
-    | { type: MessageType.MAIL_ALL; content: TextChatMessageContent }
-    | { type: MessageType.SCORE; content: ScoreContent }
-    | { type: MessageType.PRIVATE_MESSAGE; content: TextChatMessageContent }
-    | {
+
+  export namespace ChatMessage {
+    export type Type = User | Score | Status;
+    export type SavedType = User | Score;
+
+    export type User =
+      | { type: MessageType.MAIL_ALL; content: Content.UserMessageContent }
+      | {
+        type: MessageType.PRIVATE_MESSAGE;
+        content: Content.UserMessageContent;
+      }
+      | {
+        type: MessageType.ENHANCED_MESSAGE;
+        content: Content.UserMessageContent;
+      };
+
+    export type Score = {
+      type: MessageType.SCORE;
+      content: Content.ScoreMessageContent;
+    };
+
+    export type Status =
+      | {
         type: MessageType.SUCCESS;
-        content: Pick<TextChatMessageContent, "text" | "timestamp">;
+        content: Pick<Content.UserMessageContent, "text" | "timestamp">;
       }
-    | {
+      | {
         type: MessageType.ERROR;
-        content: Pick<TextChatMessageContent, "text" | "timestamp">;
+        content: Pick<Content.UserMessageContent, "text" | "timestamp">;
+      };
+
+    export namespace Content {
+      export interface UserMessageContent {
+        id: string;
+        user: Pick<Server.User, "name" | "moderatorLevel">;
+        text: string;
+        timestamp: string;
+        imageData?: string;
+        replyId?: string;
       }
-    | { type: MessageType.ENHANCED_MESSAGE; content: TextChatMessageContent };
 
-  export type SavedChatMessageType =
-    | MessageType.MAIL_ALL
-    | MessageType.ENHANCED_MESSAGE
-    | MessageType.SCORE;
-
-  export type SavedChatMessage = Extract<
-    ChatMessage,
-    { type: SavedChatMessageType }
-  >;
-
-  export type SavedChatMessageContent = Pick<SavedChatMessage, "content">;
-
-  export interface TextChatMessageContent {
-    id: string;
-    user: Pick<User, "name" | "moderatorLevel">;
-    text: string;
-    timestamp: string;
-    imageData?: any;
-    replyId?: string;
+      export interface ScoreMessageContent {
+        id: string;
+        user: Pick<Server.User, "name" | "moderatorLevel">;
+        answer: string;
+        attempts: string[];
+        timestamp: string;
+      }
+    }
   }
-
-  export interface ScoreContent {
-    id: string;
-    user: Pick<User, "name" | "moderatorLevel">;
-    answer: string;
-    attempts: string[];
-  }
-
-  export type ChatMessageContent = TextChatMessageContent | ScoreContent;
 
   export interface User {
     name: string;

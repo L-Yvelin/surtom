@@ -9,7 +9,7 @@ import {
 import databaseService from "../services/databaseService.js";
 import Constants from "../utils/constants.js";
 import FullUser from "../models/User.js";
-import { Server } from "@interfaces/Message.js";
+import { Server } from "../../../interfaces/Message.js";
 
 interface Command {
   [key: string]: string;
@@ -96,7 +96,7 @@ async function handleCommand(user: FullUser, command: string): Promise<void> {
 async function handleNickCommand(user: FullUser): Promise<void> {
   user.connection.send(
     JSON.stringify({
-      type: Server.MessageType.MESSAGE,
+      type: Server.MessageType.ERROR,
       content: {
         type: Server.MessageType.ERROR,
         content: {
@@ -125,7 +125,7 @@ async function loginUserAndSendSession(
 
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.MESSAGE,
+        type: Server.MessageType.SUCCESS,
         content: {
           type: Server.MessageType.SUCCESS,
           content: {
@@ -159,9 +159,15 @@ async function loginUserAndSendSession(
   } catch (error) {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: (error as Error).message,
-      })
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: (error as Error).message,
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
     return false;
   }
@@ -178,7 +184,7 @@ async function handleLoginCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.MESSAGE,
+        type: Server.MessageType.ERROR,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -205,9 +211,15 @@ async function handleRegisterCommand(
     ) {
       user.connection.send(
         JSON.stringify({
-          Type: "commandError",
-          message: "Ce pseudo n'est pas valide...",
-        })
+          type: Server.MessageType.MESSAGE,
+          content: {
+            type: Server.MessageType.ERROR,
+            content: {
+              text: "Ce pseudo n'est pas valide...",
+              timestamp: Date.now().toString(),
+            },
+          },
+        } as Server.Message)
       );
       return;
     }
@@ -218,17 +230,29 @@ async function handleRegisterCommand(
     } catch (error) {
       user.connection.send(
         JSON.stringify({
-          Type: "commandError",
-          message: (error as Error).message,
-        })
+          type: Server.MessageType.ERROR,
+          content: {
+            type: Server.MessageType.ERROR,
+            content: {
+              text: (error as Error).message,
+              timestamp: Date.now().toString(),
+            },
+          },
+        } as Server.Message)
       );
     }
   } else {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: "Utilisation : /register pseudo mot_de_passe",
-      })
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "Utilisation : /register pseudo mot_de_passe",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
   }
 }
@@ -275,17 +299,29 @@ async function handleMsgCommand(
     } else {
       user.connection.send(
         JSON.stringify({
-          Type: "commandError",
-          message: "Pseudo ou message invalide",
-        })
+          type: Server.MessageType.ERROR,
+          content: {
+            type: Server.MessageType.ERROR,
+            content: {
+              text: "Pseudo ou message invalide",
+              timestamp: Date.now().toString(),
+            },
+          },
+        } as Server.Message)
       );
     }
   } else {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: "Utilisation : /msg pseudo message",
-      })
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "Utilisation : /msg pseudo message",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
   }
 }
@@ -302,9 +338,15 @@ async function handleEvalCommand(
       if (new RegExp("cookie", "i").test(messageText)) {
         user.connection.send(
           JSON.stringify({
-            Type: "commandError",
-            message: "Pas touche aux 🍪 !",
-          })
+            type: Server.MessageType.ERROR,
+            content: {
+              type: Server.MessageType.ERROR,
+              content: {
+                text: "Pas touche aux 🍪 !",
+                timestamp: Date.now().toString(),
+              },
+            },
+          } as Server.Message)
         );
         return;
       }
@@ -341,14 +383,29 @@ async function handleEvalCommand(
     } else {
       user.connection.send(
         JSON.stringify({
-          Type: "commandError",
-          message: "Utilisation : /eval pseudo ¿¿¿¿¿",
-        })
+          type: Server.MessageType.ERROR,
+          content: {
+            type: Server.MessageType.ERROR,
+            content: {
+              text: "Utilisation : /eval pseudo ¿¿¿¿¿",
+              timestamp: Date.now().toString(),
+            },
+          },
+        } as Server.Message)
       );
     }
   } else {
     user.connection.send(
-      JSON.stringify({ Type: "commandError", message: "¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿" })
+      JSON.stringify({
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
   }
 }
@@ -363,36 +420,56 @@ async function handleAddTypeCommand(
     if (validateUsername(type)) {
       user.listeningTypes.push(type);
 
-      user.connection.send(JSON.stringify({ Type: "portAdded", port: type }));
+      user.connection.send(JSON.stringify({ type: Server.MessageType.SUCCESS, port: type }));
       user.connection.send(
         JSON.stringify({
-          Type: "commandSuccess",
-          message: `Vous écoutez maintenant le type : ${type}`,
+          type: Server.MessageType.SUCCESS,
+          content: {
+            text: `Vous écoutez maintenant le type : ${type}`,
+            timestamp: Date.now().toString(),
+          },
         })
       );
     } else {
       user.connection.send(
         JSON.stringify({
-          Type: "commandError",
-          status: "error",
-          message: "Type invalide",
+          type: Server.MessageType.ERROR,
+          content: {
+            type: Server.MessageType.ERROR,
+            content: {
+              text: "Type invalide",
+              timestamp: Date.now().toString(),
+            },
+          },
         })
       );
     }
   } else if (commandParts.length === 1) {
     user.connection.send(
       JSON.stringify({
-        Type: "commandSuccess",
-        message: `Vous écoutez les types : ${Array.from(
-          user.listeningTypes
-        ).join(", ")}`,
+        type: Server.MessageType.SUCCESS,
+        content: {
+          type: Server.MessageType.SUCCESS,
+          content: {
+            text: `Vous écoutez les types : ${Array.from(
+              user.listeningTypes
+            ).join(", ")}`,
+            timestamp: Date.now().toString(),
+          },
+        },
       })
     );
   } else {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: "Utilisation : /listen type",
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "Utilisation : /listen type",
+            timestamp: Date.now().toString(),
+          },
+        },
       })
     );
   }
@@ -400,7 +477,16 @@ async function handleAddTypeCommand(
 
 async function handleUnknownCommand(user: FullUser): Promise<void> {
   user.connection.send(
-    JSON.stringify({ Type: "commandError", message: "Commande invalide !" })
+    JSON.stringify({
+      type: Server.MessageType.ERROR,
+      content: {
+        type: Server.MessageType.ERROR,
+        content: {
+          text: "Commande invalide !",
+          timestamp: Date.now().toString(),
+        },
+      },
+    } as Server.Message)
   );
 }
 
@@ -423,18 +509,30 @@ async function handleRefreshCommand(
     } else {
       user.connection.send(
         JSON.stringify({
-          Type: "commandError",
-          message: "Vous n'êtes pas autorisé à utiliser cette commande.",
-        })
+          type: Server.MessageType.ERROR,
+          content: {
+            type: Server.MessageType.ERROR,
+            content: {
+              text: "Vous n'êtes pas autorisé à utiliser cette commande.",
+              timestamp: Date.now().toString(),
+            },
+          },
+        } as Server.Message)
       );
       return;
     }
   } else {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: "Utilisation : /refresh target?",
-      })
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "Utilisation : /refresh target?",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
     return;
   }
@@ -447,8 +545,14 @@ async function handleRefreshCommand(
     )
     .then((messages) => {
       const message = JSON.stringify({
-        Type: "getMessages",
-        messages: messages,
+        type: Server.MessageType.SUCCESS,
+        content: {
+          type: Server.MessageType.SUCCESS,
+          content: {
+            text: "Tchat rafraîchi",
+            timestamp: Date.now().toString(),
+          },
+        },
       });
       Object.values(targetedUsers).forEach((target) => {
         target.connection && target.connection.send(message);
@@ -462,9 +566,6 @@ async function handleRefreshCommand(
     .catch((err) => {
       console.error("Error getting messages:", err);
     });
-  user.connection.send(
-    JSON.stringify({ Type: "log", message: "Tchat rafraîchi" })
-  );
 }
 
 function handleHelpCommand(user: FullUser, commandParts: string[]): void {
@@ -566,7 +667,16 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
     );
   } else {
     user.connection.send(
-      JSON.stringify({ Type: "commandError", message: "Utilisation : /help" })
+      JSON.stringify({
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "Utilisation : /help",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
     return;
   }
@@ -576,8 +686,14 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
     Pseudo: user.name,
     Moderator: user.isModerator,
     Date: timestamp,
-    Type: "enhancedMessage",
-    Texte: JSON.stringify(formattedCommands),
+    type: Server.MessageType.SUCCESS,
+    content: {
+      type: Server.MessageType.SUCCESS,
+      content: {
+        text: JSON.stringify(formattedCommands),
+        timestamp: Date.now().toString(),
+      },
+    },
   };
 
   user.connection.send(JSON.stringify(finalMessage));
@@ -599,9 +715,15 @@ async function handleTellrawCommand(
   if (!user.isModerator) {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: "Vous n'êtes pas autorisé à utiliser cette commande.",
-      })
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "Vous n'êtes pas autorisé à utiliser cette commande.",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
     return;
   }
@@ -624,9 +746,15 @@ async function handleTellrawCommand(
   if (!isJson(commandParts[commandParts.length - 1])) {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: "L'objet JSON est invalide.",
-      })
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "L'objet JSON est invalide.",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
     return;
   }
@@ -653,9 +781,15 @@ async function handleTellrawCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: "Utilisation : /tellraw target message",
-      })
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "Utilisation : /tellraw target message",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
     return;
   }
@@ -664,17 +798,26 @@ async function handleTellrawCommand(
     target.connection &&
       target.connection.send(
         JSON.stringify({
-          Type: "enhancedMessage",
-          Pseudo: user.name,
-          Moderator: user.isModerator,
-          Date: new Date().toISOString(),
-          Texte: message,
+          type: Server.MessageType.SUCCESS,
+          content: {
+            type: Server.MessageType.SUCCESS,
+            content: {
+              text: message,
+              timestamp: new Date().toISOString(),
+            },
+          },
         })
       );
     user.connection.send(
       JSON.stringify({
-        Type: "log",
-        message: `Message envoyé à ${target.name}`,
+        type: Server.MessageType.SUCCESS,
+        content: {
+          type: Server.MessageType.SUCCESS,
+          content: {
+            text: `Message envoyé à ${target.name}`,
+            timestamp: Date.now().toString(),
+          },
+        },
       })
     );
   });
@@ -703,9 +846,15 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
       default:
         user.connection.send(
           JSON.stringify({
-            Type: "commandError",
-            message: "Sélecteur inexistant",
-          })
+            type: Server.MessageType.ERROR,
+            content: {
+              type: Server.MessageType.ERROR,
+              content: {
+                text: "Sélecteur inexistant",
+                timestamp: Date.now().toString(),
+              },
+            },
+          } as Server.Message)
         );
         break;
     }
@@ -720,10 +869,15 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
     } else {
       user.connection.send(
         JSON.stringify({
-          Type: "commandError",
-          status: "error",
-          message: "Nom d'utilisateur invalide",
-        })
+          type: Server.MessageType.ERROR,
+          content: {
+            type: Server.MessageType.ERROR,
+            content: {
+              text: "Nom d'utilisateur invalide",
+              timestamp: Date.now().toString(),
+            },
+          },
+        } as Server.Message)
       );
     }
   }
@@ -731,9 +885,15 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
   if (targetedUsers.length === 0) {
     user.connection.send(
       JSON.stringify({
-        Type: "commandError",
-        message: "Utilisateur inexistant",
-      })
+        type: Server.MessageType.ERROR,
+        content: {
+          type: Server.MessageType.ERROR,
+          content: {
+            text: "Utilisateur inexistant",
+            timestamp: Date.now().toString(),
+          },
+        },
+      } as Server.Message)
     );
   }
   return targetedUsers;

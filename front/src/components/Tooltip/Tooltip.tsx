@@ -6,7 +6,7 @@ import classes from "./Tooltip.module.css";
 import classNames from "classnames";
 
 interface TooltipProps {
-  element: ReactNode;
+  children: ReactNode;
   tooltipContent: ReactNode;
   offset?: number;
   anchor?: Anchor;
@@ -14,7 +14,7 @@ interface TooltipProps {
 }
 
 function Tooltip({
-  element,
+  children,
   tooltipContent,
   offset = 10,
   anchor = Anchor.TOP_LEFT,
@@ -49,7 +49,7 @@ function Tooltip({
       onMouseLeave={() => setVisible(false)}
       onMouseMove={updatePosition}
     >
-      {element}
+      {children}
       {(isDesktop || activeOnMobile) &&
         createPortal(
           <div

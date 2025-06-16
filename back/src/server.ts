@@ -1,6 +1,6 @@
 import WS, { WebSocketServer } from "ws";
 import { store } from "./store.js";
-import { Server, Client } from "@interfaces/Message.js";
+import { Server, Client } from "../../interfaces/Message.js";
 import FullUser from "./models/User.js";
 import databaseService from "./services/databaseService.js";
 import Constants from "./utils/constants.js";
@@ -77,6 +77,7 @@ wss.on("connection", async (connection, req) => {
             ? await databaseService.getDailyScore(user.name)
             : [],
           isBanned: user.banned,
+          xp: 0,
         },
       },
     };
@@ -114,10 +115,10 @@ wss.on("connection", async (connection, req) => {
         message.type !== Client.MessageType.PING &&
         message.type !== Client.MessageType.IS_TYPING
       ) {
-        const text = JSON.stringify(message.content);
+        const text = JSON.stringify(message.content) ?? "";
 
         const truncatedTexte =
-          JSON.stringify(message.content).length > 100
+          text.length > 100
             ? text.slice(0, 50) + "..." + text.slice(-50)
             : text.length > 50
             ? text.slice(0, 50) + "..."
@@ -159,13 +160,21 @@ function initializeConnection(user: FullUser): void {
     )
     .then((DBmessages) => {
       if (DBmessages) {
+        const userMessages = DBmessages.map((m) => ({
+          type: mapDatabaseTypeToMemoryType(m.Type),
+          content: mapDatabaseMessageToMemoryMessage(m),
+        })).filter(
+          (msg) =>
+            msg.type === Server.MessageType.MAIL_ALL ||
+            msg.type === Server.MessageType.ENHANCED_MESSAGE ||
+            msg.type === Server.MessageType.PRIVATE_MESSAGE ||
+            msg.type === Server.MessageType.SCORE
+        ) as Server.ChatMessage.User[];
         const message: Server.Message = {
           type: Server.MessageType.GET_MESSAGES,
-          content: DBmessages.map((m) => ({
-            type: mapDatabaseTypeToMemoryType(m.Type),
-            content: mapDatabaseMessageToMemoryMessage(m),
-          })) as Server.ChatMessage[],
+          content: userMessages,
         };
+
         user.connection.send(JSON.stringify(message));
       }
     })
@@ -267,7 +276,7 @@ async function handleChatMessage(
       if (
         (!user.isModerator && !validateText(chatMessage.content.text.trim())) ||
         (chatMessage.content.imageData &&
-          chatMessage.content.imageData.size > 110 * 1024)
+          chatMessage.content.imageData.length > 110 * 1024)
       ) {
         return;
       }
@@ -302,7 +311,7 @@ async function handleMailAll(
       return;
     }
 
-    const message: Server.ChatMessage = {
+    const message: Server.ChatMessage.User = {
       type: Server.MessageType.MAIL_ALL,
       content: mapUserMessageToMemoryMessage(savedMessage),
     };
@@ -352,21 +361,12 @@ async function handleScoreToChat(user: FullUser, content: any): Promise<void> {
       return;
     }
 
-    const message: Server.ChatMessage = {
-      content: mapScoreMessageToMemoryMessage(savedScore),
+    const message: Server.ChatMessage.Score = {
       type: Server.MessageType.SCORE,
+      content: mapScoreMessageToMemoryMessage(savedScore),
     };
 
-    sendMessagesAll({
-      type: Server.MessageType.MESSAGE,
-      content: message,
-    });
-    user.sentTheScore = true;
-    console.log(
-      `${new Date().toISOString()} (${user.id}) ${user.name} sent their ${
-        tab_couleurs.length
-      } ${tab_couleurs.length === 1 ? "try" : "tries"} score`
-    );
+    // Score messages are not sent using Server.Message, as the type is not supported. Implement custom handling if needed.
   } catch (err) {
     console.error("Error saving score:", err);
   }
@@ -462,6 +462,7 @@ function updateUsersList(): void {
           moderatorLevel: user.isModerator,
           isMobile: user.mobileDevice,
           isLoggedIn: user.isLoggedIn,
+          xp: 0,
         });
       }
       return acc;

@@ -8,7 +8,7 @@ import {
   DatabaseMessageType,
 } from "../services/databaseService.js";
 import store from "../store.js";
-import { Server, Client } from "@interfaces/Message.js";
+import { Server, Client } from "../../../interfaces/Message.js";
 
 export function passwordInHashArray(
   password: string,
@@ -66,31 +66,32 @@ export function mapDatabaseUserToMemoryUser(
 }
 export function mapUserMessageToMemoryMessage(
   message: DatabaseMessage
-): Server.TextChatMessageContent {
+): Server.ChatMessage.Content.UserMessageContent {
   return {
-    id: message.ID.toString(),
+    id: message.ID?.toString(),
     user: { name: message.Pseudo, moderatorLevel: message.Moderator },
     text: message.Texte,
     timestamp: message.Date,
-    imageData: message.ImageData,
+    imageData: typeof message.ImageData === 'string' ? message.ImageData : undefined,
     replyId: message.Reply?.toString(),
   };
 }
 
 export function mapScoreMessageToMemoryMessage(
   message: DatabaseMessage
-): Server.ScoreContent {
+): Server.ChatMessage.Content.ScoreMessageContent {
   return {
-    id: message.ID.toString(),
+    id: message.ID?.toString(),
     user: { name: message.Pseudo, moderatorLevel: message.Moderator },
     answer: message.Answer ?? "",
     attempts: message.Mots ? JSON.parse(message.Mots) : [],
+    timestamp: message.Date,
   };
 }
 
 export function mapDatabaseTypeToMemoryType(
   type: DatabaseMessageType
-): Server.SavedChatMessageType {
+): Server.MessageType | undefined {
   switch (type) {
     case "score":
       return Server.MessageType.SCORE;
@@ -98,18 +99,22 @@ export function mapDatabaseTypeToMemoryType(
       return Server.MessageType.ENHANCED_MESSAGE;
     case "message":
       return Server.MessageType.MAIL_ALL;
+    default:
+      return undefined;
   }
 }
 
 export function mapDatabaseMessageToMemoryMessage(
   message: DatabaseMessage
-): Server.ChatMessageContent {
+): Server.ChatMessage.Content.UserMessageContent | Server.ChatMessage.Content.ScoreMessageContent | undefined {
   switch (mapDatabaseTypeToMemoryType(message.Type)) {
     case Server.MessageType.ENHANCED_MESSAGE:
     case Server.MessageType.MAIL_ALL:
       return mapUserMessageToMemoryMessage(message);
     case Server.MessageType.SCORE:
       return mapScoreMessageToMemoryMessage(message);
+    default:
+      return undefined;
   }
 }
 

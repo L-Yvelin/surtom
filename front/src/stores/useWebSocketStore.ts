@@ -6,14 +6,14 @@ import { Client, Server } from "../../../interfaces/Message";
 interface WebSocketState {
   isConnected: boolean;
   lastMessageTimestamp: string;
-  sendMessage: (message: Client.Message, type: string) => void;
+  sendMessage: (message: Client.Message) => void;
   connect: () => void;
   disconnect: () => void;
 }
 
 export const useWebSocketStore = create<WebSocketState>((set) => {
   const { setPlayerList, setScores } = useGameStore.getState();
-  const { setMessages } = useChatStore.getState();
+  const { setMessages, addMessage } = useChatStore.getState();
   const scrollToBottom = useChatStore.getState().scrollToBottom;
 
   let ws: WebSocket | null = null;
@@ -94,7 +94,6 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
   const handleMessage = (data: Server.Message) => {
     switch (data.type) {
       case Server.MessageType.LOGIN: {
-        console.log("GOT USER!");
         break;
       }
       case Server.MessageType.STATS: {
@@ -114,34 +113,18 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
       }
       case Server.MessageType.GET_MESSAGES: {
         const getMessages = data.content;
-        setMessages(
-          getMessages.map((message) => {
-            return {
-              id: message.id ?? Math.random().toString(),
-              player: {
-                name: message.user,
-                isModerator: message.isModerator,
-                xp: 0,
-              },
-              content: {
-                text: message.text,
-                words: message.Mots,
-                answer: message.Answer,
-                attempts: message.Attempts,
-                image: message.ImageData,
-              },
-              type: message.Type,
-              deleted: message.Supprime,
-              reply: message.Reply,
-              date: message.Date,
-            };
-          })
-        );
+        setMessages(getMessages);
+        scrollToBottom?.();
+        break;
+      }
+      case Server.MessageType.MESSAGE: {
+        const message = data.content;
+        addMessage(message);
         scrollToBottom?.();
         break;
       }
       default:
-        console.warn("Unknown message type:", data.Type);
+        console.warn("Unknown message type:", data.type);
     }
   };
 

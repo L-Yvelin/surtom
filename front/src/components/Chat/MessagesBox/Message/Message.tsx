@@ -1,6 +1,6 @@
 import { JSX } from "react";
 import classes from "./Message.module.css";
-import { ChatPlayer, MessageType } from "../../Chat";
+import { Server } from "../../../../../../interfaces/Message";
 import { getPlayerColor } from "../../../../utils/Player";
 import MessageTool from "./MessageTool/MessageTool";
 import classNames from "classnames";
@@ -11,18 +11,22 @@ import MessageContextMenu from "./MessageContextMenu/MessageContextMenu";
 import useGameStore from "../../../../stores/useGameStore";
 import answerIcon from "../../../../assets/images/ui/answer.svg";
 import deleteIcon from "../../../../assets/images/ui/delete.svg";
+import {
+  isSavedChatMessage,
+  isScoreMessage,
+  isStatusMessage,
+  isUserMessage,
+  isEnhancedMessage,
+} from "../../utils";
+import { isMobile } from "react-device-detect";
 
-interface MessageProps {
-  id: string;
-  type: MessageType;
-  player: ChatPlayer;
-  text?: string;
-}
-
-const PlayerName = ({ name, isModerator }: ChatPlayer) => (
+const PlayerName = ({
+  name,
+  moderatorLevel,
+}: Pick<Server.User, "name" | "moderatorLevel">) => (
   <span
     style={{
-      color: getPlayerColor(isModerator, name),
+      color: getPlayerColor(moderatorLevel, name),
     }}
   >
     {name}
@@ -48,10 +52,12 @@ const enhancedMessageContent = (text: string): JSX.Element => {
   const createMessage = (
     text: string,
     color?: string,
-    onClickAction?: string
+    onClickAction?: string,
+    key?: number
   ) => {
     return (
       <span
+        key={key}
         style={{ color }}
         onClick={() => {
           if (onClickAction) {
@@ -63,6 +69,7 @@ const enhancedMessageContent = (text: string): JSX.Element => {
             }
           }
         }}
+        className={classNames({ [classes.clickable]: !!onClickAction })}
       >
         {text}
       </span>
@@ -71,8 +78,8 @@ const enhancedMessageContent = (text: string): JSX.Element => {
 
   return Array.isArray(parsedContent) ? (
     <>
-      {parsedContent.map((message) =>
-        createMessage(message.text, message.color, message.clickable)
+      {parsedContent.map((message, index) =>
+        createMessage(message.text, message.color, message.clickable, index)
       )}
     </>
   ) : (
@@ -84,60 +91,79 @@ const enhancedMessageContent = (text: string): JSX.Element => {
   );
 };
 
-export const MessageContent = ({
-  id,
-  type,
-  player,
-  text,
-}: MessageProps): JSX.Element => {
-  return (
-    <div className={classNames(classes.message, classes.content)} id={id}>
-      {player.name && ["message", "enhancedMessage"].includes(type) ? (
-        <span className={classes.username}>
-          &lt;
-          <PlayerName name={player.name} isModerator={player.isModerator} />
-          &gt;&nbsp;
+const MessageContent = ({
+  message,
+}: {
+  message: Server.ChatMessage.Type;
+}): JSX.Element => {
+  if (isStatusMessage(message)) {
+    return <span className={classes.text}>{message.content.text}</span>;
+  } else if (isScoreMessage(message)) {
+    return (
+      <span>
+        <PlayerName
+          name={message.content.user.name}
+          moderatorLevel={message.content.user.moderatorLevel}
+        />{" "}
+        <span className={classes.score}>
+          finit la partie en {message.content.attempts?.length} essais ! <u>(voir)</u>
         </span>
-      ) : null}
-      <span className={classes.text}>
-        {(() => {
-          switch (type) {
-            case "tellraw":
-            case "message":
-              return text;
-            case "score":
-              return (
-                <span className={classes.score}>
-                  <PlayerName
-                    name={player.name}
-                    isModerator={player.isModerator}
-                  />{" "}
-                  finit la partie en X essais ! (voir)
-                </span>
-              );
-            case "enhancedMessage":
-              return enhancedMessageContent(text ?? "");
-            default:
-              return "Unknown type";
-          }
-        })()}
       </span>
-    </div>
-  );
+    );
+  } else if (isSavedChatMessage(message)) {
+    const user = message.content.user;
+    return (
+      <>
+        {user?.name && (
+          <span className={classes.username}>
+            &lt;
+            <PlayerName name={user.name} moderatorLevel={user.moderatorLevel} />
+            &gt;&nbsp;
+          </span>
+        )}
+        {isUserMessage(message) && (
+          <>
+            <span className={classes.text}>
+              {isEnhancedMessage(message)
+                ? enhancedMessageContent(message.content.text)
+                : message.content.text}
+            </span>
+            {message.content.imageData ? (
+              <div className={classes.image}>
+                <img
+                  src={message.content.imageData}
+                  onError={(e) => e.currentTarget.remove()}
+                />
+              </div>
+            ) : null}
+          </>
+        )}
+      </>
+    );
+  } else {
+    console.log(`Unknown type: ${message}`);
+    return <></>;
+  }
 };
 
-function MessageLine({ id, type, player, text }: MessageProps): JSX.Element {
+export default function Message({
+  message,
+}: {
+  message: Server.ChatMessage.Type;
+}): JSX.Element {
   const { setAnsweringTo, focusInput } = useChatStore();
-  const myModeratorLevel = useGameStore((state) => state.player.isModerator);
+  const username = useGameStore((state) => state.player.name);
+  const myModeratorLevel = useGameStore((state) => state.player.moderatorLevel);
+
+  const { id, user } = (message as Server.ChatMessage.User).content;
 
   const handleRespond = (id: string) => {
-    console.log("Responding to message with id", id);
     setAnsweringTo(id);
     focusInput();
   };
 
   const handleDelete = (id: string) => {
-    console.log("Deleting message with id", id);
+    console.log(`Deleting message with id: ${id}`);
   };
 
   return (
@@ -145,12 +171,18 @@ function MessageLine({ id, type, player, text }: MessageProps): JSX.Element {
       menuContent={
         <MessageContextMenu
           actions={[
-            {
-              label: "Répondre",
-              icon: answerIcon,
-              onClick: () => handleRespond(id),
-            },
-            ...(myModeratorLevel > player.isModerator
+            ...(isSavedChatMessage(message)
+              ? [
+                  {
+                    label: "Répondre",
+                    icon: answerIcon,
+                    onClick: () => handleRespond(id),
+                  },
+                ]
+              : []),
+            ...((user && myModeratorLevel > user.moderatorLevel) ||
+            user.name === username ||
+            !isSavedChatMessage(message)
               ? [
                   {
                     label: "Supprimer",
@@ -164,21 +196,27 @@ function MessageLine({ id, type, player, text }: MessageProps): JSX.Element {
       }
       offset={5}
     >
-      <SwipeActions
-        direction="left"
-        onSwipeOne={() => handleRespond(id)}
-        onSwipeTwo={() => handleDelete(id)}
-      >
-        <MessageContent id={id} type={type} player={player} text={text} />
-        <div className={classes.tool}>
-          <MessageTool
-            onDelete={() => handleDelete(id)}
-            onRespond={() => handleRespond(id)}
-          />
+      {isMobile ? (
+        <SwipeActions
+          direction="left"
+          onSwipeOne={() => handleRespond(id)}
+          onSwipeTwo={() => handleDelete(id)}
+        >
+          <div className={classNames(classes.message, classes.content)} id={id}>
+            <MessageContent message={message} />
+          </div>
+          <div className={classes.tool}>
+            <MessageTool
+              onDelete={() => handleDelete(id)}
+              onRespond={() => handleRespond(id)}
+            />
+          </div>
+        </SwipeActions>
+      ) : (
+        <div className={classNames(classes.message, classes.content)} id={id}>
+          <MessageContent message={message} />
         </div>
-      </SwipeActions>
+      )}
     </CustomContextMenu>
   );
 }
-
-export default MessageLine;

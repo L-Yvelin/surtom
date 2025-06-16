@@ -1,3 +1,5 @@
+import { Server } from "../../../../interfaces/Message";
+
 export const funnyNames = [
   "Surtomien",
   "Cracotto",
@@ -59,4 +61,53 @@ export const getPlayerColor = (moderatorLevel: number) => {
     default:
       return "#000000";
   }
+};
+
+export function isUserMessage(
+  message: Server.ChatMessage.Type
+): message is Server.ChatMessage.User {
+  return (
+    message.type === Server.MessageType.MAIL_ALL ||
+    message.type === Server.MessageType.PRIVATE_MESSAGE ||
+    message.type === Server.MessageType.ENHANCED_MESSAGE
+  );
+}
+
+export function isScoreMessage(
+  message: Server.ChatMessage.Type
+): message is Server.ChatMessage.Score {
+  return message.type === Server.MessageType.SCORE;
+}
+
+export function isStatusMessage(
+  message: Server.ChatMessage.Type
+): message is Server.ChatMessage.Status {
+  return (
+    message.type === Server.MessageType.SUCCESS ||
+    message.type === Server.MessageType.ERROR
+  );
+}
+
+export function isSavedChatMessage(
+  message: Server.ChatMessage.Type
+): message is Server.ChatMessage.SavedType {
+  return isUserMessage(message) || isScoreMessage(message);
+}
+
+export function isEnhancedMessage(
+  message: Server.ChatMessage.Type
+): message is Extract<
+  Server.ChatMessage.User,
+  { type: Server.MessageType.ENHANCED_MESSAGE }
+> {
+  return message.type === Server.MessageType.ENHANCED_MESSAGE;
+}
+
+export function isMailAllMessage(
+  message: Server.ChatMessage.Type
+): message is Extract<
+  Server.ChatMessage.User,
+  { type: Server.MessageType.MAIL_ALL }
+> {
+  return message.type === Server.MessageType.MAIL_ALL;
 }

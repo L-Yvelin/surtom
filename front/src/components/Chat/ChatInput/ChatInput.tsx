@@ -1,9 +1,10 @@
 import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import classes from "./ChatInput.module.css";
-import useGameStore from "../../../stores/useGameStore";
 import useChatStore from "../../../stores/useChatStore";
 import classNames from "classnames";
-import { MessageContent } from "../MessagesBox/Message/Message";
+import { Server, Client } from "../../../../../interfaces/Message";
+import { isSavedChatMessage, isScoreMessage, isUserMessage } from "../utils";
+import { useWebSocketStore } from "../../../stores/useWebSocketStore";
 
 interface ChatInputProps {
   onSend: () => void;
@@ -11,22 +12,34 @@ interface ChatInputProps {
   display: boolean;
 }
 
+function SimpleMessage({
+  message,
+}: {
+  message: Server.ChatMessage.SavedType;
+}): JSX.Element {
+  return (
+    <div className={classes.simpleMessage}>
+      {isUserMessage(message) ? message.content.text : null}
+      {isScoreMessage(message)
+        ? `Les ${message.content.attempts} essais de ${message.content.user.name}.`
+        : null}
+    </div>
+  );
+}
+
 function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
   const keyboardRef = useRef<HTMLInputElement>(null);
   const [input, setInputValue] = useState<string>("");
-  const { player } = useGameStore();
-  const {
-    addMessage,
-    answeringTo,
-    setAnsweringTo,
-    messages,
-    focusInput,
-    setFocusInput,
-  } = useChatStore();
+  const { sendMessage: sendWebSocketMessage } = useWebSocketStore();
+  const { answeringTo, setAnsweringTo, messages, focusInput, setFocusInput } =
+    useChatStore();
 
-  const focusInputFunction = useCallback(() => {
+  const focusInputFunction = useCallback((message?: string) => {
     if (keyboardRef.current) {
       keyboardRef.current.focus();
+      if (message) {
+        setInputValue(message);
+      }
     }
   }, []);
 
@@ -47,11 +60,13 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
   function sendMessage() {
     if (input.trim()) {
       onSend();
-      addMessage({
-        content: { text: input },
-        id: Math.random().toString(),
-        player: player,
-        type: "message",
+      sendWebSocketMessage({
+        type: Client.MessageType.CHAT_MESSAGE,
+        content: {
+          text: input.trim(),
+          imageData: undefined,
+          replyId: undefined,
+        },
       });
       setInputValue("");
       focusInput();
@@ -86,18 +101,14 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
         {answeringTo &&
           (() => {
             const message = messages.find(
-              (message) => message.id === answeringTo
+              (m): m is Server.ChatMessage.SavedType =>
+                isSavedChatMessage(m) && m.content.id === answeringTo
             );
             if (message) {
               return (
                 <div className={classes.answeringMessage}>
                   ➦&nbsp;&nbsp;
-                  <MessageContent
-                    id={message.id}
-                    type={message.type}
-                    player={message.player}
-                    text={message.content.text}
-                  />
+                  <SimpleMessage message={message} />
                 </div>
               );
             } else {

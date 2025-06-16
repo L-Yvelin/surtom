@@ -1,27 +1,29 @@
 import { create } from "zustand";
-import { Message } from "../components/Chat/Chat";
+import { Server } from "../../../interfaces/Message";
 import { defaultPlayer } from "./useGameStore";
+import { isSavedChatMessage } from "../components/Chat/utils";
 
 interface ChatStore {
-  messages: Message[];
-  setMessages: (messages: Message[]) => void;
+  messages: Server.ChatMessage.Type[];
+  setMessages: (messages: Server.ChatMessage.Type[]) => void;
   answeringTo: string | null;
   setAnsweringTo: (id: string) => void;
   removeMessage: (messageId: string) => void;
-  addMessage: (message: Message) => void;
+  addMessage: (message: Server.ChatMessage.Type) => void;
   scrollToBottom: () => void;
   setScrollToBottom: (fn: () => void) => void;
-  focusInput: () => void;
+  focusInput: (message?: string) => void;
   setFocusInput: (fn: () => void) => void;
 }
 
-const defaultMessage: Message = {
-  id: "",
-  player: defaultPlayer,
+const defaultMessage: Server.ChatMessage.Type = {
+  type: Server.MessageType.MAIL_ALL,
   content: {
+    id: "1",
+    user: defaultPlayer,
     text: "En cours de chargement",
+    timestamp: new Date().toISOString(),
   },
-  type: "message",
 };
 
 const useChatStore = create<ChatStore>((set) => ({
@@ -31,7 +33,7 @@ const useChatStore = create<ChatStore>((set) => ({
   setAnsweringTo: (id) => set({ answeringTo: id }),
   removeMessage: (messageId) =>
     set((state) => ({
-      messages: state.messages?.filter((m) => m.id !== messageId) || [],
+      messages: state.messages?.filter((m) => isSavedChatMessage(m) && m.content.id !== messageId) || [],
     })),
   addMessage: (message) =>
     set((state) => ({ messages: [...(state.messages || []), message] })),

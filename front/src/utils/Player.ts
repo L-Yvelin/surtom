@@ -48,9 +48,9 @@ export const funnyNames = [
   "Chamallow",
 ];
 
-export function getPlayerColor(isModerator: number, pseudo: string): string {
-  if (isModerator) {
-    switch (isModerator) {
+export function getPlayerColor(moderatorLevel: number, pseudo: string): string {
+  if (moderatorLevel) {
+    switch (moderatorLevel) {
       case 1:
         return "rgb(155 185 244)";
       case 2:

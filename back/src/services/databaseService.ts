@@ -3,8 +3,10 @@ import { createPool, Pool } from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+const __dirname = path.resolve();
+console.log(path.resolve(__dirname, ".env"));
+
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 export interface User {
   Pseudo: string;
@@ -27,7 +29,7 @@ export interface DatabaseMessage {
   Mots?: string;
   Answer?: string;
   Attempts?: number;
-  ImageData?: Buffer;
+  ImageData?: string;
   Solution?: string;
 }
 
@@ -128,7 +130,7 @@ class DatabaseService {
     texte: string,
     moderator: boolean,
     type: string,
-    imageData?: Buffer,
+    imageData?: string,
     answerId?: number
   ): Promise<DatabaseMessage | null> {
     const [result] = await this.pool.query(
@@ -346,6 +348,13 @@ const dbConfig = {
   database: process.env.DB_DATABASE,
   charset: process.env.DB_CHARSET,
 };
+
+console.log(process.env.DB_HOST);
+console.log(process.env.DB_USER);
+console.log(process.env.DB_PASSWORD);
+console.log(process.env.DB_DATABASE);
+console.log(process.env.DB_CHARSET);
+
 
 const instance = new DatabaseService(dbConfig);
 Object.freeze(instance);

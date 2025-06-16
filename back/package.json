@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"tsc --watch\" \"node build/server.js\""
+    "dev": "concurrently \"tsc --watch\" \"node dist/back/src/server\""
   },
   "dependencies": {
     "axios": "^1.7.2",
