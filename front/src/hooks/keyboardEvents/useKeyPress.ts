@@ -13,9 +13,9 @@ const useKeyPress = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (gameFinished || event.altKey) {
+      if (gameFinished() || event.altKey) {
         shortcutsState.handleKeyDown(event);
-      } else if (!isAnyInterfaceOpen()) {
+      } else if (!isAnyInterfaceOpen() && !gameFinished()) {
         gameLogicState.handleKeyDown(event);
       }
     };

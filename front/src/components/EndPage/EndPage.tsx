@@ -1,12 +1,15 @@
 import { JSX, useMemo, useRef } from "react";
 import classes from "./EndPage.module.css";
 import classNames from "classnames";
-import { getLetterColor, LetterState } from "../Main/Game/Grid/types";
+import { getLetterColor } from "../Main/Game/Grid/types";
+import { LetterState } from "../../../../interfaces/Message";
 import useClickOutside from "../../hooks/useClickOutside";
 import Button from "../Widgets/Button/Button";
 import copyIcon from "../../assets/images/ui/copy-icon.png";
 import useGameStore from "../../stores/useGameStore";
 import useUIStore from "../../stores/useUIStore";
+import { useWebSocketStore } from "../../stores/useWebSocketStore";
+import { Client } from "../../../../interfaces/Message";
 
 interface EndPageProps {
   endPageButtonRef: React.RefObject<HTMLButtonElement | null>;
@@ -14,6 +17,7 @@ interface EndPageProps {
 
 function EndPage({ endPageButtonRef }: EndPageProps): JSX.Element {
   const tries = useGameStore((state) => state.tries);
+  const { sendMessage } = useWebSocketStore();
   const { showEndPage: display, setVisibility } = useUIStore();
 
   const endPageRef = useRef<HTMLDivElement | null>(null);
@@ -37,6 +41,13 @@ function EndPage({ endPageButtonRef }: EndPageProps): JSX.Element {
   }
 
   function shareInTchat() {
+    sendMessage({
+      type: Client.MessageType.SCORE_TO_CHAT,
+      content: {
+        attempts: tries.map((w) => w.map((l) => l.letter)),
+        custom: false,
+      },
+    });
     return;
   }
 

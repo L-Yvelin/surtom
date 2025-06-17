@@ -13,6 +13,7 @@ import Chat from "./components/Chat/Chat";
 import { useWebSocketStore } from "./stores/useWebSocketStore";
 import WebSocketPingHandler from "./utils/webSocketPingHandler";
 import twemoji from "./assets/fonts/TwemojiMozilla-Regular.ttf";
+import { TooltipProvider } from "./components/Tooltip/TooltipContext";
 
 const fontFile = new FontFace("Twemoji", `url(${twemoji})`, {
   unicodeRange:
@@ -55,28 +56,30 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
 
   return (
     <div id="root-container">
-      <Header theme={theme} />
-      <Main
-        theme={theme}
-        setTheme={setTheme}
-        tabButtonRef={tabButtonRef}
-        statsButtonRef={statsButtonRef}
-        customWordButtonRef={customWordButtonRef}
-        endPageButtonRef={endPageButtonRef}
-        chatButtonRef={chatButtonRef}
-      />
+      <TooltipProvider>
+        <Header theme={theme} />
+        <Main
+          theme={theme}
+          setTheme={setTheme}
+          tabButtonRef={tabButtonRef}
+          statsButtonRef={statsButtonRef}
+          customWordButtonRef={customWordButtonRef}
+          endPageButtonRef={endPageButtonRef}
+          chatButtonRef={chatButtonRef}
+        />
 
-      {/* Floating interfaces */}
-      <div className="windows">
-        <Chat chatButtonRef={chatButtonRef} />
-        <Stats statsButtonRef={statsButtonRef} />
-        <AchievementsStack lifeTime={4} transitionDuration={0.5} />
-        <CustomWord customWordButtonRef={customWordButtonRef} />
-        <EndPage endPageButtonRef={endPageButtonRef} />
-        <Tab tabButtonRef={tabButtonRef} />
-      </div>
+        {/* Floating interfaces */}
+        <div className="windows">
+          <Chat chatButtonRef={chatButtonRef} />
+          <Stats statsButtonRef={statsButtonRef} />
+          <AchievementsStack lifeTime={4} transitionDuration={0.5} />
+          <CustomWord customWordButtonRef={customWordButtonRef} />
+          <EndPage endPageButtonRef={endPageButtonRef} />
+          <Tab tabButtonRef={tabButtonRef} />
+        </div>
 
-      <WebSocketPingHandler />
+        <WebSocketPingHandler />
+      </TooltipProvider>
     </div>
   );
 };

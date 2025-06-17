@@ -1,16 +1,13 @@
 import { JSX } from "react";
 import classes from "./TabItem.module.css";
-import { getPlayerColor, rank } from "../../../utils/Player";
+import { getPlayerColor, rank } from "../../Chat/utils";
 import TabTools from "./TabTools/TabTools";
 import phoneIcon from "../../../assets/images/tools/phone.png";
 import computerIcon from "../../../assets/images/tools/computer.png";
+import { Server } from "../../../../../interfaces/Message";
 
 interface TabItemProps {
-  user?: {
-    name: string;
-    isModerator: number;
-    isMobile: boolean;
-  };
+  user?: Server.User;
 }
 
 function TabItem({ user }: TabItemProps): JSX.Element {
@@ -25,12 +22,14 @@ function TabItem({ user }: TabItemProps): JSX.Element {
       />
       <div
         className={classes.name}
-        style={{ color: getPlayerColor(user.isModerator, user.name) }}
+        style={{ color: getPlayerColor(user.moderatorLevel, user.name) }}
       >
         {user.name}
       </div>
-      {user.isModerator > 0 && (
-        <span className={classes.rank}>[{rank[user.isModerator] ?? "?"}]</span>
+      {Object.keys(rank).includes(`${user.moderatorLevel}`) && (
+        <span className={classes.rank}>
+          [{rank[user.moderatorLevel as keyof typeof rank] ?? "?"}]
+        </span>
       )}
       <div className={classes.tools}>
         <TabTools />

@@ -1,4 +1,10 @@
-import { LetterState, Word } from "../components/Main/Game/Grid/types";
+import { LetterState, Word } from "../../../interfaces/Message";
+import useGameStore from "../stores/useGameStore";
+
+export const gameFinished = (): boolean => {
+  const { tries } = useGameStore.getState();
+  return tries[tries.length - 1]?.every((letter) => letter.state === LetterState.Correct) || false;
+}
 
 export function isGuessValid(guess: string, solution: string): boolean {
   return guess.length === solution.length;
@@ -50,4 +56,17 @@ export function validateWord(
   }
 
   return result;
+}
+
+export function getValidatedWords(
+  guesses: string[][],
+  solution: string
+): Word[] {
+  return guesses.map((guess) => {
+    const states = validateWord(guess, solution.toUpperCase());
+    return guess.map((char, i) => ({
+      letter: char,
+      state: states[i],
+    }));
+  });
 }

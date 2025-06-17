@@ -101,11 +101,11 @@ function Tools({
         >
           <button
             className={classNames(
-              !gameFinished ? classes.disabled : undefined,
+              !gameFinished() ? classes.disabled : undefined,
               classes.tool
             )}
             ref={endPageButtonRef}
-            onClick={() => gameFinished && toggle("showEndPage")}
+            onClick={() => gameFinished() && toggle("showEndPage")}
           >
             <img
               src={tabLectern}

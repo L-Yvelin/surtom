@@ -22,6 +22,10 @@
   align-items: center;
 }
 
+.noBorder {
+  border: #4c4c4c .5px solid;
+}
+
 .cell:hover {
   background-color: #a1a1a1;
 }

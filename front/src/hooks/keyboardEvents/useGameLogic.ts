@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Achievement } from "../../components/AchievementsStack/Achievement/Achievement";
 import { AchievementIcon } from "../../components/AchievementsStack/Achievement/utils";
-import { LetterState } from "../../components/Main/Game/Grid/types";
+import { LetterState } from "../../../../interfaces/Message";
 import {
   isGuessValid,
   validateWord,
@@ -14,20 +14,23 @@ const useGameLogic = () => {
   const {
     letters,
     setLetters,
+    tries,
     addTry,
-    setGameFinished,
     solution,
     addAchievement,
+    validWords,
   } = useGameStore();
 
   const { setVisibility } = useUIStore();
   const skipFirstLetter = useRef(true);
 
   useEffect(() => {
+    if (!solution) return;
     setLetters([{ letter: solution[0], state: LetterState.Correct }]);
   }, [solution, setLetters]);
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    if (!solution) return;
     if (event.key === "Backspace") {
       if (event.ctrlKey || event.metaKey) {
         setLetters(letters.slice(0, 1));
@@ -37,13 +40,17 @@ const useGameLogic = () => {
     } else if (event.metaKey) {
       return;
     } else if (/^[a-zA-Z]$/.test(event.key)) {
-      if (event.key === solution[0] && letters.length === 1 && skipFirstLetter.current) {
+      if (
+        event.key.toUpperCase() === solution[0] &&
+        letters.length === 1 &&
+        skipFirstLetter.current
+      ) {
         skipFirstLetter.current = false;
         return;
       }
       setLetters(
         letters.length < solution.length
-          ? [...letters, { letter: event.key.toLowerCase() }]
+          ? [...letters, { letter: event.key.toUpperCase() }]
           : letters
       );
       skipFirstLetter.current = true;
@@ -53,15 +60,21 @@ const useGameLogic = () => {
   };
 
   const processGuess = () => {
-    const guess = letters.map((l) => l.letter).join("");
+    if (!solution) return;
+    const guess = letters
+      .map((l) => l.letter)
+      .join("")
+      .toUpperCase();
 
-    if (isGuessValid(guess, solution)) {
+    if (isGuessValid(guess, solution) && validWords.includes(guess)) {
       const guessColors = validateWord(guess, solution);
       const newTry = letters.map((l, i) => ({ ...l, state: guessColors[i] }));
       addTry(newTry);
 
       if (areWinningColors(guessColors)) {
         handleWin();
+      } else if (tries.length === 5) {
+        handleLoss();
       } else {
         resetLetters();
       }
@@ -78,14 +91,26 @@ const useGameLogic = () => {
 
   const handleWin = () => {
     setLetters([]);
-    setGameFinished(true);
     setVisibility("showEndPage", true);
     addAchievement(
       new Achievement("VICTOIRE !", "👏👏👏", AchievementIcon.BOOK)
     );
   };
 
+  const handleLoss = () => {
+    setLetters([]);
+    setVisibility("showEndPage", true);
+    addAchievement(
+      new Achievement(
+        "Perdu",
+        "Vous avez perdu, mais vous pouvez réessayer demain !",
+        AchievementIcon.BOOK
+      )
+    );
+  };
+
   const resetLetters = () => {
+    if (!solution) return;
     setLetters([{ letter: solution[0], state: LetterState.Correct }]);
   };
 

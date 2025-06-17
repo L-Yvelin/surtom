@@ -2,11 +2,10 @@ import { JSX } from "react";
 import classes from "./Game.module.css";
 import Grid from "./Grid/Grid";
 import useGameStore from "../../../stores/useGameStore";
-import { LetterState } from "./Grid/types";
 
 function Game(): JSX.Element {
   const { solution, tries, letters } = useGameStore();
-  const loadingWord = "CHARGEMENT";
+  const shownSolution = solution ?? "      ";
 
   function getChestLabel(length: number): string {
     if (
@@ -25,19 +24,11 @@ function Game(): JSX.Element {
     <div className={classes.coffre}>
       <div className={classes.coffreUi}>
         <p className={classes.chestLabel}>
-          {getChestLabel(solution?.length ?? loadingWord.length)}
+          {getChestLabel(shownSolution.length)}
         </p>
         <Grid
-          solution={solution ?? loadingWord}
-          tries={
-            solution
-              ? [...tries, letters]
-              : [
-                  loadingWord
-                    .split("")
-                    .map((l) => ({ letter: l, status: LetterState.Correct })),
-                ]
-          }
+          solution={shownSolution}
+          tries={[...tries, letters]}
         />
       </div>
     </div>

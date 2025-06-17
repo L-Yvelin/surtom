@@ -1,25 +1,17 @@
-export enum LetterState {
-  Miss,
-  Misplaced,
-  Correct,
-}
-
-export interface Letter {
-  letter: string;
-  state?: LetterState;
-}
-
-export type Word = Letter[];
-
-export type Tries = Word[];
+import { CSSProperties } from "react";
+import { Letter, LetterState, Word } from "../../../../../../interfaces/Message";
 
 export interface CellProps {
   letter: Letter | undefined;
+  confidential?: boolean;
+  cellSize?: CSSProperties["width"];
 }
 
 export interface RowProps {
   word: Word | null;
   size: number;
+  confidential?: boolean;
+  cellSize?: CSSProperties["width"];
 }
 
 export function getLetterColor(letter: LetterState): string {

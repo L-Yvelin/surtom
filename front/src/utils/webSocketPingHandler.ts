@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useWebSocketStore } from "../stores/useWebSocketStore";
+import { Client } from "../../../interfaces/Message";
 
 const WebSocketPingHandler = () => {
   const { isConnected, sendMessage } = useWebSocketStore();
@@ -15,7 +16,7 @@ const WebSocketPingHandler = () => {
 
     pingWorker.onmessage = () => {
       if (isConnected) {
-        sendMessage("", "ping");
+        sendMessage({type: Client.MessageType.PING});
       }
     };
 

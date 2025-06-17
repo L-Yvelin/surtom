@@ -26,7 +26,7 @@ export namespace Client {
 
   export interface ScoreContent {
     custom: boolean;
-    attempts: string[];
+    attempts: string[][];
   }
 }
 
@@ -49,14 +49,15 @@ export namespace Server {
     MAIL_ALL = "mailAll",
     ENHANCED_MESSAGE = "enhancedMessage",
     EVAL = "eval",
+    DAILY_WORDS = "dailyWords",
   }
 
   export enum SavedMessageType {
-    MAIL_ALL = 'mailAll',
-    PRIVATE_MESSAGE = 'privateMessage',
-    ENHANCED_MESSAGE = 'enhancedMessage',
-    SCORE = 'score',
-  };
+    MAIL_ALL = "mailAll",
+    PRIVATE_MESSAGE = "privateMessage",
+    ENHANCED_MESSAGE = "enhancedMessage",
+    SCORE = "score",
+  }
 
   export type Message =
     | { type: MessageType.DELETE_MESSAGE; content: number }
@@ -64,14 +65,17 @@ export namespace Server {
     | { type: MessageType.IS_TYPING; content: string }
     | { type: MessageType.LAST_TIME_MESSAGE; content: string }
     | { type: MessageType.LOG; content: string }
-    | { type: MessageType.MESSAGE; content: ChatMessage.User | ChatMessage.Score | ChatMessage.Status }
+    | {
+        type: MessageType.MESSAGE;
+        content: ChatMessage.User | ChatMessage.Score | ChatMessage.Status;
+      }
     | { type: MessageType.STATS; content: Record<`${number}`, number> }
     | { type: MessageType.LOGIN; content: LoginMessage }
     | { type: MessageType.USER_LIST; content: User[] }
     | { type: MessageType.EVAL; content: string }
     | { type: MessageType.SUCCESS; content: ChatMessage.Status }
-    | { type: MessageType.ERROR; content: ChatMessage.Status };
-
+    | { type: MessageType.ERROR; content: ChatMessage.Status }
+    | { type: MessageType.DAILY_WORDS; content: string[] };
 
   export namespace ChatMessage {
     export type Type = User | Score | Status;
@@ -80,13 +84,13 @@ export namespace Server {
     export type User =
       | { type: MessageType.MAIL_ALL; content: Content.UserMessageContent }
       | {
-        type: MessageType.PRIVATE_MESSAGE;
-        content: Content.UserMessageContent;
-      }
+          type: MessageType.PRIVATE_MESSAGE;
+          content: Content.UserMessageContent;
+        }
       | {
-        type: MessageType.ENHANCED_MESSAGE;
-        content: Content.UserMessageContent;
-      };
+          type: MessageType.ENHANCED_MESSAGE;
+          content: Content.UserMessageContent;
+        };
 
     export type Score = {
       type: MessageType.SCORE;
@@ -95,13 +99,13 @@ export namespace Server {
 
     export type Status =
       | {
-        type: MessageType.SUCCESS;
-        content: Pick<Content.UserMessageContent, "text" | "timestamp">;
-      }
+          type: MessageType.SUCCESS;
+          content: Pick<Content.UserMessageContent, "text" | "timestamp">;
+        }
       | {
-        type: MessageType.ERROR;
-        content: Pick<Content.UserMessageContent, "text" | "timestamp">;
-      };
+          type: MessageType.ERROR;
+          content: Pick<Content.UserMessageContent, "text" | "timestamp">;
+        };
 
     export namespace Content {
       export interface UserMessageContent {
@@ -117,7 +121,7 @@ export namespace Server {
         id: string;
         user: Pick<Server.User, "name" | "moderatorLevel">;
         answer: string;
-        attempts: string[];
+        attempts: string[][];
         timestamp: string;
       }
     }
@@ -142,3 +146,18 @@ export namespace Server {
     sessionHash?: string;
   }
 }
+
+export enum LetterState {
+  Miss,
+  Misplaced,
+  Correct,
+}
+
+export interface Letter {
+  letter: string;
+  state?: LetterState;
+}
+
+export type Word = Letter[];
+
+export type Tries = Word[];

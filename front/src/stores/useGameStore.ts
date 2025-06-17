@@ -1,19 +1,20 @@
-import { Server } from "../../../interfaces/Message";
+import { LetterState, Server } from "../../../interfaces/Message";
 import { AchievementProps } from "../components/AchievementsStack/Achievement/Achievement";
-import { Tries, Word } from "../components/Main/Game/Grid/types";
+import { Tries, Word } from "../../../interfaces/Message";
 import { ScoreStats } from "../components/Stats/utils";
 import { create } from "zustand";
 
 interface GameState {
-  solution: string;
+  solution: string | undefined;
   setSolution: (solution: string) => void;
+  validWords: string[];
+  setValidWords: (validWords: string[]) => void;
   tries: Tries;
   setTries: (tries: Tries) => void;
   addTry: (word: Word) => void;
   letters: Word;
+  gameFinished: () => boolean;
   setLetters: (letters: Word) => void;
-  gameFinished: boolean;
-  setGameFinished: (gameFinished: boolean) => void;
   player: Server.User;
   setPlayer: (updatedPlayer: Partial<Server.User>) => void;
   playerList: Server.User[];
@@ -32,24 +33,29 @@ interface GameState {
 export const defaultPlayer: Server.User = {
   name: "",
   isMobile: false,
-  isLoggedIn: true,
-  moderatorLevel: 3,
+  isLoggedIn: false,
+  moderatorLevel: 0,
   xp: 0,
 };
 
-const useGameStore = create<GameState>((set) => ({
-  solution: "solution",
+const useGameStore = create<GameState>((set, get) => ({
+  solution: undefined,
   setSolution: (solution) =>
     set(() => ({
       solution,
     })),
+  validWords: [],
+  setValidWords: (validWords) => set({ validWords }),
   tries: [],
   setTries: (tries) => set({ tries }),
   addTry: (word) => set((state) => ({ tries: [...(state.tries || []), word] })),
   letters: [],
+  gameFinished: () => {
+    const tries = get().tries;
+    const lastTry = tries[tries.length - 1];
+    return lastTry?.every((l) => l.state === LetterState.Correct) || false;
+  },
   setLetters: (letters) => set({ letters }),
-  gameFinished: false,
-  setGameFinished: (gameFinished) => set({ gameFinished }),
   player: defaultPlayer,
   setPlayer: (updatedPlayer) =>
     set((state) => ({
@@ -79,7 +85,7 @@ const useGameStore = create<GameState>((set) => ({
       achievements:
         state.achievements?.filter((a) => a.id !== achievementId) || [],
     })),
-  hasLoaded: true,
+  hasLoaded: false,
   setHasLoaded: (hasLoaded) => set({ hasLoaded }),
 }));
 

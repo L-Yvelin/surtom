@@ -11,37 +11,43 @@ interface WebSocketState {
   disconnect: () => void;
 }
 
+let ws: WebSocket | null = null;
+let reconnectTimer: NodeJS.Timeout | null = null;
+let isConnecting = false;
+let listenersAdded = false;
+
 export const useWebSocketStore = create<WebSocketState>((set) => {
-  const { setPlayerList, setScores } = useGameStore.getState();
+  const { setPlayerList, setPlayer, setScores, setValidWords, setSolution, setHasLoaded } =
+    useGameStore.getState();
   const { setMessages, addMessage } = useChatStore.getState();
   const scrollToBottom = useChatStore.getState().scrollToBottom;
 
-  let ws: WebSocket | null = null;
-  let reconnectTimer: NodeJS.Timeout | null = null;
+  if (!listenersAdded) {
+    window.addEventListener("beforeunload", () => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    });
 
-  window.addEventListener("beforeunload", () => {
-    if (ws && ws.OPEN) {
-      ws.close();
-    }
-  });
+    window.addEventListener("unload", () => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    });
 
-  window.addEventListener("unload", () => {
-    if (ws && ws.OPEN) {
-      ws.close();
-    }
-  });
+    listenersAdded = true;
+  }
 
   const connect = () => {
-    if (ws && ws.readyState !== WebSocket.CLOSED) {
-      console.warn(
-        "Can't connect: WebSocket is already in",
-        ws?.readyState,
-        "state."
-      );
+    if (
+      isConnecting ||
+      (ws &&
+        (ws.readyState === WebSocket.OPEN ||
+          ws.readyState === WebSocket.CONNECTING))
+    ) {
+      console.warn("WebSocket is already open or connecting.");
       return;
     }
-
-    console.warn("Connecting WebSocket...", ws?.readyState);
 
     const url = import.meta.env.VITE_WEBSOCKET_URL;
     if (!url) {
@@ -49,27 +55,32 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
       return;
     }
 
+    isConnecting = true;
+    console.warn("Connecting WebSocket...");
+
     ws = new WebSocket(url);
 
     ws.onopen = () => {
       console.warn("WebSocket connected!");
+      isConnecting = false;
       set({ isConnected: true });
     };
 
     ws.onmessage = (event) => {
       const data: Server.Message = JSON.parse(event.data);
       console.log(data);
-
       handleMessage(data);
     };
 
     ws.onerror = (error) => {
       console.error("WebSocket error:", error);
+      isConnecting = false;
       ws?.close();
     };
 
     ws.onclose = () => {
       console.warn("WebSocket connection closed!");
+      isConnecting = false;
       set({ isConnected: false });
       scheduleReconnect();
     };
@@ -83,6 +94,7 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
       ws.close();
       ws = null;
     }
+    isConnecting = false;
   };
 
   const sendMessage = (message: Client.Message) => {
@@ -93,36 +105,31 @@ export const useWebSocketStore = create<WebSocketState>((set) => {
 
   const handleMessage = (data: Server.Message) => {
     switch (data.type) {
-      case Server.MessageType.LOGIN: {
+      case Server.MessageType.LOGIN:
+        setPlayer(data.content.user);
         break;
-      }
-      case Server.MessageType.STATS: {
-        const stats = data.content;
-        setScores(stats);
+      case Server.MessageType.STATS:
+        setScores(data.content);
         break;
-      }
-      case Server.MessageType.USER_LIST: {
-        const usersList = data.content;
-        setPlayerList(usersList);
+      case Server.MessageType.USER_LIST:
+        setPlayerList(data.content);
         break;
-      }
-      case Server.MessageType.LAST_TIME_MESSAGE: {
-        const lastTimeMessage = data.content;
-        set({ lastMessageTimestamp: lastTimeMessage });
+      case Server.MessageType.LAST_TIME_MESSAGE:
+        set({ lastMessageTimestamp: data.content });
         break;
-      }
-      case Server.MessageType.GET_MESSAGES: {
-        const getMessages = data.content;
-        setMessages(getMessages);
+      case Server.MessageType.GET_MESSAGES:
+        setMessages(data.content);
         scrollToBottom?.();
         break;
-      }
-      case Server.MessageType.MESSAGE: {
-        const message = data.content;
-        addMessage(message);
+      case Server.MessageType.MESSAGE:
+        addMessage(data.content);
         scrollToBottom?.();
         break;
-      }
+      case Server.MessageType.DAILY_WORDS:
+        setSolution(data.content[data.content.length - 1]);
+        setValidWords(data.content);
+        setHasLoaded(true);
+        break;
       default:
         console.warn("Unknown message type:", data.type);
     }

@@ -1,7 +1,6 @@
 import { JSX } from "react";
 import classes from "./Message.module.css";
-import { Server } from "../../../../../../interfaces/Message";
-import { getPlayerColor } from "../../../../utils/Player";
+import { Server, Client } from "../../../../../../interfaces/Message";
 import MessageTool from "./MessageTool/MessageTool";
 import classNames from "classnames";
 import SwipeActions from "../../../Widgets/SwipeActions/SwipeActions";
@@ -16,80 +15,12 @@ import {
   isScoreMessage,
   isStatusMessage,
   isUserMessage,
-  isEnhancedMessage,
 } from "../../utils";
 import { isMobile } from "react-device-detect";
-
-const PlayerName = ({
-  name,
-  moderatorLevel,
-}: Pick<Server.User, "name" | "moderatorLevel">) => (
-  <span
-    style={{
-      color: getPlayerColor(moderatorLevel, name),
-    }}
-  >
-    {name}
-  </span>
-);
-
-const enhancedMessageContent = (text: string): JSX.Element => {
-  type enhancedMessageContent = {
-    text: string;
-    color?: string;
-    clickable?: string;
-  };
-
-  let parsedContent: enhancedMessageContent | enhancedMessageContent[];
-
-  try {
-    parsedContent = JSON.parse(text);
-  } catch (err) {
-    console.error("Error while parsing enhanced message", err);
-    return <>Unable to generate message</>;
-  }
-
-  const createMessage = (
-    text: string,
-    color?: string,
-    onClickAction?: string,
-    key?: number
-  ) => {
-    return (
-      <span
-        key={key}
-        style={{ color }}
-        onClick={() => {
-          if (onClickAction) {
-            try {
-              const action = new Function(onClickAction);
-              action();
-            } catch {
-              console.error("Error while executing action", onClickAction);
-            }
-          }
-        }}
-        className={classNames({ [classes.clickable]: !!onClickAction })}
-      >
-        {text}
-      </span>
-    );
-  };
-
-  return Array.isArray(parsedContent) ? (
-    <>
-      {parsedContent.map((message, index) =>
-        createMessage(message.text, message.color, message.clickable, index)
-      )}
-    </>
-  ) : (
-    createMessage(
-      parsedContent.text,
-      parsedContent.color,
-      parsedContent.clickable
-    )
-  );
-};
+import StatusContent from "./Content/StatusContent";
+import ScoreContent from "./Content/ScoreContent";
+import UserContent from "./Content/UserContent";
+import { useWebSocketStore } from "../../../../stores/useWebSocketStore";
 
 const MessageContent = ({
   message,
@@ -97,49 +28,16 @@ const MessageContent = ({
   message: Server.ChatMessage.Type;
 }): JSX.Element => {
   if (isStatusMessage(message)) {
-    return <span className={classes.text}>{message.content.text}</span>;
-  } else if (isScoreMessage(message)) {
-    return (
-      <span>
-        <PlayerName
-          name={message.content.user.name}
-          moderatorLevel={message.content.user.moderatorLevel}
-        />{" "}
-        <span className={classes.score}>
-          finit la partie en {message.content.attempts?.length} essais ! <u>(voir)</u>
-        </span>
-      </span>
-    );
+    return <StatusContent message={message} />;
   } else if (isSavedChatMessage(message)) {
-    const user = message.content.user;
-    return (
-      <>
-        {user?.name && (
-          <span className={classes.username}>
-            &lt;
-            <PlayerName name={user.name} moderatorLevel={user.moderatorLevel} />
-            &gt;&nbsp;
-          </span>
-        )}
-        {isUserMessage(message) && (
-          <>
-            <span className={classes.text}>
-              {isEnhancedMessage(message)
-                ? enhancedMessageContent(message.content.text)
-                : message.content.text}
-            </span>
-            {message.content.imageData ? (
-              <div className={classes.image}>
-                <img
-                  src={message.content.imageData}
-                  onError={(e) => e.currentTarget.remove()}
-                />
-              </div>
-            ) : null}
-          </>
-        )}
-      </>
-    );
+    if (isScoreMessage(message)) {
+      return <ScoreContent message={message} />;
+    } else if (isUserMessage(message)) {
+      return <UserContent message={message} />;
+    } else {
+      console.log(`Unknown type: ${message}`);
+      return <></>;
+    }
   } else {
     console.log(`Unknown type: ${message}`);
     return <></>;
@@ -152,6 +50,7 @@ export default function Message({
   message: Server.ChatMessage.Type;
 }): JSX.Element {
   const { setAnsweringTo, focusInput } = useChatStore();
+  const { sendMessage } = useWebSocketStore();
   const username = useGameStore((state) => state.player.name);
   const myModeratorLevel = useGameStore((state) => state.player.moderatorLevel);
 
@@ -163,8 +62,19 @@ export default function Message({
   };
 
   const handleDelete = (id: string) => {
+    const intId = parseInt(id);
+    sendMessage({
+      type: Client.MessageType.DELETE_MESSAGE,
+      content: intId,
+    });
     console.log(`Deleting message with id: ${id}`);
   };
+
+  const date = new Date(message.content.timestamp);
+  const timeString = date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
     <CustomContextMenu
@@ -180,9 +90,9 @@ export default function Message({
                   },
                 ]
               : []),
-            ...((user && myModeratorLevel > user.moderatorLevel) ||
-            user.name === username ||
-            !isSavedChatMessage(message)
+            ...(!isSavedChatMessage(message) ||
+            (user && myModeratorLevel > user.moderatorLevel) ||
+            user.name === username
               ? [
                   {
                     label: "Supprimer",
@@ -202,8 +112,10 @@ export default function Message({
           onSwipeOne={() => handleRespond(id)}
           onSwipeTwo={() => handleDelete(id)}
         >
-          <div className={classNames(classes.message, classes.content)} id={id}>
-            <MessageContent message={message} />
+          <div className={classNames(classes.message)} id={id}>
+            <div className={classes.content}>
+              <MessageContent message={message} />
+            </div>
           </div>
           <div className={classes.tool}>
             <MessageTool
@@ -213,8 +125,11 @@ export default function Message({
           </div>
         </SwipeActions>
       ) : (
-        <div className={classNames(classes.message, classes.content)} id={id}>
-          <MessageContent message={message} />
+        <div className={classNames(classes.message)} id={id}>
+          <div className={classes.content}>
+            <MessageContent message={message} />
+          </div>
+          <p className={classes.timestamp}>{timeString}</p>
         </div>
       )}
     </CustomContextMenu>

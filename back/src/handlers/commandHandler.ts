@@ -478,7 +478,7 @@ async function handleAddTypeCommand(
 async function handleUnknownCommand(user: FullUser): Promise<void> {
   user.connection.send(
     JSON.stringify({
-      type: Server.MessageType.ERROR,
+      type: Server.MessageType.MESSAGE,
       content: {
         type: Server.MessageType.ERROR,
         content: {

@@ -53,7 +53,7 @@ function CustomWord({ customWordButtonRef }: CustomWordProps): JSX.Element {
           pattern={"[a-zA-Z]+"}
           autoFocus
         />
-        <Button text={"Lancer la partieLancer la partieLancer la partie"} onClick={validate} />
+        <Button text={"Lancer la partie"} onClick={validate} />
         <Button
           text={"Fermer"}
           onClick={() => setVisibility("showCustomWord", false)}

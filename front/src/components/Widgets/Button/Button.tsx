@@ -32,6 +32,7 @@ function Button({
       onClick={handleOnClick}
     >
       <Marquee text={text} className={classes.text} />
+      {/* {text} */}
     </button>
   );
 }

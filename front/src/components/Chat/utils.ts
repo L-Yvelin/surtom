@@ -50,18 +50,24 @@ export const rank = {
   3: "👑",
 };
 
-export const getPlayerColor = (moderatorLevel: number) => {
-  switch (moderatorLevel) {
-    case 1:
-      return "#ff0000";
-    case 2:
-      return "#ff00ff";
-    case 3:
-      return "#ff0000";
-    default:
-      return "#000000";
+export function getPlayerColor(moderatorLevel: number, pseudo: string): string {
+  if (moderatorLevel) {
+    switch (moderatorLevel) {
+      case 1:
+        return "rgb(155 185 244)";
+      case 2:
+        return "rgb(150 40 150)";
+      case 3:
+        return "rgb(240, 75, 75)";
+      default:
+        return "rgb(255, 255, 134)";
+    }
+  } else if (funnyNames.includes(pseudo)) {
+    return "white";
+  } else {
+    return "rgb(255, 255, 134)";
   }
-};
+}
 
 export function isUserMessage(
   message: Server.ChatMessage.Type
@@ -71,6 +77,12 @@ export function isUserMessage(
     message.type === Server.MessageType.PRIVATE_MESSAGE ||
     message.type === Server.MessageType.ENHANCED_MESSAGE
   );
+}
+
+export function isPrivateMessage(
+  message: Server.ChatMessage.Type
+): message is Server.ChatMessage.User {
+  return message.type === Server.MessageType.PRIVATE_MESSAGE;
 }
 
 export function isScoreMessage(
@@ -91,7 +103,7 @@ export function isStatusMessage(
 export function isSavedChatMessage(
   message: Server.ChatMessage.Type
 ): message is Server.ChatMessage.SavedType {
-  return isUserMessage(message) || isScoreMessage(message);
+  return isUserMessage(message) || isScoreMessage(message) || isEnhancedMessage(message);
 }
 
 export function isEnhancedMessage(
@@ -110,4 +122,25 @@ export function isMailAllMessage(
   { type: Server.MessageType.MAIL_ALL }
 > {
   return message.type === Server.MessageType.MAIL_ALL;
+}
+
+type URL = `https://${string}.${
+  | "jpg"
+  | "jpeg"
+  | "png"
+  | "webp"
+  | "avif"
+  | "gif"
+  | "svg"}${`?${string}` | ""}`;
+export function extractImageUrls(text: string): URL[] {
+  const urlRegex =
+    /https:\/\/[^\s]+?\.(jpg|jpeg|png|webp|avif|gif|svg)(\?[^\s]*)?/g;
+  const matches = text.match(urlRegex);
+  return matches ? (matches as URL[]) : [];
+}
+
+export function extractUrls(text: string): string[] {
+  const urlRegex = /https?:\/\/[^\s]+/g;
+  const matches = text.match(urlRegex);
+  return matches ? matches : [];
 }

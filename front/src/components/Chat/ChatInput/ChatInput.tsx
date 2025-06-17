@@ -21,7 +21,7 @@ function SimpleMessage({
     <div className={classes.simpleMessage}>
       {isUserMessage(message) ? message.content.text : null}
       {isScoreMessage(message)
-        ? `Les ${message.content.attempts} essais de ${message.content.user.name}.`
+        ? `Les ${message.content.attempts?.length} essais de ${message.content.user.name}.`
         : null}
     </div>
   );
@@ -39,6 +39,10 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
       keyboardRef.current.focus();
       if (message) {
         setInputValue(message);
+        keyboardRef.current.setSelectionRange(
+          keyboardRef.current.value.length,
+          keyboardRef.current.value.length
+        );
       }
     }
   }, []);

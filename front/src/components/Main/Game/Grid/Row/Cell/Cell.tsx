@@ -4,14 +4,14 @@ import { getClassForState } from "../../utils";
 import classes from "./Cell.module.css";
 import classNames from "classnames";
 
-function Cell({ letter }: CellProps): JSX.Element {
+function Cell({ letter, confidential, cellSize }: CellProps): JSX.Element {
   const letterStateClass = letter
     ? getClassForState(letter.state)
     : classes.empty;
   return (
     <td className={classes.td}>
-      <div className={classNames(classes.cell, letterStateClass)}>
-        {letter ? letter.letter : ""}
+      <div className={classNames(classes.cell, letterStateClass, { [classes.noBorder]: cellSize })} style={{ width: cellSize, height: cellSize, fontSize: cellSize }}>
+        {letter && !confidential ? letter.letter : ""}
       </div>
     </td>
   );

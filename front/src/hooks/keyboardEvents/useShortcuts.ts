@@ -24,7 +24,7 @@ const useShortcuts = () => {
         setVisibility("showChat", true);
         break;
       case "t":
-        if (gameFinished) {
+        if (gameFinished()) {
           setVisibility("showChat", true);
           event.preventDefault();
         }

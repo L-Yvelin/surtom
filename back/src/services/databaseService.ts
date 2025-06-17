@@ -67,6 +67,15 @@ class DatabaseService {
     return results.length ? results[0].MotMinecraft : null;
   }
 
+  async getValidWords(word: string): Promise<string[]> {
+    const [results] = await this.pool.query(`
+      SELECT MotValide
+      FROM MotValideCombine
+      WHERE MotValide LIKE "${word[0] + "_".repeat(word.length - 1)}";`);
+
+    return (results as any[]).map((row) => row.MotValide);
+  }
+
   async getMessages(
     includeDeleted = false,
     max = 200,
@@ -354,7 +363,6 @@ console.log(process.env.DB_USER);
 console.log(process.env.DB_PASSWORD);
 console.log(process.env.DB_DATABASE);
 console.log(process.env.DB_CHARSET);
-
 
 const instance = new DatabaseService(dbConfig);
 Object.freeze(instance);

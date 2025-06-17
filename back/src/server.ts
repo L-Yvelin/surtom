@@ -56,8 +56,8 @@ wss.on("connection", async (connection, req) => {
 
     const user = new FullUser(
       generateRandomHash(),
-      sessionUser?.name || getRandomFunnyName(),
-      sessionUser?.isModerator || 0,
+      sessionUser?.name ?? getRandomFunnyName(),
+      sessionUser?.isModerator ?? 0,
       connection,
       ip,
       sessionUser ? true : false,
@@ -181,6 +181,20 @@ function initializeConnection(user: FullUser): void {
     .catch((err) => {
       console.error("Error getting last message timestamp:", err);
     });
+
+  databaseService.getTodaysWord().then((word) => {
+    if (word) {
+      databaseService.getValidWords(word.toUpperCase()).then((validWords) => {
+        const message: Server.Message = {
+          type: Server.MessageType.DAILY_WORDS,
+          content: [...(validWords.map(w => w.toUpperCase())), word.toUpperCase()],
+        };
+        user.connection.send(JSON.stringify(message));
+      });
+    } else {
+      console.error("No word found for today");
+    }
+  });
 }
 
 function logMessage(message: string, user: FullUser): void {
@@ -326,7 +340,7 @@ async function handleMailAll(
   }
 }
 
-async function handleScoreToChat(user: FullUser, content: any): Promise<void> {
+async function handleScoreToChat(user: FullUser, content: Client.ScoreContent): Promise<void> {
   if (user.sentTheScore) return;
 
   const { tab_couleurs, liste_mots } = content;
@@ -366,7 +380,10 @@ async function handleScoreToChat(user: FullUser, content: any): Promise<void> {
       content: mapScoreMessageToMemoryMessage(savedScore),
     };
 
-    // Score messages are not sent using Server.Message, as the type is not supported. Implement custom handling if needed.
+    sendMessagesAll({
+      type: Server.MessageType.MESSAGE,
+      content: message,
+    } as Server.Message);
   } catch (err) {
     console.error("Error saving score:", err);
   }

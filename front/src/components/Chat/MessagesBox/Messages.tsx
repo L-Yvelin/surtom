@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useRef } from "react";
+import { JSX, useCallback, useEffect, useRef, useMemo } from "react";
 import { Server } from "../../../../../interfaces/Message";
 import Message from "./Message/Message";
 import classes from "./Messages.module.css";
@@ -23,60 +23,64 @@ function MessagesBox({ messages }: MessagesBoxProps): JSX.Element {
     setScrollToBottom(scrollToBottomFunction);
   }, [setScrollToBottom, scrollToBottomFunction]);
 
-  function getMessageId(
-    message: Server.ChatMessage.Type,
-    rand: number
-  ): string {
-    const messageHash = Math.abs(
-      Array.from(JSON.stringify(message)).reduce(
-        (hash, char) => (hash << 5) - hash + char.charCodeAt(0),
-        0
-      )
-    );
-    return `${messageHash}-${rand}`;
-  }
+  const elements = useMemo(() => {
+    let lastDate: string | null = null;
 
-  let lastDate: string | null = null;
+    return messages
+      .toReversed()
+      .map((message, index) => {
+        const stringified = JSON.stringify(message);
+        const hash = Math.abs(
+          Array.from(stringified).reduce(
+            (hash, char) => (hash << 5) - hash + char.charCodeAt(0),
+            0
+          )
+        );
+        const messageId = `${hash}-${index}`;
 
-  const elements = messages
-    .toReversed()
-    .reduce<JSX.Element[]>((acc, message, index) => {
-      acc.push(
-        <div
-          data-key={getMessageId(message, index)}
-          key={getMessageId(message, index)}
-          {...("id" in message.content && { "data-id": message.content.id })}
-        >
-          <Message message={message} />
-        </div>
-      );
+        const blocks: JSX.Element[] = [];
 
-      if ("timestamp" in message.content) {
-        const messageDate = new Date(
-          message.content.timestamp
-        ).toLocaleDateString("fr", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        });
-        if (messageDate !== lastDate) {
-          acc.push(
-            <div
-              data-key={`date-${getMessageId(message, index)}`}
-              key={`date-${getMessageId(message, index)}`}
-              className={classes.date}
-            >
-              <span className={classes.dateLeftBar}></span>
-              {messageDate}
-              <span className={classes.dateRightBar}></span>
-            </div>
-          );
+        if ("timestamp" in message.content) {
+          const messageDate = new Date(
+            message.content.timestamp
+          ).toLocaleDateString("fr", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+          if (lastDate && messageDate !== lastDate) {
+            blocks.push(
+              <div
+                data-key={`date-${messageId}`}
+                key={`date-${messageId}`}
+                className={classes.date}
+              >
+                <span className={classes.dateLeftBar}></span>
+                {messageDate}
+                <span className={classes.dateRightBar}></span>
+              </div>
+            );
+          }
+
           lastDate = messageDate;
         }
-      }
-      return acc;
-    }, []);
+
+        blocks.push(
+          <div
+            data-key={messageId}
+            key={messageId}
+            {...("id" in message.content && { "data-id": message.content.id })}
+          >
+            <Message message={message} />
+          </div>
+        );
+
+        return blocks;
+      })
+      .flat();
+  }, [messages]);
 
   return (
     <div ref={containerRef} className={classes.messages}>
