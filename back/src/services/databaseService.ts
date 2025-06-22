@@ -1,45 +1,56 @@
 import path from "path";
-import { createPool, Pool } from "mysql2/promise";
+import { createPool, Pool, RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import { Client, Server } from "interfaces/Message.js";
 
-const __dirname = path.resolve();
-console.log(path.resolve(__dirname, ".env"));
+const dirname = path.resolve();
+dotenv.config({ path: path.resolve(dirname, ".env") });
 
-dotenv.config({ path: path.resolve(__dirname, ".env") });
-
-export interface User {
-  Pseudo: string;
-  MotDePasse: string;
-  Admin: number;
-  HashSession?: string;
-  banned?: number;
+export interface Player {
+  id: number;
+  username: string;
+  password: string;
+  sessionHash?: string;
+  registrationDate: Date;
+  isAdmin: number;
+  isBanned: number;
 }
 
-export interface DatabaseMessage {
+interface MessageRow {
   ID: number;
-  Pseudo: string;
-  Texte: string;
-  Moderator: number;
-  Type: DatabaseMessageType;
-  Reply?: number;
-  Date: string;
-  Supprime?: number;
-  Couleurs?: string;
-  Mots?: string;
-  Answer?: string;
-  Attempts?: number;
-  ImageData?: string;
-  Solution?: string;
+  Username: string;
+  Timestamp: string | Date;
+  Type: string;
+  Text: string | null;
+  ImageData?: string | null;
+  ReplyID?: number | null;
+  Answer?: string | null;
+  Attempts?: string | null;
+  IsCustom?: number | null;
+  IsAdmin?: number;
+  Deleted?: number | null;
 }
 
-export type DatabaseMessageType = "message" | "score" | "enhancedMessage";
+interface PlayerRow {
+  ID: number;
+  Username: string;
+  Password: string;
+  SessionHash?: string | null;
+  RegistrationDate: string | Date;
+  IsAdmin: number;
+  IsBanned: number;
+}
+
+interface ScoreContentRow {
+  Attempts: string;
+}
 
 class DatabaseService {
   private pool!: Pool;
   private static instance: DatabaseService;
 
-  constructor(dbConfig: any) {
+  constructor(dbConfig: Record<string, unknown>) {
     if (!DatabaseService.instance) {
       this.pool = createPool(dbConfig);
       DatabaseService.instance = this;
@@ -48,15 +59,8 @@ class DatabaseService {
     return DatabaseService.instance;
   }
 
-  async getLastMessageId(): Promise<number | null> {
-    const [results]: [any[], any] = await this.pool.query(
-      "SELECT ID FROM Messages ORDER BY Date DESC LIMIT 1"
-    );
-    return results.length ? results[0].ID : null;
-  }
-
   async getTodaysWord(): Promise<string | null> {
-    const [results]: [any[], any] = await this.pool.query(`
+    const [results] = await this.pool.query<RowDataPacket[]>(`
       SELECT m.MotMinecraft
       FROM MotMinecraft m, WordHistory w
       WHERE DATE(w.AssignedDate) = CURDATE()
@@ -64,289 +68,339 @@ class DatabaseService {
       ORDER BY w.AssignedDate DESC
       LIMIT 1;
     `);
-    return results.length ? results[0].MotMinecraft : null;
+    return results.length ? (results[0] as { MotMinecraft: string }).MotMinecraft : null;
   }
 
   async getValidWords(word: string): Promise<string[]> {
-    const [results] = await this.pool.query(`
+    const [results] = await this.pool.query<RowDataPacket[]>(`
       SELECT MotValide
       FROM MotValideCombine
       WHERE MotValide LIKE "${word[0] + "_".repeat(word.length - 1)}";`);
-
-    return (results as any[]).map((row) => row.MotValide);
+    return results.map((row) => (row as { MotValide: string }).MotValide);
   }
 
   async getMessages(
     includeDeleted = false,
     max = 200,
     showHelp = false
-  ): Promise<DatabaseMessage[]> {
-    const whereClause = includeDeleted ? "" : "WHERE m.Supprime != ?";
-    const queryParams = includeDeleted ? [] : ["1"];
+  ): Promise<Server.ChatMessage.SavedType[]> {
+    const whereClause = includeDeleted ? "" : "WHERE m.Deleted IS NULL OR m.Deleted = 0";
     const query = `
       SELECT
-      m.*,
-      sd.Couleurs,
-      sd.Mots,
-      sd.Answer,
-      sd.Attempts,
-      mi.ImageData
-      FROM Messages m
-      LEFT JOIN ScoreData sd ON m.ID = sd.MessageID
-      LEFT JOIN MessageImages mi ON m.ID = mi.MessageID
+        m.ID,
+        p.Username,
+        m.Timestamp,
+        m.Type,
+        tc.Text,
+        tc.ImageData,
+        tc.ReplyID,
+        sc.Answer,
+        sc.Attempts,
+        sc.IsCustom,
+        p.IsAdmin,
+        m.Deleted
+      FROM Message m
+      JOIN Player p ON m.PlayerID = p.ID
+      LEFT JOIN TextContent tc ON m.ID = tc.ID
+      LEFT JOIN ScoreContent sc ON m.ID = sc.ID
       ${whereClause}
-      ORDER BY m.Date DESC
+      ORDER BY m.Timestamp DESC
       LIMIT ?;
     `;
-
-    const [results] = await this.pool.query(query, [...queryParams, max]);
-
+    const [results] = await this.pool.query<RowDataPacket[]>(query, [max]);
+    const messages = (results as MessageRow[]).map((row) => this.mapMessage(row));
     if (showHelp) {
-      const helpMessage = this.getHelpMessage();
-      (results as any[]).unshift(helpMessage);
+      messages.unshift(this.getHelpMessage());
     }
-
-    return this.mapScoreData(results as any[]).reverse();
+    return messages.reverse();
   }
 
-  getHelpMessage(): DatabaseMessage {
+  async getMessageById(
+    id: number
+  ): Promise<Server.ChatMessage.SavedType | null> {
+    const [results] = await this.pool.query<RowDataPacket[]>(
+      "SELECT m.ID, p.Username, m.Timestamp, m.Type, tc.Text, tc.ImageData, tc.ReplyID, sc.Answer, sc.Attempts, sc.IsCustom, p.IsAdmin, m.Deleted FROM Message m JOIN Player p ON m.PlayerID = p.ID LEFT JOIN TextContent tc ON m.ID = tc.ID LEFT JOIN ScoreContent sc ON m.ID = sc.ID WHERE m.ID = ?",
+      [id]
+    );
+    return (results as MessageRow[]).length
+      ? this.mapMessage((results as MessageRow[])[0])
+      : null;
+  }
+
+  private mapMessage(row: MessageRow): Server.ChatMessage.SavedType {
+    const baseContent: Server.ChatMessage.Content.BaseMessageContent = {
+      id: row.ID.toString(),
+      user: {
+        name: row.Username,
+        moderatorLevel: row.IsAdmin ?? 0,
+      },
+      timestamp: new Date(row.Timestamp).toISOString(),
+      deleted: row.Deleted ?? 0,
+    };
+    if (row.Type === "SCORE") {
+      return {
+        type: Server.MessageType.SCORE,
+        content: {
+          ...baseContent,
+          answer: row.Answer ?? "",
+          attempts: row.Attempts ? JSON.parse(row.Attempts) : [],
+        },
+      };
+    } else {
+      const messageType =
+        row.Type === "ENHANCED_MESSAGE"
+          ? Server.MessageType.ENHANCED_MESSAGE
+          : row.Type === "MAIL_ALL"
+          ? Server.MessageType.MAIL_ALL
+          : Server.MessageType.PRIVATE_MESSAGE;
+      return {
+        type: messageType,
+        content: {
+          ...baseContent,
+          text: row.Text ?? "",
+          imageData: row.ImageData || undefined,
+          replyId: row.ReplyID ? row.ReplyID.toString() : undefined,
+        },
+      };
+    }
+  }
+
+  getHelpMessage(): Server.ChatMessage.SavedType {
     return {
-      Texte:
-        '[{"text":"Faites ","color":"LemonChiffon"},{"text":"/help","color":"DarkKhaki","clickable":"toggleChat(\'\');toggleChat(\'/help\')"},{"text":" pour plus d\'information","color":"LemonChiffon"}]',
-      Type: "enhancedMessage",
-      Date: new Date().toISOString(),
-    } as DatabaseMessage;
-  }
-
-  mapScoreData(results: any[]): DatabaseMessage[] {
-    return results.map((row) => {
-      if (row.Type === "score") {
-        return {
-          ...row,
-          Texte: JSON.stringify({
-            couleurs: row.Couleurs ? JSON.parse(row.Couleurs) : [],
-            mots: row.Mots ? JSON.parse(row.Mots) : [],
-            attempts: row.Attempts || 0,
-          }),
-        };
-      }
-      return row;
-    });
-  }
-
-  async saveMessage(
-    pseudo: string,
-    texte: string,
-    moderator: boolean,
-    type: string,
-    imageData?: string,
-    answerId?: number
-  ): Promise<DatabaseMessage | null> {
-    const [result] = await this.pool.query(
-      "INSERT INTO Messages (Pseudo, Texte, Moderator, Type, Reply) VALUES (?, ?, ?, ?, ?)",
-      [pseudo, type !== "score" ? texte : "", moderator, type, answerId]
-    );
-
-    const messageId = (result as any).insertId;
-
-    if (type === "score") {
-      await this.saveScoreData(messageId, texte);
-    }
-
-    if (imageData) {
-      await this.pool.query(
-        "INSERT INTO MessageImages (MessageID, ImageData) VALUES (?, ?)",
-        [messageId, imageData]
-      );
-    }
-
-    return this.getMessageById(messageId);
-  }
-
-  async saveScoreData(messageId: number, texte: string): Promise<void> {
-    let couleurs: any[] = [];
-    let motsData: any[] = [];
-    let solution = await this.getTodaysWord();
-    let attempts = 0;
-
-    try {
-      const parsedTexte = JSON.parse(texte);
-      couleurs = parsedTexte.couleurs || [];
-      motsData = parsedTexte.mots || [];
-      attempts = motsData.length || 0;
-    } catch (parseErr) {
-      console.error("Error parsing texte for ScoreData:", parseErr);
-    }
-
-    await this.pool.query(
-      "INSERT INTO ScoreData (MessageID, Couleurs, Mots, Answer, Attempts) VALUES (?, ?, ?, ?, ?)",
-      [
-        messageId,
-        JSON.stringify(couleurs),
-        JSON.stringify(motsData),
-        solution,
-        attempts,
-      ]
-    );
-  }
-
-  async getMessageById(messageId: number): Promise<DatabaseMessage | null> {
-    const [rows]: [any[], any] = await this.pool.query(
-      `
-      SELECT
-      m.*,
-      sd.Couleurs,
-      sd.Mots,
-      sd.Answer,
-      sd.Attempts,
-      mi.ImageData
-      FROM Messages m
-      LEFT JOIN ScoreData sd ON m.ID = sd.MessageID
-      LEFT JOIN MessageImages mi ON m.ID = mi.MessageID
-      WHERE m.ID = ?;
-    `,
-      [messageId]
-    );
-
-    if (rows.length === 0) {
-      return null;
-    }
-
-    const row = rows[0];
-    return {
-      ...row,
-      Texte:
-        row.Type === "score"
-          ? JSON.stringify({
-              couleurs: row.Couleurs ? JSON.parse(row.Couleurs) : [],
-              mots: row.Mots ? JSON.parse(row.Mots) : [],
-              attempts: row.Attempts || null,
-            })
-          : row.Texte,
+      type: Server.MessageType.ENHANCED_MESSAGE,
+      content: {
+        id: "0",
+        user: { name: "System", moderatorLevel: 2 },
+        text: '[{"text":"Faites ","color":"LemonChiffon"},{"text":"/help","color":"DarkKhaki","clickable":"toggleChat(\'\');toggleChat(\'/help\')"},{"text":" pour plus d\'information","color":"LemonChiffon"}]',
+        timestamp: new Date().toISOString(),
+        deleted: 0,
+      },
     };
   }
 
-  async deleteMessage(
-    messageId: number,
-    permissionLevel = 1
-  ): Promise<boolean> {
-    const [result]: [any[], any] = await this.pool.query(
-      "UPDATE Messages SET Supprime = ? WHERE ID = ?",
-      [permissionLevel, messageId]
+  async saveMessage(
+    user: Server.PrivateUser,
+    message: Client.ChatMessage
+  ): Promise<Server.Message> {
+    const player = await this.getPlayerByName(user.name);
+    if (!player) throw new Error("Player not found");
+
+    const timestamp = new Date();
+    const [messageResult] = await this.pool.query<ResultSetHeader>(
+      "INSERT INTO Message (PlayerID, Timestamp, Type) VALUES (?, ?, ?)",
+      [player.id, timestamp, this.mapMessageType(message.type)]
     );
-    return (result as any).affectedRows > 0;
+
+    const messageId = messageResult.insertId;
+
+    switch (message.type) {
+      case Client.MessageType.SCORE_TO_CHAT: {
+        const { custom, attempts } = message.content;
+        await this.pool.query(
+          "INSERT INTO ScoreContent (ID, Answer, Attempts, IsCustom) VALUES (?, ?, ?, ?)",
+          [
+            messageId,
+            message.content.custom ? message.content.custom : (await this.getTodaysWord()),
+            JSON.stringify(attempts),
+            !!custom,
+          ]
+        );
+
+        return {
+          type: Server.MessageType.MESSAGE,
+          content: {
+            type: Server.MessageType.SCORE,
+            content: {
+              id: messageId.toString(),
+              answer: (await this.getTodaysWord()) ?? "",
+              attempts: attempts,
+              timestamp: timestamp.toISOString(),
+              user: {
+                name: user.name,
+                moderatorLevel: user.moderatorLevel,
+              },
+              deleted: 0,
+            },
+          },
+        };
+      }
+      case Client.MessageType.CHAT_MESSAGE: {
+        const { text, imageData, replyId } = message.content;
+        await this.pool.query(
+          "INSERT INTO TextContent (ID, Text, ImageData, ReplyID) VALUES (?, ?, ?, ?)",
+          [
+            messageId,
+            text,
+            imageData || null,
+            replyId ? parseInt(replyId) : null,
+          ]
+        );
+
+        return {
+          type: Server.MessageType.MESSAGE,
+          content: {
+            type: Server.MessageType.MAIL_ALL,
+            content: {
+              id: messageId.toString(),
+              text: text,
+              timestamp: timestamp.toISOString(),
+              user: {
+                name: user.name,
+                moderatorLevel: user.moderatorLevel,
+              },
+              imageData: imageData,
+              replyId: replyId,
+              deleted: 0,
+            },
+          },
+        };
+      }
+      default:
+        throw new Error("Unsupported message type");
+    }
+  }
+
+  private mapMessageType(
+    clientType: Client.MessageType
+  ): string {
+    switch (clientType) {
+      case Client.MessageType.SCORE_TO_CHAT:
+        return "SCORE";
+      case Client.MessageType.CHAT_MESSAGE:
+      default:
+        return "MAIL_ALL";
+    }
+  }
+
+  async toggleMessage(
+    messageId: number,
+    user: Server.PrivateUser
+  ): Promise<boolean> {
+    const message = await this.getMessageById(messageId);
+    if (!message) return false;
+
+    if (
+      user.moderatorLevel < message.content.deleted &&
+      message.content.user.name === user.name
+    )
+      return false;
+
+    const newDeletedStatus = message.content.deleted ? 0 : user.moderatorLevel;
+
+    const [result] = await this.pool.query<ResultSetHeader>(
+      "UPDATE Message SET Deleted = ? WHERE ID = ?",
+      [newDeletedStatus, messageId]
+    );
+    return result.affectedRows > 0;
   }
 
   async getLastMessageTimestamp(): Promise<string | null> {
-    const [results]: [any[], any] = await this.pool.query(
-      "SELECT Date FROM Messages ORDER BY Date DESC LIMIT 1"
+    const [results] = await this.pool.query<RowDataPacket[]>(
+      "SELECT Timestamp FROM Message ORDER BY Timestamp DESC LIMIT 1"
     );
-    return results.length ? results[0].Date : null;
+    return results.length ? (results[0] as { Timestamp: string }).Timestamp : null;
   }
 
-  async getUserWithSessionHash(hash: string): Promise<User | null> {
-    const [results]: [any[], any] = await this.pool.query(
-      "SELECT * FROM Surtomien WHERE hashSession = ?",
+  async getPlayerBySessionHash(hash: string): Promise<Player | null> {
+    const [results] = await this.pool.query<RowDataPacket[]>(
+      "SELECT * FROM Player WHERE SessionHash = ?",
       [hash]
     );
-    return results.length ? (results[0] as User) : null;
+    return results.length ? this.mapPlayer(results[0] as PlayerRow) : null;
   }
 
-  async getUser(pseudo: string): Promise<User | null> {
-    const [results]: [any[], any] = await this.pool.query(
-      "SELECT * FROM Surtomien WHERE Pseudo = ?",
-      [pseudo]
+  async getPlayerByName(username: string): Promise<Player | null> {
+    const [results] = await this.pool.query<RowDataPacket[]>(
+      "SELECT * FROM Player WHERE Username = ?",
+      [username]
     );
-    return results.length ? results[0] : null;
+    return results.length ? this.mapPlayer(results[0] as PlayerRow) : null;
   }
 
-  async registerUser(pseudo: string, password: string): Promise<void> {
-    const existingUser = await this.getUser(pseudo);
-    if (existingUser) {
+  private mapPlayer(row: PlayerRow): Player {
+    return {
+      id: row.ID,
+      username: row.Username,
+      password: row.Password,
+      sessionHash: row.SessionHash || undefined,
+      registrationDate: new Date(row.RegistrationDate),
+      isAdmin: row.IsAdmin,
+      isBanned: row.IsBanned,
+    };
+  }
+
+  async registerPlayer(username: string, password: string): Promise<void> {
+    const existingPlayer = await this.getPlayerByName(username);
+    if (existingPlayer) {
       throw new Error("Oups, pseudo déjà pris.");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     await this.pool.query(
-      "INSERT INTO Surtomien (Pseudo, MotDePasse) VALUES (?, ?)",
-      [pseudo, hashedPassword]
+      "INSERT INTO Player (Username, Password) VALUES (?, ?)",
+      [username, hashedPassword]
     );
   }
 
-  async loginUser(pseudo: string, password: string): Promise<User> {
-    const user = await this.getUser(pseudo);
-    if (!user) {
+  async loginPlayer(username: string, password: string): Promise<Player> {
+    const player = await this.getPlayerByName(username);
+    if (!player) {
       throw new Error("Utilisateur inconnu au bataillon...");
     }
 
-    const match = await bcrypt.compare(password, user.MotDePasse);
+    const match = await bcrypt.compare(password, player.password);
     if (!match) {
       throw new Error("Mot de passe invalide !");
     }
 
-    return user;
+    return player;
   }
 
-  async storeSessionHash(pseudo: string, sessionHash: string): Promise<void> {
-    await this.pool.query(
-      "UPDATE Surtomien SET hashSession = ? WHERE Pseudo = ?",
-      [sessionHash, pseudo]
-    );
+  async storeSessionHash(playerId: number, sessionHash: string): Promise<void> {
+    await this.pool.query("UPDATE Player SET SessionHash = ? WHERE ID = ?", [
+      sessionHash,
+      playerId,
+    ]);
   }
 
   async getScoreDistribution(
-    pseudo: string
+    username: string
   ): Promise<{ [key: number]: number }> {
-    const [results]: [any[], any] = await this.pool.query(
+    const [results] = await this.pool.query<RowDataPacket[]>(
       `
-      SELECT sd.Attempts
-      FROM ScoreData sd
-      JOIN Messages m ON sd.MessageID = m.ID
-      WHERE m.Type = 'score' AND m.Pseudo = ?
-      GROUP BY DATE(m.Date)
-      HAVING MIN(m.Date)
+      SELECT sc.Attempts
+      FROM ScoreContent sc
+      JOIN Message m ON sc.ID = m.ID
+      JOIN Player p ON m.PlayerID = p.ID
+      WHERE m.Type = 'SCORE' AND p.Username = ?
+      GROUP BY DATE(m.Timestamp)
+      HAVING MIN(m.Timestamp)
     `,
-      [pseudo]
+      [username]
     );
 
     return results.reduce((acc, row) => {
-      const attempts = row.Attempts || 0;
-      if (!acc[attempts]) {
-        acc[attempts] = 1;
-      } else {
-        acc[attempts]++;
-      }
+      const attempts = JSON.parse((row as ScoreContentRow).Attempts).length;
+      acc[attempts] = (acc[attempts] || 0) + 1;
       return acc;
-    }, {});
+    }, {} as Record<number, number>);
   }
 
-  async getDailyScore(pseudo: string): Promise<string[]> {
-    const [results]: [any[], any] = await this.pool.query(
+  async getDailyScore(username: string): Promise<string[][]> {
+    const [results] = await this.pool.query<RowDataPacket[]>(
       `
-      SELECT
-      m.Texte,
-      sd.Mots
-      FROM Messages m
-      LEFT JOIN ScoreData sd ON m.ID = sd.MessageID
-      WHERE m.Type = 'score'
-      AND m.Pseudo = ?
-      AND DATE(m.Date) = CURDATE();
+      SELECT sc.Attempts
+      FROM ScoreContent sc
+      JOIN Message m ON sc.ID = m.ID
+      JOIN Player p ON m.PlayerID = p.ID
+      WHERE m.Type = 'SCORE'
+      AND p.Username = ?
+      AND DATE(m.Timestamp) = CURDATE();
     `,
-      [pseudo]
+      [username]
     );
 
-    if (results.length > 0) {
-      const row = results[0];
-      try {
-        if (row.Mots) {
-          return JSON.parse(row.Mots);
-        }
-      } catch (parseErr) {
-        console.error("Error parsing Mots from database:", parseErr);
-      }
-    }
-
-    return [];
+    return results.length > 0 ? JSON.parse((results[0] as ScoreContentRow).Attempts) : [];
   }
 }
 
@@ -357,12 +411,6 @@ const dbConfig = {
   database: process.env.DB_DATABASE,
   charset: process.env.DB_CHARSET,
 };
-
-console.log(process.env.DB_HOST);
-console.log(process.env.DB_USER);
-console.log(process.env.DB_PASSWORD);
-console.log(process.env.DB_DATABASE);
-console.log(process.env.DB_CHARSET);
 
 const instance = new DatabaseService(dbConfig);
 Object.freeze(instance);

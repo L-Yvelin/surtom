@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { Letter, LetterState, Word } from "../../../../../../interfaces/Message";
+import { Letter, LetterState, Word } from "../../../../utils/Message";
 
 export interface CellProps {
   letter: Letter | undefined;

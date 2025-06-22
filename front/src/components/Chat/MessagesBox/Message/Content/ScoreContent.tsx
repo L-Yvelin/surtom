@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { Server } from "../../../../../../../interfaces/Message";
+import { Server } from "../../../../../utils/Message";
 import classes from "../Message.module.css";
 import { getValidatedWords } from "../../../../../utils/gameLogic";
 import PlayerName from "../PlayerName/PlayerName";
@@ -15,7 +15,7 @@ function ScoreContent({
   const tries = message.content.attempts;
   const answer = message.content.answer;
   const words = getValidatedWords(tries, answer);
-  const { solution } = useGameStore();
+  const { gameFinished } = useGameStore();
 
   return (
     <span>
@@ -31,7 +31,10 @@ function ScoreContent({
             <Grid
               solution={answer}
               tries={words}
-              confidential={solution === answer}
+              confidential={
+                new Date(message.content.timestamp).getDate() ===
+                  new Date().getDate() && !gameFinished()
+              }
               cellSize={"2dvh"}
             />
           }

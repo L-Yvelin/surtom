@@ -1,4 +1,4 @@
-import { LetterState } from "../../../../../../interfaces/Message";
+import { LetterState } from "../../../../utils/Message";
 import rowClasses from "./Row/Cell/Cell.module.css";
 
 export function getClassForState(state: LetterState | undefined): string {

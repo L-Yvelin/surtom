@@ -69,9 +69,9 @@ export function getPlayerColor(moderatorLevel: number, pseudo: string): string {
   }
 }
 
-export function isUserMessage(
+export function isTextMessage(
   message: Server.ChatMessage.Type
-): message is Server.ChatMessage.User {
+): message is Server.ChatMessage.Text {
   return (
     message.type === Server.MessageType.MAIL_ALL ||
     message.type === Server.MessageType.PRIVATE_MESSAGE ||
@@ -81,7 +81,7 @@ export function isUserMessage(
 
 export function isPrivateMessage(
   message: Server.ChatMessage.Type
-): message is Server.ChatMessage.User {
+): message is Server.ChatMessage.Text {
   return message.type === Server.MessageType.PRIVATE_MESSAGE;
 }
 
@@ -103,13 +103,13 @@ export function isStatusMessage(
 export function isSavedChatMessage(
   message: Server.ChatMessage.Type
 ): message is Server.ChatMessage.SavedType {
-  return isUserMessage(message) || isScoreMessage(message) || isEnhancedMessage(message);
+  return isTextMessage(message) || isScoreMessage(message) || isEnhancedMessage(message);
 }
 
 export function isEnhancedMessage(
   message: Server.ChatMessage.Type
 ): message is Extract<
-  Server.ChatMessage.User,
+  Server.ChatMessage.Text,
   { type: Server.MessageType.ENHANCED_MESSAGE }
 > {
   return message.type === Server.MessageType.ENHANCED_MESSAGE;
@@ -118,7 +118,7 @@ export function isEnhancedMessage(
 export function isMailAllMessage(
   message: Server.ChatMessage.Type
 ): message is Extract<
-  Server.ChatMessage.User,
+  Server.ChatMessage.Text,
   { type: Server.MessageType.MAIL_ALL }
 > {
   return message.type === Server.MessageType.MAIL_ALL;

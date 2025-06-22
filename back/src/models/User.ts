@@ -1,45 +1,32 @@
 import WS from "ws";
+import { Server } from "interfaces/Message.js";
 
 class FullUser {
   id: string;
-  name: string;
-  isModerator: number;
+  privateUser: Server.PrivateUser;
   connection: WS;
   messageCount: number;
   lastMessageTimestamp: string | null;
   messageCooldown: number;
   cooldownMultiplier: number;
-  sentTheScore: boolean;
   listeningTypes: string[];
   ip: string;
-  isLoggedIn: boolean;
-  mobileDevice: boolean;
-  banned: boolean;
 
   constructor(
     id: string,
-    name: string,
-    isModerator: number,
+    privateUser: Server.PrivateUser,
     connection: WS,
-    ip: string = "unknown",
-    isLoggedIn: boolean = false,
-    mobileDevice: boolean = false,
-    banned: boolean = false
+    ip: string = "unknown"
   ) {
     this.id = id;
-    this.name = name || "default";
-    this.isModerator = isModerator || 0;
+    this.privateUser = privateUser;
     this.connection = connection;
     this.messageCount = 0;
     this.lastMessageTimestamp = null;
     this.messageCooldown = 1;
     this.cooldownMultiplier = 2;
-    this.sentTheScore = false;
     this.listeningTypes = [];
     this.ip = ip;
-    this.isLoggedIn = isLoggedIn;
-    this.mobileDevice = mobileDevice;
-    this.banned = banned;
   }
 }
 

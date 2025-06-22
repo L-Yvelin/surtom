@@ -11,10 +11,9 @@
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"],
-      "src/*": ["src/*"],
+      "src/*": ["./src/*"],
       "interfaces/*": ["../interfaces/*"]
     }
   },
-  "include": ["src/**/*", "../interfaces/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "*.test.ts"]
 }

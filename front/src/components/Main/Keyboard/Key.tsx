@@ -1,7 +1,8 @@
 import classes from "./Key.module.css";
 import classNames from "classnames";
 import { JSX } from "react";
-import { LetterState, getKeyColorClassName } from "../Game/Grid/types";
+import { LetterState } from "../../../utils/Message.ts";
+import { getKeyColorClassName } from "../Game/Grid/types.ts";
 import { getKeyClassName, getKeyStyle, getButtonKeyEvent } from "./utils";
 
 interface KeyProps {

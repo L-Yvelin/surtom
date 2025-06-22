@@ -3,7 +3,7 @@ import classes from "./ChatInput.module.css";
 import useChatStore from "../../../stores/useChatStore";
 import classNames from "classnames";
 import { Server, Client } from "../../../../../interfaces/Message";
-import { isSavedChatMessage, isScoreMessage, isUserMessage } from "../utils";
+import { isSavedChatMessage, isScoreMessage, isTextMessage } from "../utils";
 import { useWebSocketStore } from "../../../stores/useWebSocketStore";
 
 interface ChatInputProps {
@@ -19,7 +19,7 @@ function SimpleMessage({
 }): JSX.Element {
   return (
     <div className={classes.simpleMessage}>
-      {isUserMessage(message) ? message.content.text : null}
+      {isTextMessage(message) ? message.content.text : null}
       {isScoreMessage(message)
         ? `Les ${message.content.attempts?.length} essais de ${message.content.user.name}.`
         : null}

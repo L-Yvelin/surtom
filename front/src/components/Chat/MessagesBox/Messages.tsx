@@ -1,92 +1,80 @@
-import { JSX, useCallback, useEffect, useRef, useMemo } from "react";
-import { Server } from "../../../../../interfaces/Message";
-import Message from "./Message/Message";
-import classes from "./Messages.module.css";
-import useChatStore from "../../../stores/useChatStore";
+import { JSX, useCallback, useEffect, useRef } from "react"
+import { Server } from "../../../utils/Message"
+import Message from "./Message/Message"
+import classes from "./Messages.module.css"
+import useChatStore from "../../../stores/useChatStore"
 
 interface MessagesBoxProps {
-  messages: Server.ChatMessage.Type[];
+  messages: Server.ChatMessage.Type[]
 }
 
 function MessagesBox({ messages }: MessagesBoxProps): JSX.Element {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const setScrollToBottom = useChatStore((state) => state.setScrollToBottom);
+  const containerRef = useRef<HTMLDivElement>(null)
+  const setScrollToBottom = useChatStore((state) => state.setScrollToBottom)
 
-  const scrollToBottomFunction = useCallback(() => {
+  const scrollToBottom = useCallback(() => {
     containerRef.current?.scrollTo({
       top: containerRef.current.scrollHeight,
-      behavior: "instant",
-    });
-  }, []);
+      behavior: "instant"
+    })
+  }, [])
 
   useEffect(() => {
-    setScrollToBottom(scrollToBottomFunction);
-  }, [setScrollToBottom, scrollToBottomFunction]);
+    setScrollToBottom(scrollToBottom)
+  }, [setScrollToBottom, scrollToBottom])
 
-  const elements = useMemo(() => {
-    let lastDate: string | null = null;
+  const renderedMessages: JSX.Element[] = []
+  let prevDate: string | null = null
 
-    return messages
-      .toReversed()
-      .map((message, index) => {
-        const stringified = JSON.stringify(message);
-        const hash = Math.abs(
-          Array.from(stringified).reduce(
-            (hash, char) => (hash << 5) - hash + char.charCodeAt(0),
-            0
-          )
-        );
-        const messageId = `${hash}-${index}`;
+  const reversed = [...messages].reverse()
 
-        const blocks: JSX.Element[] = [];
+  for (let i = 0; i < reversed.length; i++) {
+    const msg = reversed[i]
+    const hasTimestamp = "timestamp" in msg.content
+    const id = `${hasTimestamp ? msg.content.timestamp : "no-ts"}-${msg.type}-${"id" in msg.content ? msg.content.id : "no-id"
+      }`
 
-        if ("timestamp" in message.content) {
-          const messageDate = new Date(
-            message.content.timestamp
-          ).toLocaleDateString("fr", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
+    let dateSeparator: JSX.Element | null = null
 
-          if (lastDate && messageDate !== lastDate) {
-            blocks.push(
-              <div
-                data-key={`date-${messageId}`}
-                key={`date-${messageId}`}
-                className={classes.date}
-              >
-                <span className={classes.dateLeftBar}></span>
-                {messageDate}
-                <span className={classes.dateRightBar}></span>
-              </div>
-            );
-          }
-
-          lastDate = messageDate;
-        }
-
-        blocks.push(
-          <div
-            data-key={messageId}
-            key={messageId}
-            {...("id" in message.content && { "data-id": message.content.id })}
-          >
-            <Message message={message} />
-          </div>
-        );
-
-        return blocks;
+    if (hasTimestamp) {
+      const currentDate = new Date(msg.content.timestamp).toLocaleDateString("fr", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
       })
-      .flat();
-  }, [messages]);
+
+      if (prevDate && currentDate !== prevDate) {
+        dateSeparator = (
+          <div key={`date-${id}`} className={classes.date} data-key={`date-${id}`}>
+            <span className={classes.dateLeftBar}></span>
+            {prevDate}
+            <span className={classes.dateRightBar}></span>
+          </div>
+        )
+      }
+
+      prevDate = currentDate
+    }
+
+    if (dateSeparator) renderedMessages.push(dateSeparator)
+
+    renderedMessages.push(
+      <div
+        key={id}
+        data-key={id}
+        {...("id" in msg.content && { "data-id": msg.content.id })}
+      >
+        <Message message={msg} />
+      </div>
+    )
+  }
 
   return (
     <div ref={containerRef} className={classes.messages}>
-      {elements}
+      {renderedMessages}
     </div>
-  );
+  )
 }
 
-export default MessagesBox;
+export default MessagesBox

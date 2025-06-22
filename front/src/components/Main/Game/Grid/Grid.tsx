@@ -1,4 +1,4 @@
-import { CSSProperties, JSX, useEffect } from "react";
+import { CSSProperties, JSX } from "react";
 import Row from "./Row/Row";
 import classes from "./Grid.module.css";
 import { Tries } from "../../../../../../interfaces/Message";
@@ -20,10 +20,6 @@ function Grid({
 }: GridProps): JSX.Element {
   const height = 6;
   const size = solution.length;
-
-  useEffect(() => {
-    console.log(tries.length);
-  }, [tries.length]);
 
   const rows = [
     ...tries

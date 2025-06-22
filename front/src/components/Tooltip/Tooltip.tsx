@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from "react";
-import { useTooltip } from "./TooltipContext";
+import { useTooltip } from "./useTooltip";
 import { getTooltipPosition, Anchor } from "./utils";
 import { isDesktop } from "react-device-detect";
 

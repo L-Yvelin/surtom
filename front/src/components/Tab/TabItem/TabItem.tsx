@@ -4,7 +4,7 @@ import { getPlayerColor, rank } from "../../Chat/utils";
 import TabTools from "./TabTools/TabTools";
 import phoneIcon from "../../../assets/images/tools/phone.png";
 import computerIcon from "../../../assets/images/tools/computer.png";
-import { Server } from "../../../../../interfaces/Message";
+import { Server } from "../../../utils/Message";
 
 interface TabItemProps {
   user?: Server.User;

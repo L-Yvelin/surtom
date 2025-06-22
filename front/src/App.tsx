@@ -13,7 +13,7 @@ import Chat from "./components/Chat/Chat";
 import { useWebSocketStore } from "./stores/useWebSocketStore";
 import WebSocketPingHandler from "./utils/webSocketPingHandler";
 import twemoji from "./assets/fonts/TwemojiMozilla-Regular.ttf";
-import { TooltipProvider } from "./components/Tooltip/TooltipContext";
+import { TooltipProvider } from "./components/Tooltip/TooltipProvider";
 
 const fontFile = new FontFace("Twemoji", `url(${twemoji})`, {
   unicodeRange:
@@ -22,7 +22,7 @@ const fontFile = new FontFace("Twemoji", `url(${twemoji})`, {
 
 document.fonts.add(fontFile);
 const twemojiPromise = fontFile.load().then(
-  () => {},
+  () => { },
   (err) => {
     console.error(err);
   }

@@ -7,7 +7,7 @@ interface Props {
   visible: boolean;
   content: ReactNode;
   position: { x: number; y: number };
-  tooltipRef: React.RefObject<HTMLDivElement>;
+  tooltipRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export function TooltipSingleton({
@@ -16,6 +16,10 @@ export function TooltipSingleton({
   position,
   tooltipRef,
 }: Props) {
+  if (!tooltipRef) {
+    return;
+  }
+  
   return createPortal(
     <div
       ref={tooltipRef}

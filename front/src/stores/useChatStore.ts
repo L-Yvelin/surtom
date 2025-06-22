@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Server } from "../../../interfaces/Message";
+import { Server } from "../utils/Message";
 import { defaultPlayer } from "./useGameStore";
 import { isSavedChatMessage } from "../components/Chat/utils";
 
@@ -23,6 +23,7 @@ const defaultMessage: Server.ChatMessage.Type = {
     user: defaultPlayer,
     text: "En cours de chargement",
     timestamp: new Date().toISOString(),
+    deleted: 0,
   },
 };
 
@@ -37,9 +38,9 @@ const useChatStore = create<ChatStore>((set) => ({
     })),
   addMessage: (message) =>
     set((state) => ({ messages: [...(state.messages || []), message] })),
-  scrollToBottom: () => {},
+  scrollToBottom: () => { },
   setScrollToBottom: (fn) => set({ scrollToBottom: fn }),
-  focusInput: () => {},
+  focusInput: () => { },
   setFocusInput: (fn) => set({ focusInput: fn }),
 }));
 

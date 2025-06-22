@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Achievement } from "../../components/AchievementsStack/Achievement/Achievement";
 import { AchievementIcon } from "../../components/AchievementsStack/Achievement/utils";
-import { LetterState } from "../../../../interfaces/Message";
+import { LetterState } from "../../utils/Message";
 import {
   isGuessValid,
   validateWord,
@@ -37,7 +37,7 @@ const useGameLogic = () => {
       } else {
         setLetters(letters.length > 1 ? letters.slice(0, -1) : letters);
       }
-    } else if (event.metaKey) {
+    } else if (event.metaKey || event.ctrlKey) {
       return;
     } else if (/^[a-zA-Z]$/.test(event.key)) {
       if (

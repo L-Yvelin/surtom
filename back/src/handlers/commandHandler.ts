@@ -1,15 +1,15 @@
-import { store } from "../store.js";
+import { store } from "src/store.js";
 import bcrypt from "bcrypt";
 import {
   validateUsername,
   validateText,
   generateRandomHash,
   handleIsBanned,
-} from "../utils/helpers.js";
-import databaseService from "../services/databaseService.js";
-import Constants from "../utils/constants.js";
-import FullUser from "../models/User.js";
-import { Server } from "../../../interfaces/Message.js";
+} from "src/utils/helpers.js";
+import databaseService, { Player } from "src/services/databaseService.js";
+import Constants from "src/utils/constants.js";
+import FullUser from "src/models/User.js";
+import { Server } from "interfaces/Message.js";
 
 interface Command {
   [key: string]: string;
@@ -96,7 +96,7 @@ async function handleCommand(user: FullUser, command: string): Promise<void> {
 async function handleNickCommand(user: FullUser): Promise<void> {
   user.connection.send(
     JSON.stringify({
-      type: Server.MessageType.ERROR,
+      type: Server.MessageType.MESSAGE,
       content: {
         type: Server.MessageType.ERROR,
         content: {
@@ -115,43 +115,46 @@ async function loginUserAndSendSession(
   password: string
 ): Promise<boolean> {
   try {
-    const userInfo = await databaseService.loginUser(username, password);
+    const userInfo = await databaseService.loginPlayer(username, password);
 
     console.log(userInfo);
-    if (userInfo && userInfo.banned === 1) {
+    if (userInfo && userInfo.isBanned === 1) {
       handleIsBanned(user);
       return false;
     }
 
-    user.connection.send(
-      JSON.stringify({
-        type: Server.MessageType.SUCCESS,
-        content: {
-          type: Server.MessageType.SUCCESS,
-          content: {
-            text: `Rebonjour ${userInfo.Pseudo} !`,
-            timestamp: Date.now().toString(),
-          },
-        },
-      } as Server.Message)
-    );
 
-    user.name = userInfo.Pseudo;
-    user.isModerator = userInfo.Admin;
-    user.isLoggedIn = true;
+    user.privateUser.name = userInfo.username;
+    user.privateUser.moderatorLevel = userInfo.isAdmin;
+    user.privateUser.isLoggedIn = true;
 
-    const sessionHash = userInfo.HashSession || generateRandomHash();
+    const sessionHash = userInfo.sessionHash || generateRandomHash();
 
-    if (!userInfo.HashSession) {
-      await databaseService.storeSessionHash(userInfo.Pseudo, sessionHash);
+    if (!userInfo.sessionHash) {
+      await databaseService.storeSessionHash(userInfo.id, sessionHash);
     }
 
     user.connection.send(
       JSON.stringify({
-        Type: "mod",
-        status: "success",
-        moderatorHash: sessionHash,
-      })
+        type: Server.MessageType.LOGIN,
+        content: {
+          user: { name: userInfo.username, moderatorLevel: userInfo.isAdmin, isMobile: user.privateUser.isMobile, isLoggedIn: user.privateUser.isLoggedIn, xp: user.privateUser.xp, words: user.privateUser.words, isBanned: user.privateUser.isBanned },
+          sessionHash: userInfo.sessionHash,
+        },
+      } as Server.Message)
+    );
+
+    user.connection.send(
+      JSON.stringify({
+        type: Server.MessageType.MESSAGE,
+        content: {
+          type: Server.MessageType.SUCCESS,
+          content: {
+            text: `Rebonjour ${userInfo.username} !`,
+            timestamp: Date.now().toString(),
+          }
+        },
+      } as Server.Message)
     );
 
     publish("updateUsersList");
@@ -159,7 +162,7 @@ async function loginUserAndSendSession(
   } catch (error) {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -184,7 +187,7 @@ async function handleLoginCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -225,12 +228,42 @@ async function handleRegisterCommand(
     }
 
     try {
-      await databaseService.registerUser(username, password);
-      await loginUserAndSendSession(user, username, password);
+      await databaseService.registerPlayer(username, password);
+      const userInfo = await databaseService.getPlayerByName(username);
+      if (!userInfo) throw new Error("Registration failed");
+      user.privateUser.name = userInfo.username;
+      user.privateUser.moderatorLevel = userInfo.isAdmin;
+      user.privateUser.isLoggedIn = true;
+      const sessionHash = userInfo.sessionHash || generateRandomHash();
+      if (!userInfo.sessionHash) {
+        await databaseService.storeSessionHash(userInfo.id, sessionHash);
+      }
+      user.connection.send(
+        JSON.stringify({
+          type: Server.MessageType.LOGIN,
+          content: {
+            user: { name: userInfo.username, moderatorLevel: userInfo.isAdmin, isMobile: user.privateUser.isMobile, isLoggedIn: user.privateUser.isLoggedIn, xp: user.privateUser.xp, words: user.privateUser.words, isBanned: user.privateUser.isBanned },
+            sessionHash: userInfo.sessionHash,
+          },
+        } as Server.Message)
+      );
+      user.connection.send(
+        JSON.stringify({
+          type: Server.MessageType.MESSAGE,
+          content: {
+            type: Server.MessageType.SUCCESS,
+            content: {
+              text: `Bienvenue ${username} !`,
+              timestamp: new Date().toISOString(),
+            },
+          },
+        } as Server.Message)
+      );
+      publish("updateUsersList");
     } catch (error) {
       user.connection.send(
         JSON.stringify({
-          type: Server.MessageType.ERROR,
+          type: Server.MessageType.MESSAGE,
           content: {
             type: Server.MessageType.ERROR,
             content: {
@@ -244,7 +277,7 @@ async function handleRegisterCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -271,15 +304,15 @@ async function handleMsgCommand(
       return;
     }
 
-    if (validateText(messageText) || user.isModerator) {
+    if (validateText(messageText) || user.privateUser.moderatorLevel) {
       const timestamp = new Date().toISOString();
       const privateMessage = {
-        Pseudo: user.name,
-        Moderator: user.isModerator,
+        Pseudo: user.privateUser.name,
+        Moderator: user.privateUser.moderatorLevel,
         Texte: messageText,
         Date: timestamp,
         Type: "privateMessage",
-        isLoggedIn: user.isLoggedIn,
+        isLoggedIn: user.privateUser.isLoggedIn,
       };
 
       Object.values(targetedUsers).forEach((targetUser) => {
@@ -289,9 +322,9 @@ async function handleMsgCommand(
           const senderPrivateMessage = {
             ...privateMessage,
             Type: "privateMessageSent",
-            Pseudo: targetUser.name,
-            Moderator: targetUser.isModerator,
-            isLoggedIn: user.isLoggedIn,
+            Pseudo: targetUser.privateUser.name,
+            Moderator: targetUser.privateUser.moderatorLevel,
+            isLoggedIn: user.privateUser.isLoggedIn,
           };
           user.connection.send(JSON.stringify(senderPrivateMessage));
         }
@@ -299,7 +332,7 @@ async function handleMsgCommand(
     } else {
       user.connection.send(
         JSON.stringify({
-          type: Server.MessageType.ERROR,
+          type: Server.MessageType.MESSAGE,
           content: {
             type: Server.MessageType.ERROR,
             content: {
@@ -313,7 +346,7 @@ async function handleMsgCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -330,7 +363,7 @@ async function handleEvalCommand(
   user: FullUser,
   commandParts: string[]
 ): Promise<void> {
-  if (user.isModerator) {
+  if (user.privateUser.moderatorLevel) {
     if (commandParts.length >= 3) {
       const targetUsername = commandParts[1];
       const messageText = commandParts.slice(2).join(" ");
@@ -338,7 +371,7 @@ async function handleEvalCommand(
       if (new RegExp("cookie", "i").test(messageText)) {
         user.connection.send(
           JSON.stringify({
-            type: Server.MessageType.ERROR,
+            type: Server.MessageType.MESSAGE,
             content: {
               type: Server.MessageType.ERROR,
               content: {
@@ -359,31 +392,16 @@ async function handleEvalCommand(
 
       const timestamp = new Date().toISOString();
 
-      const createPrivateMessage = (Pseudo = "¿¿¿", Type = "eval") => ({
-        Pseudo,
-        Moderator: user.isModerator,
-        isLoggedIn: user.isLoggedIn,
-        Texte: messageText,
-        Date: timestamp,
-        Type,
-      });
-
       Object.values(targetedUsers).forEach((targetUser) => {
-        const message = createPrivateMessage();
-        targetUser.connection.send(JSON.stringify(message));
-
-        const senderPrivateMessage = {
-          ...createPrivateMessage(),
-          Type: "evalSent",
-          Pseudo: targetUser.name,
-          Moderator: targetUser.isModerator,
-        };
-        user.connection.send(JSON.stringify(senderPrivateMessage));
+        user.connection.send(JSON.stringify({
+          type: Server.MessageType.EVAL,
+          content: messageText
+        } as Server.Message));
       });
     } else {
       user.connection.send(
         JSON.stringify({
-          type: Server.MessageType.ERROR,
+          type: Server.MessageType.MESSAGE,
           content: {
             type: Server.MessageType.ERROR,
             content: {
@@ -397,7 +415,7 @@ async function handleEvalCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -433,7 +451,7 @@ async function handleAddTypeCommand(
     } else {
       user.connection.send(
         JSON.stringify({
-          type: Server.MessageType.ERROR,
+          type: Server.MessageType.MESSAGE,
           content: {
             type: Server.MessageType.ERROR,
             content: {
@@ -462,7 +480,7 @@ async function handleAddTypeCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -499,7 +517,7 @@ async function handleRefreshCommand(
   if (commandParts.length === 1) {
     targetedUsers.push(user);
   } else if (commandParts.length === 2) {
-    if (user.isModerator) {
+    if (user.privateUser.moderatorLevel) {
       const targetUsername = commandParts[1];
       targetedUsers = getTargetedUsers(targetUsername, user);
 
@@ -509,7 +527,7 @@ async function handleRefreshCommand(
     } else {
       user.connection.send(
         JSON.stringify({
-          type: Server.MessageType.ERROR,
+          type: Server.MessageType.MESSAGE,
           content: {
             type: Server.MessageType.ERROR,
             content: {
@@ -524,7 +542,7 @@ async function handleRefreshCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -539,13 +557,13 @@ async function handleRefreshCommand(
 
   databaseService
     .getMessages(
-      !!user.isModerator,
+      !!user.privateUser.moderatorLevel,
       Constants.MAX_MESSAGES_LOADED,
-      !user.isLoggedIn
+      !user.privateUser.isLoggedIn
     )
     .then((messages) => {
       const message = JSON.stringify({
-        type: Server.MessageType.SUCCESS,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.SUCCESS,
           content: {
@@ -558,8 +576,7 @@ async function handleRefreshCommand(
         target.connection && target.connection.send(message);
       });
       console.log(
-        `${new Date().toISOString()} (${user.id}) User got messages history: ${
-          user.name
+        `${new Date().toISOString()} (${user.id}) User got messages history: ${user.privateUser.name
         }`
       );
     })
@@ -571,7 +588,7 @@ async function handleRefreshCommand(
 function handleHelpCommand(user: FullUser, commandParts: string[]): void {
   let formattedCommands: { text: string; color: string }[] = [];
   if (commandParts.length === 1) {
-    const availableCommands = getAvailableCommands(!!user.isModerator);
+    const availableCommands = getAvailableCommands(!!user.privateUser.moderatorLevel);
     formattedCommands = [
       {
         text: "\nVoici la liste des commandes disponibles :\n",
@@ -668,7 +685,7 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
   } else {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -681,20 +698,16 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
     return;
   }
 
-  const timestamp = new Date().toISOString();
   const finalMessage = {
-    Pseudo: user.name,
-    Moderator: user.isModerator,
-    Date: timestamp,
-    type: Server.MessageType.SUCCESS,
+    type: Server.MessageType.MESSAGE,
     content: {
-      type: Server.MessageType.SUCCESS,
+      type: Server.MessageType.ENHANCED_MESSAGE,
       content: {
         text: JSON.stringify(formattedCommands),
         timestamp: Date.now().toString(),
       },
     },
-  };
+  } as Server.Message;
 
   user.connection.send(JSON.stringify(finalMessage));
 }
@@ -712,10 +725,10 @@ async function handleTellrawCommand(
   user: FullUser,
   commandParts: string[]
 ): Promise<void> {
-  if (!user.isModerator) {
+  if (!user.privateUser.moderatorLevel) {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -746,7 +759,7 @@ async function handleTellrawCommand(
   if (!isJson(commandParts[commandParts.length - 1])) {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -759,17 +772,12 @@ async function handleTellrawCommand(
     return;
   }
 
-  let targetedUsers: FullUser[], message: string;
+  let targetedUsers: FullUser[] = [];
+  let message = "";
   if (commandParts.length === 2) {
     const users = store.getState().users;
     targetedUsers = Object.values(users);
     message = commandParts[1];
-    await databaseService.saveMessage(
-      user.name,
-      message,
-      !!user.isModerator,
-      "enhancedMessage"
-    );
   } else if (commandParts.length === 3) {
     const targetUsername = commandParts[1];
     targetedUsers = getTargetedUsers(targetUsername, user);
@@ -781,7 +789,7 @@ async function handleTellrawCommand(
   } else {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {
@@ -798,7 +806,7 @@ async function handleTellrawCommand(
     target.connection &&
       target.connection.send(
         JSON.stringify({
-          type: Server.MessageType.SUCCESS,
+          type: Server.MessageType.MESSAGE,
           content: {
             type: Server.MessageType.SUCCESS,
             content: {
@@ -810,11 +818,11 @@ async function handleTellrawCommand(
       );
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.SUCCESS,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.SUCCESS,
           content: {
-            text: `Message envoyé à ${target.name}`,
+            text: `Message envoyé à ${target.privateUser.name}`,
             timestamp: Date.now().toString(),
           },
         },
@@ -846,7 +854,7 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
       default:
         user.connection.send(
           JSON.stringify({
-            type: Server.MessageType.ERROR,
+            type: Server.MessageType.MESSAGE,
             content: {
               type: Server.MessageType.ERROR,
               content: {
@@ -864,12 +872,12 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
       : targetUsername;
     if (validateUsername(strippedUsername)) {
       targetedUsers = Object.values(users).filter(
-        (targetUser) => targetUser.name === strippedUsername
+        (targetUser) => targetUser.privateUser.name === strippedUsername
       );
     } else {
       user.connection.send(
         JSON.stringify({
-          type: Server.MessageType.ERROR,
+          type: Server.MessageType.MESSAGE,
           content: {
             type: Server.MessageType.ERROR,
             content: {
@@ -885,7 +893,7 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
   if (targetedUsers.length === 0) {
     user.connection.send(
       JSON.stringify({
-        type: Server.MessageType.ERROR,
+        type: Server.MessageType.MESSAGE,
         content: {
           type: Server.MessageType.ERROR,
           content: {

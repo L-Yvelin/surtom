@@ -1,14 +1,24 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import Constants from "./constants.js";
+import Constants from "src/utils/constants.js";
 import FullUser from "src/models/User.js";
-import {
-  User as BackUser,
-  DatabaseMessage,
-  DatabaseMessageType,
-} from "../services/databaseService.js";
-import store from "../store.js";
-import { Server, Client } from "../../../interfaces/Message.js";
+import store from "src/store.js";
+import { Server, Client } from "interfaces/Message.js";
+
+// Define DatabaseMessage and DatabaseMessageType locally
+type DatabaseMessageType = "score" | "enhancedMessage" | "message";
+type DatabaseMessage = {
+  ID?: number;
+  Pseudo: string;
+  Moderator: number;
+  Texte?: string;
+  Date: string;
+  ImageData?: string;
+  Reply?: number;
+  Answer?: string;
+  Mots?: string;
+  Type?: DatabaseMessageType;
+};
 
 export function passwordInHashArray(
   password: string,
@@ -38,14 +48,14 @@ export function validateText(text: string): boolean {
 }
 
 export function getUserRank(user: FullUser): string | null {
-  return user.isModerator ? "moderator" : user.isLoggedIn ? "loggedIn" : null;
+  return user.privateUser.moderatorLevel ? "moderator" : user.privateUser.isLoggedIn ? "loggedIn" : null;
 }
 
 export function handleIsBanned(user: FullUser): void {
   const createPrivateMessage = (Pseudo = "¿¿¿", Type = "eval") => ({
     Pseudo,
-    Moderator: user.isModerator,
-    isLoggedIn: user.isLoggedIn,
+    Moderator: user.privateUser.moderatorLevel,
+    isLoggedIn: user.privateUser.isLoggedIn,
     Texte: `delete SocketClient.ws;clearInterval(SocketClient.pingInterval);setTimeout(() => {window.banned = true;let a = document.querySelector("#loading-mask");a.style.display = 'flex';a.style.opacity='1';a.style.zIndex = '999999';a.querySelector('p').innerHTML="<span style='color: darkred;'>You have been banned</span>";body.innerHTML = a.outerHTML;const gifUrl = "https://i.giphy.com/media/Os2Az5qAUancc/giphy.webp"; const img = document.createElement('img'); img.src = gifUrl; img.style.width = "20%"; img.style.height = "auto"; img.style.position = "absolute"; img.style.top = "0"; img.style.left = "0"; img.style.border = "none"; document.querySelector('#loading-mask').appendChild(img); let xPosition = 0; let yPosition = 0; let xDirection = 1; let yDirection = 1; const speed = 2; function moveImage() { const windowWidth = window.innerWidth; const windowHeight = window.innerHeight; const imgWidth = img.clientWidth; const imgHeight = img.clientHeight; xPosition += xDirection * speed; yPosition += yDirection * speed; if (xPosition + imgWidth > windowWidth || xPosition < 0) { xDirection *= -1; xDirection += (Math.random() - 0.5) * 0.2; } if (yPosition + imgHeight > windowHeight || yPosition < 0) { yDirection *= -1; yDirection += (Math.random() - 0.5) * 0.2; } img.style.transform = 'translate(' + xPosition + 'px, ' + yPosition + 'px)'; requestAnimationFrame(moveImage);} moveImage();},3000);`,
     Type,
   });
@@ -56,24 +66,26 @@ export function handleIsBanned(user: FullUser): void {
 }
 
 export function mapDatabaseUserToMemoryUser(
-  user: BackUser | null
+  user: any | null
 ): FullUser | null {
   if (!user) return null;
   return (
-    Object.values(store.getState().users).find((u) => u.name === user.Pseudo) ??
+    Object.values(store.getState().users).find((u) => u.privateUser.name === user.Pseudo) ??
     null
   );
 }
+
 export function mapUserMessageToMemoryMessage(
   message: DatabaseMessage
-): Server.ChatMessage.Content.UserMessageContent {
+): Server.ChatMessage.Content.TextMessageContent {
   return {
-    id: message.ID?.toString(),
-    user: { name: message.Pseudo, moderatorLevel: message.Moderator },
-    text: message.Texte,
-    timestamp: message.Date,
+    id: message.ID?.toString() ?? "",
+    user: { name: message.Pseudo ?? "", moderatorLevel: message.Moderator ?? 0 },
+    text: message.Texte ?? "",
+    timestamp: message.Date ?? "",
     imageData: typeof message.ImageData === 'string' ? message.ImageData : undefined,
-    replyId: message.Reply?.toString(),
+    replyId: message.Reply !== undefined ? message.Reply.toString() : undefined,
+    deleted: 0,
   };
 }
 
@@ -81,17 +93,19 @@ export function mapScoreMessageToMemoryMessage(
   message: DatabaseMessage
 ): Server.ChatMessage.Content.ScoreMessageContent {
   return {
-    id: message.ID?.toString(),
-    user: { name: message.Pseudo, moderatorLevel: message.Moderator },
+    id: message.ID?.toString() ?? "",
+    user: { name: message.Pseudo ?? "", moderatorLevel: message.Moderator ?? 0 },
     answer: message.Answer ?? "",
     attempts: message.Mots ? JSON.parse(message.Mots) : [],
-    timestamp: message.Date,
+    timestamp: message.Date ?? "",
+    deleted: 0,
   };
 }
 
 export function mapDatabaseTypeToMemoryType(
-  type: DatabaseMessageType
+  type: DatabaseMessageType | undefined
 ): Server.MessageType | undefined {
+  if (!type) return undefined;
   switch (type) {
     case "score":
       return Server.MessageType.SCORE;
@@ -106,7 +120,8 @@ export function mapDatabaseTypeToMemoryType(
 
 export function mapDatabaseMessageToMemoryMessage(
   message: DatabaseMessage
-): Server.ChatMessage.Content.UserMessageContent | Server.ChatMessage.Content.ScoreMessageContent | undefined {
+): Server.ChatMessage.Content.TextMessageContent | Server.ChatMessage.Content.ScoreMessageContent | undefined {
+  if (!message.Type) return undefined;
   switch (mapDatabaseTypeToMemoryType(message.Type)) {
     case Server.MessageType.ENHANCED_MESSAGE:
     case Server.MessageType.MAIL_ALL:

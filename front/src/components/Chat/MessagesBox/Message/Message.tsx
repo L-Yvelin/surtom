@@ -1,6 +1,6 @@
-import { JSX } from "react";
+import { JSX, memo } from "react";
 import classes from "./Message.module.css";
-import { Server, Client } from "../../../../../../interfaces/Message";
+import { Server, Client } from "../../../../utils/Message";
 import MessageTool from "./MessageTool/MessageTool";
 import classNames from "classnames";
 import SwipeActions from "../../../Widgets/SwipeActions/SwipeActions";
@@ -14,7 +14,7 @@ import {
   isSavedChatMessage,
   isScoreMessage,
   isStatusMessage,
-  isUserMessage,
+  isTextMessage,
 } from "../../utils";
 import { isMobile } from "react-device-detect";
 import StatusContent from "./Content/StatusContent";
@@ -32,7 +32,7 @@ const MessageContent = ({
   } else if (isSavedChatMessage(message)) {
     if (isScoreMessage(message)) {
       return <ScoreContent message={message} />;
-    } else if (isUserMessage(message)) {
+    } else if (isTextMessage(message)) {
       return <UserContent message={message} />;
     } else {
       console.log(`Unknown type: ${message}`);
@@ -44,7 +44,7 @@ const MessageContent = ({
   }
 };
 
-export default function Message({
+function Message({
   message,
 }: {
   message: Server.ChatMessage.Type;
@@ -54,7 +54,15 @@ export default function Message({
   const username = useGameStore((state) => state.player.name);
   const myModeratorLevel = useGameStore((state) => state.player.moderatorLevel);
 
-  const { id, user } = (message as Server.ChatMessage.User).content;
+  let id = "";
+  let user: { name: string; moderatorLevel: number } = {
+    name: "",
+    moderatorLevel: 0,
+  };
+  if (isTextMessage(message) || isScoreMessage(message)) {
+    id = message.content.id;
+    user = message.content.user;
+  }
 
   const handleRespond = (id: string) => {
     setAnsweringTo(id);
@@ -81,7 +89,7 @@ export default function Message({
       menuContent={
         <MessageContextMenu
           actions={[
-            ...(isSavedChatMessage(message)
+            ...(isSavedChatMessage(message) && id
               ? [
                   {
                     label: "Répondre",
@@ -135,3 +143,5 @@ export default function Message({
     </CustomContextMenu>
   );
 }
+
+export default memo(Message);

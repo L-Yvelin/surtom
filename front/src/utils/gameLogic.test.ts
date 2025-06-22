@@ -1,4 +1,4 @@
-import { LetterState } from '../components/Main/Game/Grid/types';
+import { LetterState } from '../../../interfaces/Message';
 import { areWinningColors, validateWord } from './gameLogic';
 
 describe('validateWord', () => {

@@ -1,6 +1,5 @@
-import { LetterState, Server } from "../../../interfaces/Message";
 import { AchievementProps } from "../components/AchievementsStack/Achievement/Achievement";
-import { Tries, Word } from "../../../interfaces/Message";
+import { Tries, LetterState, Server, Word } from "../../../interfaces/Message";
 import { ScoreStats } from "../components/Stats/utils";
 import { create } from "zustand";
 

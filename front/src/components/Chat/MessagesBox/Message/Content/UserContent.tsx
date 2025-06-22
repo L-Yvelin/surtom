@@ -1,9 +1,9 @@
 import { JSX } from "react";
-import { Server } from "../../../../../../../interfaces/Message";
+import { Server } from "../../../../../utils/Message";
 import classes from "../Message.module.css";
 import PlayerName from "../PlayerName/PlayerName";
 import {
-  isUserMessage,
+  isTextMessage,
   extractImageUrls,
   isEnhancedMessage,
   extractUrls,
@@ -103,7 +103,7 @@ function formatText(text: string): JSX.Element {
 function UserContent({
   message,
 }: {
-  message: Server.ChatMessage.User;
+  message: Server.ChatMessage.Text;
 }): JSX.Element {
   const user = message.content.user;
   return (
@@ -115,7 +115,7 @@ function UserContent({
           &gt;&nbsp;
         </span>
       )}
-      {isUserMessage(message) &&
+      {isTextMessage(message) &&
         (() => {
           const imageUrls = extractImageUrls(message.content.text);
           return (

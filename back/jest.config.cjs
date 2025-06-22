@@ -5,7 +5,7 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
+  testRegex: '(/__tests__/.*|(\\.|/)(critical|integration|test|spec))\\.tsx?$',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
