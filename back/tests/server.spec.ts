@@ -6,7 +6,7 @@ import * as databaseService from '../src/services/databaseService';
 import * as constants from '../src/utils/constants';
 import * as storeModule from '../src/store';
 import FullUser from '../src/models/User';
-import { Server as ServerNS } from '../../interfaces/Message.js';
+import { Server as ServerNS } from 'src/models/Message';
 
 // Use require to access unexported functions for testing
 const serverModule = require('../src/server');
@@ -56,8 +56,8 @@ describe('initializeConnection', () => {
       { send: mockSend } as unknown as WS,
       '127.0.0.1'
     );
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(serverModule, 'updateUsersList').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => { });
+    jest.spyOn(serverModule, 'updateUsersList').mockImplementation(() => { });
     mockedDatabaseService.getMessages.mockResolvedValue([
       { type: ServerNS.MessageType.MAIL_ALL },
       { type: ServerNS.MessageType.ENHANCED_MESSAGE },
@@ -66,7 +66,7 @@ describe('initializeConnection', () => {
     ]);
     mockedDatabaseService.getTodaysWord.mockResolvedValue('WORD');
     mockedDatabaseService.getValidWords.mockResolvedValue(['WORD1', 'WORD2']);
-    jest.spyOn(constants, 'default', 'get').mockReturnValue({ MAX_MESSAGES_LOADED: 100, funnyNames: ['a','b'] });
+    jest.spyOn(constants, 'default', 'get').mockReturnValue({ MAX_MESSAGES_LOADED: 100, funnyNames: ['a', 'b'] });
   });
 
   afterEach(() => {
@@ -101,14 +101,14 @@ describe('initializeConnection', () => {
 
   it('should log error if getMessages throws', async () => {
     mockedDatabaseService.getMessages.mockRejectedValueOnce(new Error('fail'));
-    const mockError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const mockError = jest.spyOn(console, 'error').mockImplementation(() => { });
     await initializeConnection(user);
     expect(mockError).toHaveBeenCalledWith('Error getting last message timestamp:', expect.any(Error));
   });
 
   it('should log error if no word found for today', async () => {
     mockedDatabaseService.getTodaysWord.mockResolvedValueOnce(null);
-    const mockError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const mockError = jest.spyOn(console, 'error').mockImplementation(() => { });
     await initializeConnection(user);
     expect(mockError).toHaveBeenCalledWith('No word found for today');
   });
@@ -133,7 +133,7 @@ describe('logMessage', () => {
       { send: jest.fn() } as unknown as WS,
       '127.0.0.1'
     );
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => { });
     mockFetch = jest.fn();
     global.fetch = mockFetch as unknown as typeof global.fetch;
   });
@@ -180,12 +180,12 @@ describe('handleMessage', () => {
       { send: mockSend } as unknown as WS,
       '127.0.0.1'
     );
-    mockHandleCommand = jest.spyOn(require('../src/handlers/commandHandler'), 'handleCommand').mockImplementation(() => {}) as jest.Mock;
+    mockHandleCommand = jest.spyOn(require('../src/handlers/commandHandler'), 'handleCommand').mockImplementation(() => { }) as jest.Mock;
     mockHandleChatMessage = jest.spyOn(serverModule, 'handleChatMessage').mockResolvedValue(undefined) as jest.Mock;
     mockHandleDeleteMessage = jest.spyOn(serverModule, 'handleDeleteMessage').mockResolvedValue(undefined) as jest.Mock;
-    mockSendMessagesAll = jest.spyOn(serverModule, 'sendMessagesAll').mockImplementation(() => {}) as jest.Mock;
-    mockHandleCustomMessageType = jest.spyOn(serverModule, 'handleCustomMessageType').mockImplementation(() => {}) as jest.Mock;
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    mockSendMessagesAll = jest.spyOn(serverModule, 'sendMessagesAll').mockImplementation(() => { }) as jest.Mock;
+    mockHandleCustomMessageType = jest.spyOn(serverModule, 'handleCustomMessageType').mockImplementation(() => { }) as jest.Mock;
+    jest.spyOn(console, 'log').mockImplementation(() => { });
   });
   afterEach(() => {
     jest.restoreAllMocks();
@@ -317,8 +317,8 @@ describe('handleMailAll', () => {
       { send: jest.fn() } as unknown as WS,
       '127.0.0.1'
     );
-    mockSendMessagesAll = jest.spyOn(serverModule, 'sendMessagesAll').mockImplementation(() => {}) as jest.Mock;
-    mockLogMessage = jest.spyOn(serverModule, 'logMessage').mockImplementation(() => {}) as jest.Mock;
+    mockSendMessagesAll = jest.spyOn(serverModule, 'sendMessagesAll').mockImplementation(() => { }) as jest.Mock;
+    mockLogMessage = jest.spyOn(serverModule, 'logMessage').mockImplementation(() => { }) as jest.Mock;
     mockedDatabaseService.saveMessage.mockClear();
   });
   afterEach(() => {
@@ -334,14 +334,14 @@ describe('handleMailAll', () => {
   it('should log error if saveMessage fails', async () => {
     mockedDatabaseService.saveMessage.mockResolvedValue(null);
     const { handleMailAll } = serverModule;
-    const mockError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const mockError = jest.spyOn(console, 'error').mockImplementation(() => { });
     await handleMailAll(user, { type: 'chatMessage', content: { text: 'hi' } });
     expect(mockError).toHaveBeenCalledWith(expect.stringContaining('Failed to save message'));
   });
   it('should log error if saveMessage throws', async () => {
     mockedDatabaseService.saveMessage.mockRejectedValue(new Error('fail'));
     const { handleMailAll } = serverModule;
-    const mockError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const mockError = jest.spyOn(console, 'error').mockImplementation(() => { });
     await handleMailAll(user, { type: 'chatMessage', content: { text: 'hi' } });
     expect(mockError).toHaveBeenCalledWith('Error saving message:', expect.any(Error));
   });
@@ -367,8 +367,8 @@ describe('handleScoreToChat', () => {
       { send: jest.fn() } as unknown as WS,
       '127.0.0.1'
     );
-    mockSendMessagesAll = jest.spyOn(serverModule, 'sendMessagesAll').mockImplementation(() => {}) as jest.Mock;
-    mockLogMessage = jest.spyOn(serverModule, 'logMessage').mockImplementation(() => {}) as jest.Mock;
+    mockSendMessagesAll = jest.spyOn(serverModule, 'sendMessagesAll').mockImplementation(() => { }) as jest.Mock;
+    mockLogMessage = jest.spyOn(serverModule, 'logMessage').mockImplementation(() => { }) as jest.Mock;
     mockedDatabaseService.saveMessage.mockClear();
     mockedDatabaseService.getTodaysWord.mockResolvedValue('WORD');
   });
@@ -378,7 +378,7 @@ describe('handleScoreToChat', () => {
   it('should return if user already sent score', async () => {
     user.privateUser.sentTheScore = true;
     const { handleScoreToChat } = serverModule;
-    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W','O','R','D']] } });
+    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W', 'O', 'R', 'D']] } });
     expect(mockSendMessagesAll).not.toHaveBeenCalled();
   });
   it('should return if attempts invalid', async () => {
@@ -389,33 +389,33 @@ describe('handleScoreToChat', () => {
   it('should return if no scoreSolution', async () => {
     mockedDatabaseService.getTodaysWord.mockResolvedValueOnce(null);
     const { handleScoreToChat } = serverModule;
-    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W','O','R','D']] } });
+    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W', 'O', 'R', 'D']] } });
     expect(mockSendMessagesAll).not.toHaveBeenCalled();
   });
   it('should return if attempts are not valid', async () => {
     const { handleScoreToChat } = serverModule;
-    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['X','O','R','D']] } });
+    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['X', 'O', 'R', 'D']] } });
     expect(mockSendMessagesAll).not.toHaveBeenCalled();
   });
   it('should send and log if valid', async () => {
     mockedDatabaseService.saveMessage.mockResolvedValue({ id: 1 });
     const { handleScoreToChat } = serverModule;
-    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W','O','R','D']] } });
+    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W', 'O', 'R', 'D']] } });
     expect(mockSendMessagesAll).toHaveBeenCalled();
     expect(mockLogMessage).toHaveBeenCalled();
   });
   it('should log error if saveMessage fails', async () => {
     mockedDatabaseService.saveMessage.mockResolvedValue(null);
     const { handleScoreToChat } = serverModule;
-    const mockError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W','O','R','D']] } });
+    const mockError = jest.spyOn(console, 'error').mockImplementation(() => { });
+    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W', 'O', 'R', 'D']] } });
     expect(mockError).toHaveBeenCalledWith(expect.stringContaining('Failed to save score message'));
   });
   it('should log error if saveMessage throws', async () => {
     mockedDatabaseService.saveMessage.mockRejectedValue(new Error('fail'));
     const { handleScoreToChat } = serverModule;
-    const mockError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W','O','R','D']] } });
+    const mockError = jest.spyOn(console, 'error').mockImplementation(() => { });
+    await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W', 'O', 'R', 'D']] } });
     expect(mockError).toHaveBeenCalledWith('Error saving score message:', expect.any(Error));
   });
 });
@@ -471,7 +471,7 @@ describe('handleDeleteMessage', () => {
   it('should log error if throws', async () => {
     mockedDatabaseService.toggleMessage.mockRejectedValue(new Error('fail'));
     const { handleDeleteMessage } = serverModule;
-    const mockError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const mockError = jest.spyOn(console, 'error').mockImplementation(() => { });
     await handleDeleteMessage(user, 1);
     expect(mockError).toHaveBeenCalledWith('Error deleting message:', expect.any(Error));
   });
@@ -497,7 +497,7 @@ describe('handleCustomMessageType', () => {
       { send: mockSend } as unknown as WS,
       '127.0.0.1'
     );
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => { });
     jest.spyOn(require('../src/store'), 'store').mockReturnValue({
       getState: () => ({ users: { [user.id]: user } }),
     });
@@ -522,13 +522,15 @@ describe('handleCustomMessageType', () => {
 describe('updateUsersList', () => {
   let mockSendMessagesAll: jest.Mock;
   beforeEach(() => {
-    mockSendMessagesAll = jest.spyOn(serverModule, 'sendMessagesAll').mockImplementation(() => {}) as jest.Mock;
+    mockSendMessagesAll = jest.spyOn(serverModule, 'sendMessagesAll').mockImplementation(() => { }) as jest.Mock;
     jest.spyOn(require('../src/store'), 'store').mockReturnValue({
-      getState: () => ({ users: {
-        id1: { privateUser: { name: 'A', moderatorLevel: 1, isMobile: false, isLoggedIn: true, xp: 0 } },
-        id2: { privateUser: { name: 'B', moderatorLevel: 0, isMobile: true, isLoggedIn: false, xp: 10 } },
-        id3: { privateUser: { name: 'A', moderatorLevel: 1, isMobile: false, isLoggedIn: true, xp: 0 } },
-      } }),
+      getState: () => ({
+        users: {
+          id1: { privateUser: { name: 'A', moderatorLevel: 1, isMobile: false, isLoggedIn: true, xp: 0 } },
+          id2: { privateUser: { name: 'B', moderatorLevel: 0, isMobile: true, isLoggedIn: false, xp: 10 } },
+          id3: { privateUser: { name: 'A', moderatorLevel: 1, isMobile: false, isLoggedIn: true, xp: 0 } },
+        }
+      }),
     });
   });
   afterEach(() => {

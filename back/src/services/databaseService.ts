@@ -2,7 +2,7 @@ import path from "path";
 import { createPool, Pool, RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import { Client, Server } from "interfaces/Message.js";
+import { Client, Server } from "src/models/Message";
 
 const dirname = path.resolve();
 dotenv.config({ path: path.resolve(dirname, ".env") });
@@ -151,8 +151,8 @@ class DatabaseService {
         row.Type === "ENHANCED_MESSAGE"
           ? Server.MessageType.ENHANCED_MESSAGE
           : row.Type === "MAIL_ALL"
-          ? Server.MessageType.MAIL_ALL
-          : Server.MessageType.PRIVATE_MESSAGE;
+            ? Server.MessageType.MAIL_ALL
+            : Server.MessageType.PRIVATE_MESSAGE;
       return {
         type: messageType,
         content: {

@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./back
+    ports:
+      - "27020:27020"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    networks:
+      - appnet
+  frontend:
+    build:
+      context: ./front
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+    networks:
+      - appnet
+networks:
+  appnet:
+    driver: bridge 

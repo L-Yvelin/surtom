@@ -1,4 +1,4 @@
-import { LetterState } from '../../../interfaces/Message';
+import { LetterState } from './Message';
 import { areWinningColors, validateWord } from './gameLogic';
 
 describe('validateWord', () => {

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Server, Client } from "../../../interfaces/Message";
+import { Server, Client } from "../utils/Message";
 import useGameStore from "./useGameStore";
 import useChatStore from "./useChatStore";
 import Cookies from "js-cookie";

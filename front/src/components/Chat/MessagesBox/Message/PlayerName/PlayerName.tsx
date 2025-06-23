@@ -1,4 +1,4 @@
-import { Server } from "../../../../../../../interfaces/Message";
+import { Server } from "../../../../../utils/Message";
 import { getPlayerColor } from "../../../utils";
 
 const PlayerName = ({

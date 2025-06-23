@@ -9,7 +9,7 @@ import {
 import databaseService, { Player } from "src/services/databaseService.js";
 import Constants from "src/utils/constants.js";
 import FullUser from "src/models/User.js";
-import { Server } from "interfaces/Message.js";
+import { Server } from "../models/Message";
 
 interface Command {
   [key: string]: string;

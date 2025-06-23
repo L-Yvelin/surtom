@@ -1,5 +1,5 @@
 import WS from "ws";
-import { Server } from "interfaces/Message.js";
+import { Server } from "./Message";
 
 class FullUser {
   id: string;

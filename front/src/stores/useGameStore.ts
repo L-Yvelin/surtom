@@ -1,5 +1,5 @@
 import { AchievementProps } from "../components/AchievementsStack/Achievement/Achievement";
-import { Tries, LetterState, Server, Word } from "../../../interfaces/Message";
+import { Tries, LetterState, Server, Word } from "../utils/Message";
 import { ScoreStats } from "../components/Stats/utils";
 import { create } from "zustand";
 

@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "dev": "npm run build && npm run start",
-    "start": "node dist/back/src/server",
+    "start": "node dist/src/server",
     "test": "jest",
     "build": "tsc",
     "postbuild": "tsc-alias"
