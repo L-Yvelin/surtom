@@ -6,7 +6,7 @@ logs/
 .vscode/
 .idea/
 *.swp
-.env
+.env*
 .DS_Store
 Thumbs.db
 coverage/

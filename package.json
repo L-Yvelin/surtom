@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "postinstall": "husky install",
+    "format": "prettier --write .",
+    "lint:secrets": "secretlint \"**/*.{js,ts,tsx,json,md,yml}\"",
+    "prepare": "husky install",
+    "dev": "npm run dev:back & npm run dev:front",
+    "dev:back": "npm --prefix ./back run dev",
+    "dev:front": "npm --prefix ./front run dev",
+    "build": "npm run build:back && npm run build:front",
+    "build:back": "npm --prefix ./back run build",
+    "build:front": "npm --prefix ./front run build",
+    "test": "npm run test:back && npm run test:front",
+    "test:back": "npm --prefix ./back run test"
+  },
+  "devDependencies": {
+    "@secretlint/secretlint-rule-preset-recommend": "^10.1.1",
+    "husky": "^8.0.0",
+    "prettier": "^3.6.1",
+    "secretlint": "^10.1.1"
+  }
+}

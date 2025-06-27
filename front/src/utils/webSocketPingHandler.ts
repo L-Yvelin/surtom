@@ -16,6 +16,8 @@ const WebSocketPingHandler = () => {
 
     pingWorker.onmessage = () => {
       if (isConnected) {
+        console.log("ping");
+        
         sendMessage({type: Client.MessageType.PING});
       }
     };

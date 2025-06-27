@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import { Server, Client } from "../utils/Message";
+import { validateServerMessage } from "../utils/validator";
 import useGameStore from "./useGameStore";
 import useChatStore from "./useChatStore";
 import Cookies from "js-cookie";
 import { isMobile } from "react-device-detect";
+import { getValidatedWords } from "../utils/gameLogic";
 
 interface WebSocketState {
   isConnected: boolean;
@@ -37,6 +39,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
     setHasLoaded,
   } = useGameStore.getState();
   const { setMessages, addMessage } = useChatStore.getState();
+  const { setTries } = useGameStore.getState();
   const scrollToBottom = useChatStore.getState().scrollToBottom;
 
   const handleMessage = (data: Server.Message) => {
@@ -72,8 +75,10 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
         scrollToBottom?.();
         break;
       case Server.MessageType.DAILY_WORDS:
-        setSolution(data.content[data.content.length - 1]);
-        setValidWords(data.content);
+        const solution = data.content.words[data.content.words.length - 1];
+        setSolution(solution);
+        setValidWords(data.content.words);
+        setTries(getValidatedWords(data.content.attempts.map(a => a.split("")), solution));
         setHasLoaded(true);
         break;
       default:
@@ -126,6 +131,10 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
 
     socket.onmessage = (event) => {
       const data: Server.Message = JSON.parse(event.data);
+      if (!validateServerMessage(data)) {
+        console.warn("Received invalid server message:", data);
+        return;
+      }
       console.log(data);
       handleMessage(data);
     };

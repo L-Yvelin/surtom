@@ -1,5 +1,5 @@
 import WS from "ws";
-import { Server } from "./Message";
+import { Server } from "../utils/Message";
 
 class FullUser {
   id: string;

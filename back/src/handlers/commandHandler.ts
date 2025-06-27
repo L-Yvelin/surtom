@@ -1,15 +1,15 @@
-import { store } from "src/store.js";
+import { store } from "../store.js";
 import bcrypt from "bcrypt";
 import {
   validateUsername,
   validateText,
   generateRandomHash,
   handleIsBanned,
-} from "src/utils/helpers.js";
-import databaseService, { Player } from "src/services/databaseService.js";
-import Constants from "src/utils/constants.js";
-import FullUser from "src/models/User.js";
-import { Server } from "../models/Message";
+} from "../utils/helpers.js";
+import databaseService, { Player } from "../services/databaseService.js";
+import Constants from "../utils/constants.js";
+import FullUser from "../models/User.js";
+import { Server } from "../utils/Message.js";
 
 interface Command {
   [key: string]: string;
@@ -101,7 +101,7 @@ async function handleNickCommand(user: FullUser): Promise<void> {
         type: Server.MessageType.ERROR,
         content: {
           text: "Eh non pardi ! Les temps ont changé...",
-          timestamp: Date.now().toString(),
+          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
         },
       },
     } as Server.Message)
@@ -151,7 +151,7 @@ async function loginUserAndSendSession(
           type: Server.MessageType.SUCCESS,
           content: {
             text: `Rebonjour ${userInfo.username} !`,
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           }
         },
       } as Server.Message)
@@ -167,7 +167,7 @@ async function loginUserAndSendSession(
           type: Server.MessageType.ERROR,
           content: {
             text: (error as Error).message,
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)
@@ -192,7 +192,7 @@ async function handleLoginCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /login pseudo mot_de_passe",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)
@@ -219,7 +219,7 @@ async function handleRegisterCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Ce pseudo n'est pas valide...",
-              timestamp: Date.now().toString(),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         } as Server.Message)
@@ -268,7 +268,7 @@ async function handleRegisterCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: (error as Error).message,
-              timestamp: Date.now().toString(),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         } as Server.Message)
@@ -282,7 +282,7 @@ async function handleRegisterCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /register pseudo mot_de_passe",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)
@@ -337,7 +337,7 @@ async function handleMsgCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Pseudo ou message invalide",
-              timestamp: Date.now().toString(),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         } as Server.Message)
@@ -351,7 +351,7 @@ async function handleMsgCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /msg pseudo message",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)
@@ -376,7 +376,7 @@ async function handleEvalCommand(
               type: Server.MessageType.ERROR,
               content: {
                 text: "Pas touche aux 🍪 !",
-                timestamp: Date.now().toString(),
+                timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
               },
             },
           } as Server.Message)
@@ -406,7 +406,7 @@ async function handleEvalCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Utilisation : /eval pseudo ¿¿¿¿¿",
-              timestamp: Date.now().toString(),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         } as Server.Message)
@@ -420,7 +420,7 @@ async function handleEvalCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)
@@ -444,7 +444,7 @@ async function handleAddTypeCommand(
           type: Server.MessageType.SUCCESS,
           content: {
             text: `Vous écoutez maintenant le type : ${type}`,
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         })
       );
@@ -456,7 +456,7 @@ async function handleAddTypeCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Type invalide",
-              timestamp: Date.now().toString(),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         })
@@ -472,7 +472,7 @@ async function handleAddTypeCommand(
             text: `Vous écoutez les types : ${Array.from(
               user.listeningTypes
             ).join(", ")}`,
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       })
@@ -485,7 +485,7 @@ async function handleAddTypeCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /listen type",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       })
@@ -501,7 +501,7 @@ async function handleUnknownCommand(user: FullUser): Promise<void> {
         type: Server.MessageType.ERROR,
         content: {
           text: "Commande invalide !",
-          timestamp: Date.now().toString(),
+          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
         },
       },
     } as Server.Message)
@@ -532,7 +532,7 @@ async function handleRefreshCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Vous n'êtes pas autorisé à utiliser cette commande.",
-              timestamp: Date.now().toString(),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         } as Server.Message)
@@ -547,7 +547,7 @@ async function handleRefreshCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /refresh target?",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)
@@ -568,7 +568,7 @@ async function handleRefreshCommand(
           type: Server.MessageType.SUCCESS,
           content: {
             text: "Tchat rafraîchi",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       });
@@ -683,31 +683,35 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
       ...cycleHistory
     );
   } else {
-    user.connection.send(
-      JSON.stringify({
-        type: Server.MessageType.MESSAGE,
+    const message: Server.Message = {
+      type: Server.MessageType.MESSAGE,
+      content: {
+        type: Server.MessageType.ERROR,
         content: {
-          type: Server.MessageType.ERROR,
-          content: {
-            text: "Utilisation : /help",
-            timestamp: Date.now().toString(),
-          },
+          text: "Utilisation : /help",
+          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
         },
-      } as Server.Message)
+      },
+    }
+    user.connection.send(
+      JSON.stringify(message)
     );
     return;
   }
 
-  const finalMessage = {
+  const finalMessage: Server.Message = {
     type: Server.MessageType.MESSAGE,
     content: {
       type: Server.MessageType.ENHANCED_MESSAGE,
       content: {
         text: JSON.stringify(formattedCommands),
-        timestamp: Date.now().toString(),
+        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+        id: "-1",
+        user: { name: "System", moderatorLevel: 2 },
+        deleted: 0
       },
     },
-  } as Server.Message;
+  };
 
   user.connection.send(JSON.stringify(finalMessage));
 }
@@ -733,7 +737,7 @@ async function handleTellrawCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Vous n'êtes pas autorisé à utiliser cette commande.",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)
@@ -764,7 +768,7 @@ async function handleTellrawCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "L'objet JSON est invalide.",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)
@@ -794,7 +798,7 @@ async function handleTellrawCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /tellraw target message",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)
@@ -823,7 +827,7 @@ async function handleTellrawCommand(
           type: Server.MessageType.SUCCESS,
           content: {
             text: `Message envoyé à ${target.privateUser.name}`,
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       })
@@ -859,7 +863,7 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
               type: Server.MessageType.ERROR,
               content: {
                 text: "Sélecteur inexistant",
-                timestamp: Date.now().toString(),
+                timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
               },
             },
           } as Server.Message)
@@ -882,7 +886,7 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
             type: Server.MessageType.ERROR,
             content: {
               text: "Nom d'utilisateur invalide",
-              timestamp: Date.now().toString(),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         } as Server.Message)
@@ -898,7 +902,7 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisateur inexistant",
-            timestamp: Date.now().toString(),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       } as Server.Message)

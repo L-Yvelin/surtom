@@ -5,6 +5,7 @@ export namespace Client {
     PING = "ping",
     CHAT_MESSAGE = "chatMessage",
     SCORE_TO_CHAT = "scoreToChat",
+    TRY = "try",
   }
 
   export type Message =
@@ -12,7 +13,8 @@ export namespace Client {
     | { type: MessageType.IS_TYPING }
     | { type: MessageType.PING }
     | { type: MessageType.CHAT_MESSAGE; content: TextChatMessageContent }
-    | { type: MessageType.SCORE_TO_CHAT; content: ScoreContent };
+    | { type: MessageType.SCORE_TO_CHAT; content: ScoreContent }
+    | { type: MessageType.TRY; content: string }
 
   export type ChatMessage =
     | { type: MessageType.CHAT_MESSAGE; content: TextChatMessageContent }
@@ -50,6 +52,7 @@ export namespace Server {
     ENHANCED_MESSAGE = "enhancedMessage",
     EVAL = "eval",
     DAILY_WORDS = "dailyWords",
+    ATTEMPT = "attempt",
   }
 
   export enum SavedMessageType {
@@ -66,16 +69,15 @@ export namespace Server {
     | { type: MessageType.LAST_TIME_MESSAGE; content: string }
     | { type: MessageType.LOG; content: string }
     | {
-        type: MessageType.MESSAGE;
-        content: ChatMessage.Text | ChatMessage.Score | ChatMessage.Status;
-      }
+      type: MessageType.MESSAGE;
+      content: ChatMessage.Text | ChatMessage.Score | ChatMessage.Status;
+    }
     | { type: MessageType.STATS; content: Record<`${number}`, number> }
     | { type: MessageType.LOGIN; content: LoginMessage }
     | { type: MessageType.USER_LIST; content: User[] }
     | { type: MessageType.EVAL; content: string }
-    | { type: MessageType.SUCCESS; content: ChatMessage.Status }
-    | { type: MessageType.ERROR; content: ChatMessage.Status }
-    | { type: MessageType.DAILY_WORDS; content: string[] };
+    | { type: MessageType.DAILY_WORDS; content: { words: string[], attempts: string[] } }
+    | { type: MessageType.ATTEMPT; content: string };
 
   export namespace ChatMessage {
     export type Type = Text | Score | Status;
@@ -84,13 +86,13 @@ export namespace Server {
     export type Text =
       | { type: MessageType.MAIL_ALL; content: Content.TextMessageContent }
       | {
-          type: MessageType.PRIVATE_MESSAGE;
-          content: Content.TextMessageContent;
-        }
+        type: MessageType.PRIVATE_MESSAGE;
+        content: Content.TextMessageContent;
+      }
       | {
-          type: MessageType.ENHANCED_MESSAGE;
-          content: Content.TextMessageContent;
-        };
+        type: MessageType.ENHANCED_MESSAGE;
+        content: Content.TextMessageContent;
+      };
 
     export type Score = {
       type: MessageType.SCORE;
@@ -99,13 +101,13 @@ export namespace Server {
 
     export type Status =
       | {
-          type: MessageType.SUCCESS;
-          content: Pick<Content.TextMessageContent, "text" | "timestamp">;
-        }
+        type: MessageType.SUCCESS;
+        content: Pick<Content.TextMessageContent, "text"> & Pick<Content.BaseMessageContent, "timestamp">;
+      }
       | {
-          type: MessageType.ERROR;
-          content: Pick<Content.TextMessageContent, "text" | "timestamp">;
-        };
+        type: MessageType.ERROR;
+        content: Pick<Content.TextMessageContent, "text"> & Pick<Content.BaseMessageContent, "timestamp">;
+      };
 
     export namespace Content {
       export interface BaseMessageContent {
@@ -137,7 +139,6 @@ export namespace Server {
   }
 
   export interface PrivateUser extends User {
-    sentTheScore: boolean;
     words: string[];
     isBanned: boolean;
   }

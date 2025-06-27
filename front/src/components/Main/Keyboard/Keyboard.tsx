@@ -31,13 +31,13 @@ const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.El
       });
       return acc;
     }, {} as Record<string, LetterState>)
-  , [tries]);
+  , [tries]);  
 
   return (
     <div className={classes.keyboardWrapper}>
       <div className={classNames(classes.keyboard, keyboardClass)}>
         {keys.flat().map((key, index) => (
-          <Key key={index} keyLabel={key} keyColor={keyColors[key]} />
+          <Key key={index} keyLabel={key} keyColor={keyColors[key.toUpperCase()]} />
         ))}
       </div>
     </div>

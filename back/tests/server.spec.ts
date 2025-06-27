@@ -6,7 +6,7 @@ import * as databaseService from '../src/services/databaseService';
 import * as constants from '../src/utils/constants';
 import * as storeModule from '../src/store';
 import FullUser from '../src/models/User';
-import { Server as ServerNS } from 'src/models/Message';
+import { Server as ServerNS } from '../src/utils/Message.js';
 
 // Use require to access unexported functions for testing
 const serverModule = require('../src/server');
@@ -48,7 +48,6 @@ describe('initializeConnection', () => {
         moderatorLevel: 1,
         isLoggedIn: true,
         isMobile: false,
-        sentTheScore: false,
         words: [],
         isBanned: false,
         xp: 0,
@@ -125,7 +124,6 @@ describe('logMessage', () => {
         moderatorLevel: 1,
         isLoggedIn: true,
         isMobile: false,
-        sentTheScore: false,
         words: [],
         isBanned: false,
         xp: 0,
@@ -172,7 +170,6 @@ describe('handleMessage', () => {
         moderatorLevel: 0,
         isLoggedIn: true,
         isMobile: false,
-        sentTheScore: false,
         words: [],
         isBanned: false,
         xp: 0,
@@ -259,7 +256,6 @@ describe('handleChatMessage', () => {
         moderatorLevel: 0,
         isLoggedIn: true,
         isMobile: false,
-        sentTheScore: false,
         words: [],
         isBanned: false,
         xp: 0,
@@ -309,7 +305,6 @@ describe('handleMailAll', () => {
         moderatorLevel: 0,
         isLoggedIn: true,
         isMobile: false,
-        sentTheScore: false,
         words: [],
         isBanned: false,
         xp: 0,
@@ -359,7 +354,6 @@ describe('handleScoreToChat', () => {
         moderatorLevel: 0,
         isLoggedIn: true,
         isMobile: false,
-        sentTheScore: false,
         words: [],
         isBanned: false,
         xp: 0,
@@ -376,7 +370,6 @@ describe('handleScoreToChat', () => {
     jest.restoreAllMocks();
   });
   it('should return if user already sent score', async () => {
-    user.privateUser.sentTheScore = true;
     const { handleScoreToChat } = serverModule;
     await handleScoreToChat(user, { type: 'scoreToChat', content: { attempts: [['W', 'O', 'R', 'D']] } });
     expect(mockSendMessagesAll).not.toHaveBeenCalled();
@@ -432,7 +425,6 @@ describe('handleDeleteMessage', () => {
         moderatorLevel: 1,
         isLoggedIn: true,
         isMobile: false,
-        sentTheScore: false,
         words: [],
         isBanned: false,
         xp: 0,
@@ -489,7 +481,6 @@ describe('handleCustomMessageType', () => {
         moderatorLevel: 1,
         isLoggedIn: true,
         isMobile: false,
-        sentTheScore: false,
         words: [],
         isBanned: false,
         xp: 0,

@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import Constants from "src/utils/constants.js";
-import FullUser from "src/models/User.js";
-import store from "src/store.js";
-import { Server, Client } from "src/models/Message";
+import Constants from "./constants.js";
+import FullUser from "../models/User.js";
+import store from "../store.js";
+import { Server, Client } from "../utils/Message.js";
 
 // Define DatabaseMessage and DatabaseMessageType locally
 type DatabaseMessageType = "score" | "enhancedMessage" | "message";

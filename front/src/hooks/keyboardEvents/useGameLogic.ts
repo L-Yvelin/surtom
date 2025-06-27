@@ -9,6 +9,8 @@ import {
 } from "../../utils/gameLogic";
 import useGameStore from "../../stores/useGameStore";
 import useUIStore from "../../stores/useUIStore";
+import { useWebSocketStore } from "../../stores/useWebSocketStore";
+import { Client } from "../../utils/Message";
 
 const useGameLogic = () => {
   const {
@@ -19,13 +21,15 @@ const useGameLogic = () => {
     solution,
     addAchievement,
     validWords,
+    gameFinished,
   } = useGameStore();
 
   const { setVisibility } = useUIStore();
   const skipFirstLetter = useRef(true);
+  const { sendMessage } = useWebSocketStore();
 
   useEffect(() => {
-    if (!solution) return;
+    if (!solution || gameFinished()) return;
     setLetters([{ letter: solution[0], state: LetterState.Correct }]);
   }, [solution, setLetters]);
 
@@ -67,6 +71,7 @@ const useGameLogic = () => {
       .toUpperCase();
 
     if (isGuessValid(guess, solution) && validWords.includes(guess)) {
+      sendMessage({ type: Client.MessageType.TRY, content: guess });
       const guessColors = validateWord(guess, solution);
       const newTry = letters.map((l, i) => ({ ...l, state: guessColors[i] }));
       addTry(newTry);

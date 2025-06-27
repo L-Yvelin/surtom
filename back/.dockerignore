@@ -1,5 +1,5 @@
 node_modules
-tests
-*.log
-*.test.ts
+.git
+.vscode
 .env
+dist
