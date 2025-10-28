@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { Letter, LetterState, Word } from "../../../../utils/Message";
+import { Letter, LetterState, Word } from "@surtom/interfaces";
 
 export interface CellProps {
   letter: Letter | undefined;

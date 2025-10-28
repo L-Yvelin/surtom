@@ -1,7 +1,7 @@
 import { CSSProperties, JSX } from "react";
 import Row from "./Row/Row";
 import classes from "./Grid.module.css";
-import { Tries } from "../../../../utils/Message";
+import { Tries } from "@surtom/interfaces";
 
 interface GridProps {
   solution: string;

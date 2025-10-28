@@ -1,20 +1,29 @@
 {
+  "name": "surtom",
+  "private": true,
+  "workspaces": [
+    "front",
+    "back",
+    "interfaces"
+  ],
   "scripts": {
     "postinstall": "husky install",
-    "format": "prettier --write .",
-    "lint:secrets": "secretlint \"**/*.{js,ts,tsx,json,md,yml}\"",
+    "format": "npx pretty-quick",
+    "lint:secrets": "secretlint \"**/*\"",
     "prepare": "husky install",
-    "dev": "npm run dev:back & npm run dev:front",
-    "dev:back": "npm --prefix ./back run dev",
-    "dev:front": "npm --prefix ./front run dev",
-    "build": "npm run build:back && npm run build:front",
-    "build:back": "npm --prefix ./back run build",
-    "build:front": "npm --prefix ./front run build",
-    "test": "npm run test:back && npm run test:front",
-    "test:back": "npm --prefix ./back run test"
+    "dev": "concurrently \"npm:dev:*\"",
+    "dev:back": "npm run dev --workspace=back",
+    "dev:front": "npm run dev --workspace=front",
+    "build": "tsc --build",
+    "typecheck": "tsc --build --force",
+    "build:back": "npm run build --workspace=back",
+    "build:front": "npm run build --workspace=front",
+    "test": "npm run test --workspaces",
+    "test:back": "npm run test --workspace=back"
   },
   "devDependencies": {
     "@secretlint/secretlint-rule-preset-recommend": "^10.1.1",
+    "concurrently": "^8.2.2",
     "husky": "^8.0.0",
     "prettier": "^3.6.1",
     "secretlint": "^10.1.1"

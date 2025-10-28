@@ -1,4 +1,4 @@
-import { Server } from "../../utils/Message";
+import { Server } from "@surtom/interfaces";
 
 export const funnyNames = [
   "Surtomien",

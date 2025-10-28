@@ -3,7 +3,7 @@ import classes from "./Chat.module.css";
 import classNames from "classnames";
 import ChatInput from "./ChatInput/ChatInput";
 import MessagesBox from "./MessagesBox/Messages";
-import { Server } from "../../utils/Message";
+import { Server } from "@surtom/interfaces";
 import useUIStore from "../../stores/useUIStore";
 import useClickOutside from "../../hooks/useClickOutside";
 import useChatStore from "../../stores/useChatStore";

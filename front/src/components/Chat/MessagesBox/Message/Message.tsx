@@ -1,6 +1,6 @@
 import { JSX, memo } from "react";
 import classes from "./Message.module.css";
-import { Server, Client } from "../../../../utils/Message";
+import { Server, Client } from "@surtom/interfaces";
 import MessageTool from "./MessageTool/MessageTool";
 import classNames from "classnames";
 import SwipeActions from "../../../Widgets/SwipeActions/SwipeActions";

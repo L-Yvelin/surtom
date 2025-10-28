@@ -3,7 +3,7 @@ import classNames from "classnames";
 import classes from "./Keyboard.module.css";
 import useGameStore from "../../../stores/useGameStore";
 import { getKeyboardClass, getKeyboardLayout, KeyboardLayouts } from "./utils";
-import { LetterState } from "../../../utils/Message";
+import { LetterState } from "@surtom/interfaces";
 import Key from "./Key";
 
 interface KeyboardProps {

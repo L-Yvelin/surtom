@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "npm run build --workspace=@surtom/interfaces",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@surtom/interfaces": "1.0.0",
     "classnames": "^2.5.1",
     "immer": "^10.1.1",
     "js-cookie": "^3.0.5",

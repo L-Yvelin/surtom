@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { Server } from "../../../../../utils/Message";
+import { Server } from "@surtom/interfaces";
 import classes from "../Message.module.css";
 import { getValidatedWords } from "../../../../../utils/gameLogic";
 import PlayerName from "../PlayerName/PlayerName";

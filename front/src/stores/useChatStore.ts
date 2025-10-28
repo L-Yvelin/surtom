@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Server } from "../utils/Message";
+import { Server } from "@surtom/interfaces";
 import { defaultPlayer } from "./useGameStore";
 import { isSavedChatMessage } from "../components/Chat/utils";
 

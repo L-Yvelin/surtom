@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { Server } from "../../../../../utils/Message";
+import { Server } from "@surtom/interfaces";
 import classes from "../Message.module.css";
 
 function StatusContent({

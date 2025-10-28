@@ -2,7 +2,7 @@ import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import classes from "./ChatInput.module.css";
 import useChatStore from "../../../stores/useChatStore";
 import classNames from "classnames";
-import { Server, Client } from "../../../utils/Message";
+import { Server, Client } from "@surtom/interfaces";
 import { isSavedChatMessage, isScoreMessage, isTextMessage } from "../utils";
 import { useWebSocketStore } from "../../../stores/useWebSocketStore";
 import useChatInputHistory from "../../../hooks/useChatInputHistory";

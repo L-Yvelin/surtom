@@ -2,14 +2,14 @@ import { JSX, useMemo, useRef } from "react";
 import classes from "./EndPage.module.css";
 import classNames from "classnames";
 import { getLetterColor } from "../Main/Game/Grid/types";
-import { LetterState } from "../../utils/Message";
+import { LetterState } from "@surtom/interfaces";
 import useClickOutside from "../../hooks/useClickOutside";
 import Button from "../Widgets/Button/Button";
 import copyIcon from "../../assets/images/ui/copy-icon.png";
 import useGameStore from "../../stores/useGameStore";
 import useUIStore from "../../stores/useUIStore";
 import { useWebSocketStore } from "../../stores/useWebSocketStore";
-import { Client } from "../../utils/Message";
+import { Client } from "@surtom/interfaces";
 
 interface EndPageProps {
   endPageButtonRef: React.RefObject<HTMLButtonElement | null>;

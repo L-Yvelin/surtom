@@ -3,7 +3,7 @@ import crypto from "crypto";
 import Constants from "./constants.js";
 import FullUser from "../models/User.js";
 import store from "../store.js";
-import { Server, Client } from "../utils/Message.js";
+import { Server, Client } from "@surtom/interfaces/Message.js";
 
 // Define DatabaseMessage and DatabaseMessageType locally
 type DatabaseMessageType = "score" | "enhancedMessage" | "message";

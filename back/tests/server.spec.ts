@@ -6,7 +6,7 @@ import * as databaseService from "../src/services/databaseService";
 import * as constants from "../src/utils/constants";
 import * as storeModule from "../src/store";
 import FullUser from "../src/models/User";
-import { Server as ServerNS } from "../src/utils/Message.js";
+import { Server as ServerNS } from "@surtom/interfaces/Message.js";
 
 // Use require to access unexported functions for testing
 const serverModule = require("../src/server");

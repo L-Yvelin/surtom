@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Server, Client } from "../utils/Message";
+import { Server, Client } from "@surtom/interfaces";
 import { validateServerMessage } from "../utils/validator";
 import useGameStore from "./useGameStore";
 import useChatStore from "./useChatStore";

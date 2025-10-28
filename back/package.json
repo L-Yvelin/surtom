@@ -1,7 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "npm run build && node -r dotenv/config dist/src/server.js",
+    "predev": "npm run build --workspace=@surtom/interfaces",
+    "dev": "nodemon --watch src --ext ts --exec 'tsx -r dotenv/config src/server.ts'",
     "start": "node dist/src/server",
     "test": "jest",
     "build": "tsc",
@@ -9,6 +10,7 @@
     "generate-models": "./generate-models.sh"
   },
   "dependencies": {
+    "@surtom/interfaces": "1.0.0",
     "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",

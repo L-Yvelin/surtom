@@ -3,7 +3,7 @@
   -webkit-backdrop-filter: saturate(125%);
   backdrop-filter: saturate(125%);
   background-color: var(--couleur2);
-  background-image: url("/src/assets/images/blocks/grass_256.png");
+  background-image: url('/src/assets/images/blocks/grass_256.png');
   background-repeat: repeat-x;
   image-rendering: pixelated;
   display: flex;
@@ -22,6 +22,7 @@
   padding: 2vmin 0;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .logo {
@@ -34,5 +35,5 @@
 }
 
 .dark {
-  background-image: url("/src/assets/images/blocks/nylium_256.png");
+  background-image: url('/src/assets/images/blocks/nylium_256.png');
 }

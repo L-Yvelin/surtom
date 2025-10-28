@@ -1,0 +1,17 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "front"
+    },
+    {
+      "path": "back"
+    },
+    {
+      "path": "interfaces"
+    }
+  ],
+  "compilerOptions": {
+    "strict": true
+  }
+}

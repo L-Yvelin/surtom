@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Achievement } from "../../components/AchievementsStack/Achievement/Achievement";
 import { AchievementIcon } from "../../components/AchievementsStack/Achievement/utils";
-import { LetterState } from "../../utils/Message";
+import { LetterState } from "@surtom/interfaces";
 import {
   isGuessValid,
   validateWord,
@@ -10,7 +10,7 @@ import {
 import useGameStore from "../../stores/useGameStore";
 import useUIStore from "../../stores/useUIStore";
 import { useWebSocketStore } from "../../stores/useWebSocketStore";
-import { Client } from "../../utils/Message";
+import { Client } from "@surtom/interfaces";
 
 const useGameLogic = () => {
   const {

@@ -1,5 +1,5 @@
 import { JSX, useCallback, useEffect, useRef } from "react";
-import { Server } from "../../../utils/Message";
+import { Server } from "@surtom/interfaces";
 import Message from "./Message/Message";
 import classes from "./Messages.module.css";
 import useChatStore from "../../../stores/useChatStore";

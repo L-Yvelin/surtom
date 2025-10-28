@@ -1,6 +1,6 @@
 import WS, { WebSocketServer } from "ws";
 import { store } from "./store.js";
-import { Server, Client } from "./utils/Message.js";
+import { Server, Client } from "@surtom/interfaces/Message.js";
 import FullUser from "./models/User.js";
 import databaseService from "./services/databaseService.js";
 import Constants from "./utils/constants.js";

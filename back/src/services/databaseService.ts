@@ -7,7 +7,7 @@ import {
 } from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import { Client, Server } from "../utils/Message.js";
+import { Client, Server } from "@surtom/interfaces";
 import {
   PlayerAttributes,
   MessageAttributes,
