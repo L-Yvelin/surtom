@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 0.5vh;
   border-radius: 0.5vh;
-  padding: .5vh;
+  padding: 0.5vh;
   background-color: black;
   min-width: 20vh;
 }
@@ -14,7 +14,7 @@
   justify-content: space-between;
   align-items: center;
   color: white;
-  padding: .5vh;
+  padding: 0.5vh;
   border-radius: 0.5vh;
   cursor: pointer;
   flex: 1;

@@ -1,14 +1,14 @@
 .tool {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 10px;
-    background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .toolButton {
   all: unset;
-    cursor: pointer;
-    height: 1vh;
-    width: 1vh;
+  cursor: pointer;
+  height: 1vh;
+  width: 1vh;
 }

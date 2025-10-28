@@ -11,8 +11,8 @@
   background-size: 100%;
   background-repeat: no-repeat;
   container-type: size;
-  text-shadow: .25cqh .25cqh 0 rgba(0, 0, 0, 0.5);
-  padding: .5cqh;
+  text-shadow: 0.25cqh 0.25cqh 0 rgba(0, 0, 0, 0.5);
+  padding: 0.5cqh;
   box-sizing: border-box;
 }
 

@@ -102,7 +102,7 @@ function Tools({
           <button
             className={classNames(
               !gameFinished() ? classes.disabled : undefined,
-              classes.tool
+              classes.tool,
             )}
             ref={endPageButtonRef}
             onClick={() => gameFinished() && toggle("showEndPage")}

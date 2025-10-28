@@ -3,7 +3,7 @@ import { Theme } from "../components/Main/Tools/Tools";
 
 const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(
-    (localStorage.getItem("theme") as Theme) || Theme.DARK
+    (localStorage.getItem("theme") as Theme) || Theme.DARK,
   );
 
   const lastSetTimeRef = useRef<number>(Date.now());

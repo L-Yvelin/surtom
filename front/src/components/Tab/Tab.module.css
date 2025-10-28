@@ -1,7 +1,7 @@
 .tab {
   display: flex;
   flex-direction: column;
-  gap: .2vh;
+  gap: 0.2vh;
   overflow: scroll;
   max-height: calc(0.4vh + (20 * (1em + 0.2vh)));
   min-width: 16em;

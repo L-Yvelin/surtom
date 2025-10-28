@@ -51,7 +51,7 @@ const useUIStore = create<
         state.showChat
       );
     },
-  }))
+  })),
 );
 
 export default useUIStore;

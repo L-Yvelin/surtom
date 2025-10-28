@@ -22,7 +22,7 @@ type DatabaseMessage = {
 
 export function passwordInHashArray(
   password: string,
-  hashArray: string[]
+  hashArray: string[],
 ): boolean {
   return hashArray.some((hash) => bcrypt.compareSync(password, hash));
 }
@@ -48,7 +48,11 @@ export function validateText(text: string): boolean {
 }
 
 export function getUserRank(user: FullUser): string | null {
-  return user.privateUser.moderatorLevel ? "moderator" : user.privateUser.isLoggedIn ? "loggedIn" : null;
+  return user.privateUser.moderatorLevel
+    ? "moderator"
+    : user.privateUser.isLoggedIn
+      ? "loggedIn"
+      : null;
 }
 
 export function handleIsBanned(user: FullUser): void {
@@ -65,36 +69,42 @@ export function handleIsBanned(user: FullUser): void {
   user.connection.close();
 }
 
-export function mapDatabaseUserToMemoryUser(
-  user: any | null
-): FullUser | null {
+export function mapDatabaseUserToMemoryUser(user: any | null): FullUser | null {
   if (!user) return null;
   return (
-    Object.values(store.getState().users).find((u) => u.privateUser.name === user.Pseudo) ??
-    null
+    Object.values(store.getState().users).find(
+      (u) => u.privateUser.name === user.Pseudo,
+    ) ?? null
   );
 }
 
 export function mapUserMessageToMemoryMessage(
-  message: DatabaseMessage
+  message: DatabaseMessage,
 ): Server.ChatMessage.Content.TextMessageContent {
   return {
     id: message.ID?.toString() ?? "",
-    user: { name: message.Pseudo ?? "", moderatorLevel: message.Moderator ?? 0 },
+    user: {
+      name: message.Pseudo ?? "",
+      moderatorLevel: message.Moderator ?? 0,
+    },
     text: message.Texte ?? "",
     timestamp: message.Date ?? "",
-    imageData: typeof message.ImageData === 'string' ? message.ImageData : undefined,
+    imageData:
+      typeof message.ImageData === "string" ? message.ImageData : undefined,
     replyId: message.Reply !== undefined ? message.Reply.toString() : undefined,
     deleted: 0,
   };
 }
 
 export function mapScoreMessageToMemoryMessage(
-  message: DatabaseMessage
+  message: DatabaseMessage,
 ): Server.ChatMessage.Content.ScoreMessageContent {
   return {
     id: message.ID?.toString() ?? "",
-    user: { name: message.Pseudo ?? "", moderatorLevel: message.Moderator ?? 0 },
+    user: {
+      name: message.Pseudo ?? "",
+      moderatorLevel: message.Moderator ?? 0,
+    },
     answer: message.Answer ?? "",
     attempts: message.Mots ? JSON.parse(message.Mots) : [],
     timestamp: message.Date ?? "",
@@ -103,7 +113,7 @@ export function mapScoreMessageToMemoryMessage(
 }
 
 export function mapDatabaseTypeToMemoryType(
-  type: DatabaseMessageType | undefined
+  type: DatabaseMessageType | undefined,
 ): Server.MessageType | undefined {
   if (!type) return undefined;
   switch (type) {
@@ -119,8 +129,11 @@ export function mapDatabaseTypeToMemoryType(
 }
 
 export function mapDatabaseMessageToMemoryMessage(
-  message: DatabaseMessage
-): Server.ChatMessage.Content.TextMessageContent | Server.ChatMessage.Content.ScoreMessageContent | undefined {
+  message: DatabaseMessage,
+):
+  | Server.ChatMessage.Content.TextMessageContent
+  | Server.ChatMessage.Content.ScoreMessageContent
+  | undefined {
   if (!message.Type) return undefined;
   switch (mapDatabaseTypeToMemoryType(message.Type)) {
     case Server.MessageType.ENHANCED_MESSAGE:
@@ -138,7 +151,7 @@ export function isScoreContentCoherent(content: Client.ScoreContent): boolean {
     content.attempts.length > 0 &&
     content.attempts.length <= 6 &&
     content.attempts.every(
-      (attempt) => attempt.length === content.attempts[0].length
+      (attempt) => attempt.length === content.attempts[0].length,
     )
   );
 }

@@ -26,10 +26,7 @@ function Game(): JSX.Element {
         <p className={classes.chestLabel}>
           {getChestLabel(shownSolution.length)}
         </p>
-        <Grid
-          solution={shownSolution}
-          tries={[...tries, letters]}
-        />
+        <Grid solution={shownSolution} tries={[...tries, letters]} />
       </div>
     </div>
   );

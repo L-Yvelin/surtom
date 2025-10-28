@@ -19,7 +19,7 @@ export function TooltipSingleton({
   if (!tooltipRef) {
     return;
   }
-  
+
   return createPortal(
     <div
       ref={tooltipRef}
@@ -28,6 +28,6 @@ export function TooltipSingleton({
     >
       {content}
     </div>,
-    document.body
+    document.body,
   );
 }

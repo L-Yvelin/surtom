@@ -10,11 +10,13 @@ interface KeyboardProps {
   layout: KeyboardLayouts;
 }
 
-const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.Element {
+const Keyboard = React.memo(function Keyboard({
+  layout,
+}: KeyboardProps): JSX.Element {
   const { tries } = useGameStore();
   const [keys, setKeys] = useState(() => getKeyboardLayout(layout));
   const [keyboardClass, setKeyboardClass] = useState(() =>
-    getKeyboardClass(layout)
+    getKeyboardClass(layout),
   );
 
   useEffect(() => {
@@ -22,22 +24,31 @@ const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.El
     setKeyboardClass(getKeyboardClass(layout));
   }, [layout]);
 
-  const keyColors = useMemo(() => 
-    tries.reduce((acc, t) => {
-      t.forEach(({ letter, state }) => {
-        if (state !== undefined && (!acc[letter] || acc[letter] < state)) {
-          acc[letter] = state;
-        }
-      });
-      return acc;
-    }, {} as Record<string, LetterState>)
-  , [tries]);  
+  const keyColors = useMemo(
+    () =>
+      tries.reduce(
+        (acc, t) => {
+          t.forEach(({ letter, state }) => {
+            if (state !== undefined && (!acc[letter] || acc[letter] < state)) {
+              acc[letter] = state;
+            }
+          });
+          return acc;
+        },
+        {} as Record<string, LetterState>,
+      ),
+    [tries],
+  );
 
   return (
     <div className={classes.keyboardWrapper}>
       <div className={classNames(classes.keyboard, keyboardClass)}>
         {keys.flat().map((key, index) => (
-          <Key key={index} keyLabel={key} keyColor={keyColors[key.toUpperCase()]} />
+          <Key
+            key={index}
+            keyLabel={key}
+            keyColor={keyColors[key.toUpperCase()]}
+          />
         ))}
       </div>
     </div>

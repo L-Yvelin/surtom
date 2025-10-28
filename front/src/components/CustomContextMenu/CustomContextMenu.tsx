@@ -28,8 +28,8 @@ function CustomContextMenu({
         { x: event.clientX, y: event.clientY },
         menuRef.current,
         offset,
-        Anchor.BOTTOM_RIGHT
-      )
+        Anchor.BOTTOM_RIGHT,
+      ),
     );
   }, [visible, event, offset]);
 
@@ -61,7 +61,7 @@ function CustomContextMenu({
               {menuContent}
             </div>
           </div>,
-          document.body
+          document.body,
         )}
     </span>
   );

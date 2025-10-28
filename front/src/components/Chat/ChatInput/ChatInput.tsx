@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { Server, Client } from "../../../utils/Message";
 import { isSavedChatMessage, isScoreMessage, isTextMessage } from "../utils";
 import { useWebSocketStore } from "../../../stores/useWebSocketStore";
+import useChatInputHistory from "../../../hooks/useChatInputHistory";
 
 interface ChatInputProps {
   onSend: () => void;
@@ -33,6 +34,12 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
   const { sendMessage: sendWebSocketMessage } = useWebSocketStore();
   const { answeringTo, setAnsweringTo, messages, focusInput, setFocusInput } =
     useChatStore();
+  const {
+    push: pushHistory,
+    handleKeyDown: handleHistoryKeyDown,
+    reset: resetHistory,
+    inputRef: historyInputRef,
+  } = useChatInputHistory();
 
   const focusInputFunction = useCallback((message?: string) => {
     if (keyboardRef.current) {
@@ -41,7 +48,7 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
         setInputValue(message);
         keyboardRef.current.setSelectionRange(
           keyboardRef.current.value.length,
-          keyboardRef.current.value.length
+          keyboardRef.current.value.length,
         );
       }
     }
@@ -59,6 +66,7 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(event.target.value);
+    resetHistory();
   }
 
   function sendMessage() {
@@ -72,6 +80,7 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
           replyId: undefined,
         },
       });
+      pushHistory(input.trim());
       setInputValue("");
       focusInput();
     }
@@ -80,6 +89,8 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
       sendMessage();
+    } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+      handleHistoryKeyDown(event, setInputValue);
     }
   }
 
@@ -91,7 +102,10 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
       <input
         className={classes.input}
         type="text"
-        ref={keyboardRef}
+        ref={(el) => {
+          keyboardRef.current = el;
+          historyInputRef.current = el;
+        }}
         value={input}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
@@ -106,7 +120,7 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
           (() => {
             const message = messages.find(
               (m): m is Server.ChatMessage.SavedType =>
-                isSavedChatMessage(m) && m.content.id === answeringTo
+                isSavedChatMessage(m) && m.content.id === answeringTo,
             );
             if (message) {
               return (

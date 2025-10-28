@@ -1,8 +1,21 @@
 import path from "path";
-import { createPool, Pool, RowDataPacket, ResultSetHeader } from "mysql2/promise";
+import {
+  createPool,
+  Pool,
+  RowDataPacket,
+  ResultSetHeader,
+} from "mysql2/promise";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import { Client, Server } from "../utils/Message.js";
+import {
+  PlayerAttributes,
+  MessageAttributes,
+  ScoreContentAttributes,
+  MotMinecraftAttributes,
+  MotValideCombineAttributes,
+  TryAttributes,
+} from "../dbModels/init-models";
 
 const dirname = path.resolve();
 dotenv.config({ path: path.resolve(dirname, ".env") });
@@ -15,35 +28,6 @@ export interface Player {
   registrationDate: Date;
   isAdmin: number;
   isBanned: number;
-}
-
-interface MessageRow {
-  ID: number;
-  Username: string;
-  Timestamp: string | Date;
-  Type: string;
-  Text: string | null;
-  ImageData?: string | null;
-  ReplyID?: number | null;
-  Answer?: string | null;
-  Attempts?: string | null;
-  IsCustom?: number | null;
-  IsAdmin?: number;
-  Deleted?: number | null;
-}
-
-interface PlayerRow {
-  ID: number;
-  Username: string;
-  Password: string;
-  SessionHash?: string | null;
-  RegistrationDate: string | Date;
-  IsAdmin: number;
-  IsBanned: number;
-}
-
-interface ScoreContentRow {
-  Attempts: string;
 }
 
 class DatabaseService {
@@ -62,56 +46,66 @@ class DatabaseService {
   }
 
   async getTodaysWord(): Promise<string | null> {
-    const [results] = await this.pool.query<RowDataPacket[]>(`
-      SELECT m.MotMinecraft
+    const [results] = await this.pool.query<
+      (MotMinecraftAttributes & RowDataPacket)[]
+    >(
+      `SELECT m.MotMinecraft
       FROM MotMinecraft m, WordHistory w
       WHERE DATE(w.AssignedDate) = CURDATE()
       AND w.WordID = m.ID
       ORDER BY w.AssignedDate DESC
-      LIMIT 1;
-    `);
-    return results.length ? (results[0] as { MotMinecraft: string }).MotMinecraft : null;
+      LIMIT 1;`,
+    );
+    return results.length ? results[0].MotMinecraft : null;
   }
 
   async getOrCreateTodaysWord(): Promise<string> {
     const todaysWord = await this.getTodaysWord();
     if (todaysWord) return todaysWord;
 
-    const [randomWordResults] = await this.pool.query<RowDataPacket[]>(
+    const [randomWordResults] = await this.pool.query<
+      (MotMinecraftAttributes & RowDataPacket)[]
+    >(
       `SELECT ID, MotMinecraft FROM MotMinecraft WHERE Rotation = (
         SELECT MIN(Rotation) FROM MotMinecraft
-      ) ORDER BY RAND() LIMIT 1;`
+      ) ORDER BY RAND() LIMIT 1;`,
     );
-    if (!randomWordResults.length) throw new Error("No words available in MotMinecraft");
-    const { ID, MotMinecraft } = randomWordResults[0] as { ID: number; MotMinecraft: string };
+    if (!randomWordResults.length)
+      throw new Error("No words available in MotMinecraft");
+    const { ID, MotMinecraft } = randomWordResults[0];
 
     await this.pool.query(
       `INSERT INTO WordHistory (WordID, AssignedDate) VALUES (?, CURDATE());`,
-      [ID]
+      [ID],
     );
 
     await this.pool.query(
       `UPDATE MotMinecraft SET Rotation = Rotation + 1 WHERE ID = ?;`,
-      [ID]
+      [ID],
     );
 
     return MotMinecraft;
   }
 
   async getValidWords(word: string): Promise<string[]> {
-    const [results] = await this.pool.query<RowDataPacket[]>(`
-      SELECT MotValide
+    const [results] = await this.pool.query<
+      (MotValideCombineAttributes & RowDataPacket)[]
+    >(
+      `SELECT MotValide
       FROM MotValideCombine
-      WHERE MotValide LIKE "${word[0] + "_".repeat(word.length - 1)}";`);
-    return results.map((row) => (row as { MotValide: string }).MotValide);
+      WHERE MotValide LIKE "${word[0] + "_".repeat(word.length - 1)}";`,
+    );
+    return results.length ? results.map((row) => row.MotValide) : [];
   }
 
   async getMessages(
     includeDeleted = false,
     max = 200,
-    showHelp = false
+    showHelp = false,
   ): Promise<Server.ChatMessage.SavedType[]> {
-    const whereClause = includeDeleted ? "" : "WHERE m.Deleted IS NULL OR m.Deleted = 0";
+    const whereClause = includeDeleted
+      ? ""
+      : "WHERE m.Deleted IS NULL OR m.Deleted = 0";
     const query = `
       SELECT
         m.ID,
@@ -134,8 +128,27 @@ class DatabaseService {
       ORDER BY m.Timestamp DESC
       LIMIT ?;
     `;
-    const [results] = await this.pool.query<RowDataPacket[]>(query, [max]);
-    const messages = (results as MessageRow[]).map((row) => this.mapMessage(row));
+    type MessageJoinRow = {
+      ID: number;
+      Username: string;
+      Timestamp: string | Date;
+      Type: string;
+      Text: string | null;
+      ImageData?: string | null;
+      ReplyID?: number | null;
+      Answer?: string | null;
+      Attempts?: string | null;
+      IsCustom?: number | null;
+      IsAdmin?: number;
+      Deleted?: number | null;
+    };
+    const [results] = await this.pool.query<(MessageJoinRow & RowDataPacket)[]>(
+      query,
+      [max],
+    );
+    const messages = results.length
+      ? results.map((row) => this.mapMessage(row))
+      : [];
     if (showHelp) {
       messages.unshift(this.getHelpMessage());
     }
@@ -143,18 +156,30 @@ class DatabaseService {
   }
 
   async getMessageById(
-    id: number
-  ): Promise<Server.ChatMessage.SavedType | null> {
-    const [results] = await this.pool.query<RowDataPacket[]>(
+    id: number,
+  ): Promise<Server.ChatMessage.SavedType | undefined> {
+    type MessageJoinRow = {
+      ID: number;
+      Username: string;
+      Timestamp: string | Date;
+      Type: string;
+      Text: string | null;
+      ImageData?: string | null;
+      ReplyID?: number | null;
+      Answer?: string | null;
+      Attempts?: string | null;
+      IsCustom?: number | null;
+      IsAdmin?: number;
+      Deleted?: number | null;
+    };
+    const [results] = await this.pool.query<(MessageJoinRow & RowDataPacket)[]>(
       "SELECT m.ID, p.Username, m.Timestamp, m.Type, tc.Text, tc.ImageData, tc.ReplyID, sc.Answer, sc.Attempts, sc.IsCustom, p.IsAdmin, m.Deleted FROM Message m JOIN Player p ON m.PlayerID = p.ID LEFT JOIN TextContent tc ON m.ID = tc.ID LEFT JOIN ScoreContent sc ON m.ID = sc.ID WHERE m.ID = ?",
-      [id]
+      [id],
     );
-    return (results as MessageRow[]).length
-      ? this.mapMessage((results as MessageRow[])[0])
-      : null;
+    return results.length ? this.mapMessage(results[0]) : undefined;
   }
 
-  private mapMessage(row: MessageRow): Server.ChatMessage.SavedType {
+  private mapMessage(row: any): Server.ChatMessage.SavedType {
     const baseContent: Server.ChatMessage.Content.BaseMessageContent = {
       id: row.ID.toString(),
       user: {
@@ -207,7 +232,7 @@ class DatabaseService {
 
   async saveMessage(
     user: Server.PrivateUser,
-    message: Client.ChatMessage
+    message: Client.ChatMessage,
   ): Promise<Server.Message> {
     const player = await this.getPlayerByName(user.name);
     if (!player) throw new Error("Player not found");
@@ -215,7 +240,7 @@ class DatabaseService {
     const timestamp = new Date();
     const [messageResult] = await this.pool.query<ResultSetHeader>(
       "INSERT INTO Message (PlayerID, Timestamp, Type) VALUES (?, ?, ?)",
-      [player.id, timestamp, this.mapMessageType(message.type)]
+      [player.id, timestamp, this.mapMessageType(message.type)],
     );
 
     const messageId = messageResult.insertId;
@@ -227,10 +252,12 @@ class DatabaseService {
           "INSERT INTO ScoreContent (ID, Answer, Attempts, IsCustom) VALUES (?, ?, ?, ?)",
           [
             messageId,
-            message.content.custom ? message.content.custom : (await this.getTodaysWord()),
+            message.content.custom
+              ? message.content.custom
+              : await this.getTodaysWord(),
             JSON.stringify(attempts),
             !!custom,
-          ]
+          ],
         );
 
         return {
@@ -260,7 +287,7 @@ class DatabaseService {
             text,
             imageData || null,
             replyId ? parseInt(replyId) : null,
-          ]
+          ],
         );
 
         return {
@@ -287,9 +314,7 @@ class DatabaseService {
     }
   }
 
-  private mapMessageType(
-    clientType: Client.MessageType
-  ): string {
+  private mapMessageType(clientType: Client.MessageType): string {
     switch (clientType) {
       case Client.MessageType.SCORE_TO_CHAT:
         return "SCORE";
@@ -301,7 +326,7 @@ class DatabaseService {
 
   async toggleMessage(
     messageId: number,
-    user: Server.PrivateUser
+    user: Server.PrivateUser,
   ): Promise<boolean> {
     const message = await this.getMessageById(messageId);
     if (!message) return false;
@@ -316,35 +341,33 @@ class DatabaseService {
 
     const [result] = await this.pool.query<ResultSetHeader>(
       "UPDATE Message SET Deleted = ? WHERE ID = ?",
-      [newDeletedStatus, messageId]
+      [newDeletedStatus, messageId],
     );
     return result.affectedRows > 0;
   }
 
   async getLastMessageTimestamp(): Promise<string | null> {
-    const [results] = await this.pool.query<RowDataPacket[]>(
-      "SELECT Timestamp FROM Message ORDER BY Timestamp DESC LIMIT 1"
-    );
-    return results.length ? (results[0] as { Timestamp: string }).Timestamp : null;
+    const [results] = await this.pool.query<
+      (Pick<MessageAttributes, "Timestamp"> & RowDataPacket)[]
+    >("SELECT Timestamp FROM Message ORDER BY Timestamp DESC LIMIT 1");
+    return results.length ? (results[0].Timestamp as unknown as string) : null;
   }
 
-  async getPlayerBySessionHash(hash: string): Promise<Player | null> {
-    const [results] = await this.pool.query<RowDataPacket[]>(
-      "SELECT * FROM Player WHERE SessionHash = ?",
-      [hash]
-    );
-    return results.length ? this.mapPlayer(results[0] as PlayerRow) : null;
+  async getPlayerBySessionHash(hash: string): Promise<Player | undefined> {
+    const [results] = await this.pool.query<
+      (PlayerAttributes & RowDataPacket)[]
+    >("SELECT * FROM Player WHERE SessionHash = ?", [hash]);
+    return results.length ? this.mapPlayer(results[0]) : undefined;
   }
 
-  async getPlayerByName(username: string): Promise<Player | null> {
-    const [results] = await this.pool.query<RowDataPacket[]>(
-      "SELECT * FROM Player WHERE Username = ?",
-      [username]
-    );
-    return results.length ? this.mapPlayer(results[0] as PlayerRow) : null;
+  async getPlayerByName(username: string): Promise<Player | undefined> {
+    const [results] = await this.pool.query<
+      (PlayerAttributes & RowDataPacket)[]
+    >("SELECT * FROM Player WHERE Username = ?", [username]);
+    return results.length ? this.mapPlayer(results[0]) : undefined;
   }
 
-  private mapPlayer(row: PlayerRow): Player {
+  private mapPlayer(row: PlayerAttributes): Player {
     return {
       id: row.ID,
       username: row.Username,
@@ -365,7 +388,7 @@ class DatabaseService {
     const hashedPassword = await bcrypt.hash(password, 10);
     await this.pool.query(
       "INSERT INTO Player (Username, Password) VALUES (?, ?)",
-      [username, hashedPassword]
+      [username, hashedPassword],
     );
   }
 
@@ -391,9 +414,11 @@ class DatabaseService {
   }
 
   async getScoreDistribution(
-    username: string
+    username: string,
   ): Promise<{ [key: number]: number }> {
-    const [results] = await this.pool.query<RowDataPacket[]>(
+    const [results] = await this.pool.query<
+      (Pick<ScoreContentAttributes, "Attempts"> & RowDataPacket)[]
+    >(
       `
       SELECT sc.Attempts
       FROM ScoreContent sc
@@ -416,18 +441,23 @@ class DatabaseService {
           WHERE m2.Type = 'SCORE' AND p2.Username = ?
         )
       `,
-      [username, username, username]
+      [username, username, username],
     );
 
-    return results.reduce((acc, row) => {
-      const attempts = JSON.parse((row as ScoreContentRow).Attempts).length;
-      acc[attempts] = (acc[attempts] || 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
+    return results.reduce(
+      (acc, row) => {
+        const attempts = JSON.parse(row.Attempts).length;
+        acc[attempts] = (acc[attempts] || 0) + 1;
+        return acc;
+      },
+      {} as Record<number, number>,
+    );
   }
 
   async getDailyScore(username: string): Promise<string[][]> {
-    const [results] = await this.pool.query<RowDataPacket[]>(
+    const [results] = await this.pool.query<
+      (Pick<ScoreContentAttributes, "Attempts"> & RowDataPacket)[]
+    >(
       `
       SELECT sc.Attempts
       FROM ScoreContent sc
@@ -437,10 +467,10 @@ class DatabaseService {
       AND p.Username = ?
       AND DATE(m.Timestamp) = CURDATE();
     `,
-      [username]
+      [username],
     );
 
-    return results.length > 0 ? JSON.parse((results[0] as ScoreContentRow).Attempts) : [];
+    return results.length > 0 ? JSON.parse(results[0].Attempts) : [];
   }
 
   public getPool(): Pool {
@@ -448,50 +478,81 @@ class DatabaseService {
   }
 
   async getTodaysTriesForPlayer(playerName: string): Promise<string[]> {
-    const [rows] = await this.pool.query<RowDataPacket[]>(
+    const [rows] = await this.pool.query<
+      (Pick<TryAttributes, "Attempts"> & RowDataPacket)[]
+    >(
       `SELECT Attempts FROM Try t
        JOIN Player p ON t.PlayerID = p.ID
        JOIN WordHistory w ON t.WordHistoryID = w.ID
        WHERE p.Username = ? AND DATE(w.AssignedDate) = CURDATE()`,
-      [playerName]
+      [playerName],
     );
-    return rows.map(row => JSON.parse((row as { Attempts: string }).Attempts))[0];
+    return rows.length ? rows.map((row) => JSON.parse(row.Attempts))[0] : [];
   }
 
-  async getOrCreateTry(playerId: number, wordHistoryId: number): Promise<{ attempts: string[], win: boolean }> {
-    const [rows] = await this.pool.query(
+  async getOrCreateTry(
+    playerId: number,
+    wordHistoryId: number,
+  ): Promise<{ attempts: string[]; win: boolean }> {
+    const [rows] = await this.pool.query<
+      (Pick<TryAttributes, "Attempts" | "Win"> & RowDataPacket)[]
+    >(
       `SELECT Attempts, Win FROM Try WHERE PlayerID = ? AND WordHistoryID = ?`,
-      [playerId, wordHistoryId]
+      [playerId, wordHistoryId],
     );
     if (Array.isArray(rows) && rows.length > 0) {
-      const row = rows[0] as { Attempts: string; Win: number };
+      const row = rows[0];
       return { attempts: JSON.parse(row.Attempts || "[]"), win: !!row.Win };
     } else {
       return { attempts: [], win: false };
     }
   }
 
-  async updateTry(playerId: number, wordHistoryId: number, attempts: string[], win: boolean): Promise<void> {
+  async updateTry(
+    playerId: number,
+    wordHistoryId: number,
+    attempts: string[],
+    win: boolean,
+  ): Promise<void> {
     await this.pool.query(
       `INSERT INTO Try (PlayerID, WordHistoryID, Attempts, Win, AttemptCount) VALUES (?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE Attempts = VALUES(Attempts), Win = VALUES(Win), AttemptCount = VALUES(AttemptCount);`,
-      [playerId, wordHistoryId, JSON.stringify(attempts), win, attempts.length]
+      [playerId, wordHistoryId, JSON.stringify(attempts), win, attempts.length],
     );
   }
 
-  async getTodaysWordAndHistoryId(): Promise<{ wordHistoryId: number, todaysWord: string }> {
-    const [rows] = await this.pool.query(
-      `SELECT w.ID as WordHistoryID, m.MotMinecraft FROM WordHistory w JOIN MotMinecraft m ON w.WordID = m.ID WHERE DATE(w.AssignedDate) = CURDATE() ORDER BY w.AssignedDate DESC LIMIT 1;`
+  async getTodaysWordAndHistoryId(): Promise<{
+    wordHistoryId: number;
+    todaysWord: string;
+  }> {
+    type WordHistoryJoinRow = {
+      WordHistoryID: number;
+      MotMinecraft: string;
+    };
+    const [rows] = await this.pool.query<
+      (WordHistoryJoinRow & RowDataPacket)[]
+    >(
+      `SELECT w.ID as WordHistoryID, m.MotMinecraft FROM WordHistory w JOIN MotMinecraft m ON w.WordID = m.ID WHERE DATE(w.AssignedDate) = CURDATE() ORDER BY w.AssignedDate DESC LIMIT 1;`,
     );
-    const wordRows = rows as { WordHistoryID: number; MotMinecraft: string }[];
-    if (!Array.isArray(wordRows) || wordRows.length === 0) throw new Error("Mot du jour introuvable.");
-    return { wordHistoryId: wordRows[0].WordHistoryID, todaysWord: wordRows[0].MotMinecraft.toUpperCase() };
+    if (!Array.isArray(rows) || rows.length === 0)
+      throw new Error("Mot du jour introuvable.");
+    return {
+      wordHistoryId: rows[0].WordHistoryID,
+      todaysWord: rows[0].MotMinecraft.toUpperCase(),
+    };
+  }
+
+  async getPlayerXp(playerName: string): Promise<number> {
+    return new Promise((resolve) => {
+      resolve(0);
+    });
   }
 }
 
 const dbConfig = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
+  port: process.env.DB_PORT,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   charset: process.env.DB_CHARSET,

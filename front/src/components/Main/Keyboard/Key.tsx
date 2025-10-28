@@ -16,12 +16,12 @@ function Key({ keyLabel, keyColor }: KeyProps): JSX.Element {
       className={classNames(
         classes.key,
         getKeyClassName(keyLabel),
-        classes[getKeyColorClassName(keyColor)]
+        classes[getKeyColorClassName(keyColor)],
       )}
       style={getKeyStyle(keyLabel)}
       onClick={() =>
         window.dispatchEvent(
-          new KeyboardEvent("keydown", { key: getButtonKeyEvent(keyLabel) })
+          new KeyboardEvent("keydown", { key: getButtonKeyEvent(keyLabel) }),
         )
       }
     >

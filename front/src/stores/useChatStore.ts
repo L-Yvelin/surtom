@@ -34,13 +34,16 @@ const useChatStore = create<ChatStore>((set) => ({
   setAnsweringTo: (id) => set({ answeringTo: id }),
   removeMessage: (messageId) =>
     set((state) => ({
-      messages: state.messages?.filter((m) => isSavedChatMessage(m) && m.content.id !== messageId) || [],
+      messages:
+        state.messages?.filter(
+          (m) => isSavedChatMessage(m) && m.content.id !== messageId,
+        ) || [],
     })),
   addMessage: (message) =>
     set((state) => ({ messages: [...(state.messages || []), message] })),
-  scrollToBottom: () => { },
+  scrollToBottom: () => {},
   setScrollToBottom: (fn) => set({ scrollToBottom: fn }),
-  focusInput: () => { },
+  focusInput: () => {},
   setFocusInput: (fn) => set({ focusInput: fn }),
 }));
 

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 function useClickOutside<T extends HTMLElement>(
   ref: React.RefObject<T | null>,
   handler: () => void,
-  ignoredRefs: React.RefObject<HTMLElement | null>[] = []
+  ignoredRefs: React.RefObject<HTMLElement | null>[] = [],
 ) {
   useEffect(() => {
     const hasIgnoreAttribute = (element: Element | null): boolean => {
@@ -20,7 +20,7 @@ function useClickOutside<T extends HTMLElement>(
         (target instanceof Node && ref.current?.contains(target)) ||
         ignoredRefs.some(
           (ignoredRef) =>
-            target instanceof Node && ignoredRef.current?.contains(target)
+            target instanceof Node && ignoredRef.current?.contains(target),
         ) ||
         (target instanceof Element && hasIgnoreAttribute(target))
       ) {

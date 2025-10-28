@@ -29,10 +29,13 @@ function isClientScoreContent(content: any): boolean {
   return (
     content &&
     typeof content === "object" &&
-    (typeof content.custom === "undefined" || typeof content.custom === "string") &&
+    (typeof content.custom === "undefined" ||
+      typeof content.custom === "string") &&
     Array.isArray(content.attempts) &&
     content.attempts.every(
-      (row: any) => Array.isArray(row) && row.every((cell: any) => typeof cell === "string")
+      (row: any) =>
+        Array.isArray(row) &&
+        row.every((cell: any) => typeof cell === "string"),
     )
   );
 }
@@ -68,7 +71,8 @@ function isLoginMessage(content: any): boolean {
     typeof content.user.xp === "number" &&
     typeof content.user.isMobile === "boolean" &&
     typeof content.user.isLoggedIn === "boolean" &&
-    (typeof content.sessionHash === "undefined" || typeof content.sessionHash === "string")
+    (typeof content.sessionHash === "undefined" ||
+      typeof content.sessionHash === "string")
   );
 }
 
@@ -85,7 +89,8 @@ function isServerUser(user: any): boolean {
 }
 
 function isSavedType(obj: any): boolean {
-  if (!obj || typeof obj !== "object" || typeof obj.type !== "string") return false;
+  if (!obj || typeof obj !== "object" || typeof obj.type !== "string")
+    return false;
   switch (obj.type) {
     case Server.MessageType.MAIL_ALL:
     case Server.MessageType.PRIVATE_MESSAGE:
@@ -120,8 +125,14 @@ export function validateServerMessage(msg: Server.Message): boolean {
     case Server.MessageType.EVAL:
       return typeof msg.content === "string";
     case Server.MessageType.MESSAGE:
-      if (!msg.content || typeof msg.content !== "object" || typeof (msg.content as any).type !== "string") return false;
-      const innerType: Server.ChatMessage.Type["type"] = (msg.content as any).type;
+      if (
+        !msg.content ||
+        typeof msg.content !== "object" ||
+        typeof (msg.content as any).type !== "string"
+      )
+        return false;
+      const innerType: Server.ChatMessage.Type["type"] = (msg.content as any)
+        .type;
       switch (innerType) {
         case Server.MessageType.MAIL_ALL:
         case Server.MessageType.PRIVATE_MESSAGE:
@@ -140,8 +151,16 @@ export function validateServerMessage(msg: Server.Message): boolean {
     case Server.MessageType.LOGIN:
       return isLoginMessage(msg.content);
     case Server.MessageType.DAILY_WORDS:
-      return (msg.content.words && Array.isArray(msg.content.words) && msg.content.words.every((w: any) => typeof w === "string")) &&
-        (msg.content.attempts && Array.isArray(msg.content.attempts) && msg.content.attempts.every((w: any) => typeof w === "string" && w.length > 0));
+      return (
+        msg.content.words &&
+        Array.isArray(msg.content.words) &&
+        msg.content.words.every((w: any) => typeof w === "string") &&
+        msg.content.attempts &&
+        Array.isArray(msg.content.attempts) &&
+        msg.content.attempts.every(
+          (w: any) => typeof w === "string" && w.length > 0,
+        )
+      );
     case Server.MessageType.ATTEMPT:
       return typeof msg.content === "string";
     default:
@@ -154,8 +173,10 @@ function isTextChatMessageContent(content: any): boolean {
     content &&
     typeof content === "object" &&
     typeof content.text === "string" &&
-    (typeof content.imageData === "undefined" || typeof content.imageData === "string") &&
-    (typeof content.replyId === "undefined" || typeof content.replyId === "string")
+    (typeof content.imageData === "undefined" ||
+      typeof content.imageData === "string") &&
+    (typeof content.replyId === "undefined" ||
+      typeof content.replyId === "string")
   );
 }
 

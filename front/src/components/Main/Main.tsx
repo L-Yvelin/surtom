@@ -60,7 +60,7 @@ function Main({
         chatButtonRef={chatButtonRef}
       />
       <Game />
-      <ExperienceBar xp={player?.xp ?? 0} />
+      <ExperienceBar xp={player?.xp} />
       <Keyboard layout={layout} />
       <Credits />
     </main>

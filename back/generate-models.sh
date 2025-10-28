@@ -3,10 +3,10 @@ if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)
 fi
 
-rm -rf ./models/*
+rm -rf ./src/dbModels/*
 
 npx sequelize-auto \
-  -o "./models" \
+  -o "./src/dbModels" \
   -d "$DB_DATABASE" \
   -h "$DB_HOST" \
   -u "$DB_USER" \

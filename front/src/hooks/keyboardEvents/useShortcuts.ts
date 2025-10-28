@@ -1,11 +1,17 @@
-import { useEffect } from "react";
-import useGameStore from "../../stores/useGameStore";
+import { useEffect, useRef } from "react";
 import useUIStore from "../../stores/useUIStore";
+import useChatStore from "../../stores/useChatStore";
 
 const useShortcuts = () => {
   const { setVisibility } = useUIStore();
 
-  const { gameFinished } = useGameStore();
+  const showChat = useUIStore((state) => state.showChat);
+  const { focusInput } = useChatStore();
+  const showChatRef = useRef(showChat);
+
+  useEffect(() => {
+    showChatRef.current = showChat;
+  }, [showChat]);
 
   const handleKeyDown = (event: KeyboardEvent) => {
     switch (event.key) {
@@ -21,10 +27,14 @@ const useShortcuts = () => {
         setVisibility("showChat", false);
         break;
       case "/":
-        setVisibility("showChat", true);
+        if (!showChatRef.current) {
+          setVisibility("showChat", true);
+          event.preventDefault();
+          focusInput("/");
+        }
         break;
       case "t":
-        if (gameFinished()) {
+        if (!showChatRef.current) {
           setVisibility("showChat", true);
           event.preventDefault();
         }
@@ -39,17 +49,7 @@ const useShortcuts = () => {
     }
   };
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
-
-  return { handleKeyDown };
+  return { handleKeyDown, handleKeyUp };
 };
 
 export default useShortcuts;

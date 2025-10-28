@@ -1,12 +1,6 @@
 SET SESSION group_concat_max_len = 1000000;
 SET SESSION group_concat_max_len = 1000000;
 SET SESSION group_concat_max_len = 1000000;
-SET SESSION group_concat_max_len = 1000000;
-SET SESSION group_concat_max_len = 1000000;
-SET SESSION group_concat_max_len = 1000000;
-SET SESSION group_concat_max_len = 1000000;
-SET SESSION group_concat_max_len = 1000000;
-SET SESSION group_concat_max_len = 1000000;
 START TRANSACTION;
 
 DROP TABLE IF EXISTS TextContent;
@@ -135,5 +129,27 @@ SELECT
 FROM ScoreData sc
 JOIN Messages m ON m.ID = sc.MessageID
 WHERE m.Type = 'score';
+
+INSERT INTO Try (PlayerID, WordHistoryID, Attempts, Win, AttemptCount)
+SELECT
+  m.PlayerID,
+  wh.ID AS WordHistoryID,
+  sc.Attempts,
+  JSON_UNQUOTE(JSON_EXTRACT(sc.Attempts, CONCAT('$[', JSON_LENGTH(sc.Attempts) - 1, ']'))) = sc.Answer AS Win,
+  JSON_LENGTH(sc.Attempts) AS AttemptCount
+FROM (
+  SELECT
+    m.ID,
+    m.PlayerID,
+    DATE(m.Timestamp) AS Day,
+    MIN(m.Timestamp) AS MinTime
+  FROM Message m
+  WHERE m.Type = 'SCORE'
+  GROUP BY m.PlayerID, DATE(m.Timestamp)
+) firsts
+JOIN Message m ON m.ID = firsts.ID
+JOIN ScoreContent sc ON sc.ID = m.ID
+JOIN MotMinecraft mm ON mm.MotMinecraft = sc.Answer
+JOIN WordHistory wh ON wh.WordID = mm.ID AND wh.AssignedDate = DATE(m.Timestamp);
 
 COMMIT;

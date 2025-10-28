@@ -9,7 +9,6 @@
   display: flex;
   justify-content: flex-start;
   align-items: stretch;
-
 }
 
 .swipeActions .content {
@@ -32,10 +31,10 @@
   align-items: center;
   position: relative;
   width: min(40vh, 40cqw);
-  background-color: rgba(255, 255, 255, .3);
+  background-color: rgba(255, 255, 255, 0.3);
   height: 100%;
   box-sizing: border-box;
-  padding-left: .5vh;
+  padding-left: 0.5vh;
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: 100%;
@@ -61,7 +60,7 @@
 }
 
 .actionIcon {
-  height: .8rem;
+  height: 0.8rem;
   min-height: 0;
   flex-shrink: 1;
   aspect-ratio: 1;

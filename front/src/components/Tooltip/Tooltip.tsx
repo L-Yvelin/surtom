@@ -26,7 +26,7 @@ function Tooltip({
       { x, y },
       tooltipRef.current,
       offset,
-      anchor
+      anchor,
     );
     setPosition(pos);
   };

@@ -9,7 +9,7 @@ const WebSocketPingHandler = () => {
     if (!isConnected) return;
 
     const pingWorker: Worker = new Worker(
-      new URL("./pingWorker.ts", import.meta.url)
+      new URL("./pingWorker.ts", import.meta.url),
     );
 
     pingWorker.postMessage("");
@@ -17,8 +17,8 @@ const WebSocketPingHandler = () => {
     pingWorker.onmessage = () => {
       if (isConnected) {
         console.log("ping");
-        
-        sendMessage({type: Client.MessageType.PING});
+
+        sendMessage({ type: Client.MessageType.PING });
       }
     };
 

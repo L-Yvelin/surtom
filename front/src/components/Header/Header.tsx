@@ -11,7 +11,12 @@ interface HeaderProps {
 
 function Header({ theme }: HeaderProps): JSX.Element {
   return (
-    <header id="haut" className={classNames(classes.header, { [classes.dark]: theme === Theme.DARK })}>
+    <header
+      id="haut"
+      className={classNames(classes.header, {
+        [classes.dark]: theme === Theme.DARK,
+      })}
+    >
       <a href={import.meta.env.VITE_FRONT_URL} className={classes.logoLink}>
         <img
           className={classes.logo}

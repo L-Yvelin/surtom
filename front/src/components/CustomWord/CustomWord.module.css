@@ -1,5 +1,6 @@
 .customWord {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
     url("/src/assets/images/blocks/dirt_256.png");
   -webkit-backdrop-filter: brightness(30%);
   backdrop-filter: brightness(30%);
@@ -18,7 +19,7 @@
   border: #5f5f5f solid 0.2vh;
   font-size: 2.2vh;
   color: white;
-  text-shadow: .25cqh .25cqh 0 rgba(0, 0, 0, 0.5);
+  text-shadow: 0.25cqh 0.25cqh 0 rgba(0, 0, 0, 0.5);
 }
 
 .customWord.hidden {

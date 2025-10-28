@@ -3,28 +3,32 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import Loading from "./components/Loading/Loading";
+import useGameStore from "./stores/useGameStore";
 
 const RootComponent = () => {
-  const [isAppLoaded, setIsAppLoaded] = useState(false);
+  const [haveAssetsLoaded, setHaveAssetsLoaded] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
+  const { hasLoaded: hasReceivedDailyWords } = useGameStore();
 
   useEffect(() => {
-    if (isAppLoaded) {
+    if (haveAssetsLoaded && hasReceivedDailyWords) {
       setTimeout(() => setShowLoading(false), 1000);
     }
-  }, [isAppLoaded]);
+  }, [haveAssetsLoaded, hasReceivedDailyWords]);
 
   return (
     <React.StrictMode>
-      {showLoading && <Loading display={!isAppLoaded} />}
+      {showLoading && (
+        <Loading display={!haveAssetsLoaded || !hasReceivedDailyWords} />
+      )}
       <Suspense fallback={<></>}>
-        <App onLoad={() => setIsAppLoaded(true)} />
+        <App onLoad={() => setHaveAssetsLoaded(true)} />
       </Suspense>
     </React.StrictMode>
   );
 };
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 root.render(<RootComponent />);

@@ -78,7 +78,12 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
         const solution = data.content.words[data.content.words.length - 1];
         setSolution(solution);
         setValidWords(data.content.words);
-        setTries(getValidatedWords(data.content.attempts.map(a => a.split("")), solution));
+        setTries(
+          getValidatedWords(
+            data.content.attempts.map((a) => a.split("")),
+            solution,
+          ),
+        );
         setHasLoaded(true);
         break;
       default:

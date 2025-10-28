@@ -39,8 +39,10 @@ p {
 
 @font-face {
   font-family: "Chinese";
-  src: local("SimKai"), local("KaiTi"), local("KaiU"), local("STKaiti"),
+  src:
+    local("SimKai"), local("KaiTi"), local("KaiU"), local("STKaiti"),
     local("Microsoft YaHei"), local("Songti"), local("MS Yi-Bai Ti"),
-    local("BiauKai"), local("Heiti SC"), local("FangSong"), "STHeitiSC-Medium", "cursive";
+    local("BiauKai"), local("Heiti SC"), local("FangSong"), "STHeitiSC-Medium",
+    "cursive";
   unicode-range: U+4E00-9FFF;
 }

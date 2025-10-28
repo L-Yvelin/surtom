@@ -27,9 +27,7 @@ function Credits(): JSX.Element {
       />
       ,{" "}
       <Tooltip
-        children={
-          <span className={classes.lowrd}>Lowrd</span>
-        }
+        children={<span className={classes.lowrd}>Lowrd</span>}
         tooltipContent={
           <MinecraftTooltip
             title={"Hammond Sus"}
@@ -39,21 +37,14 @@ function Credits(): JSX.Element {
       />
       ,{" "}
       <Tooltip
-        children={
-          <span className={classes.anxton}>Anxton</span>
-        }
+        children={<span className={classes.anxton}>Anxton</span>}
         tooltipContent={
-          <MinecraftTooltip
-            title={"WAWAWAWAWA"}
-            children={"笨蛋"}
-          />
+          <MinecraftTooltip title={"WAWAWAWAWA"} children={"笨蛋"} />
         }
       />
       ,{" "}
       <Tooltip
-        children={
-          <span className={classes.embuscade}>Embuscade</span>
-        }
+        children={<span className={classes.embuscade}>Embuscade</span>}
         tooltipContent={
           <MinecraftTooltip
             title={"Un repère Galiléen"}

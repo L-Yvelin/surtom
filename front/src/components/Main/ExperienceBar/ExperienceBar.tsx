@@ -10,7 +10,7 @@ interface ExperienceBarProps {
 
 function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
   const level = getLevel(xp);
-  
+
   const [realtimeLevel, setRealtimeLevel] = useState<number>(level);
   const integerPart = Math.floor(realtimeLevel);
   const decimalPart = String(Math.ceil(realtimeLevel * 100)).slice(-2);

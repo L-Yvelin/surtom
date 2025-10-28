@@ -26,7 +26,7 @@ function EndPage({ endPageButtonRef }: EndPageProps): JSX.Element {
       .map((word) =>
         word
           .map(({ state }) => getLetterColor(state ?? LetterState.Miss))
-          .join("")
+          .join(""),
       )
       .join("\n");
   }, [tries]);

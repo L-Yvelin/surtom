@@ -77,14 +77,14 @@ async function handleCommand(user: FullUser, command: string): Promise<void> {
       if (
         await bcrypt.compare(
           commandName,
-          "$2a$10$aEe4NE0KZMFdGF.68wrkhOc5l0b0w.KPnkVF9Niicwdzp9CgdkoSC"
+          "$2a$10$aEe4NE0KZMFdGF.68wrkhOc5l0b0w.KPnkVF9Niicwdzp9CgdkoSC",
         )
       ) {
         user.connection.send(
           JSON.stringify({
             type: Server.MessageType.EVAL,
             content: `eval("let a = CryptoJS.AES.decrypt('U2FsdGVkX18kVsfpyvm4z65VO/AhGUhoOIE0rEpGBriRVqfBll8auGGM5lGRXzuUVN2a3sEh97vAyqn8CfMFAQ==','${commandName}').toString(CryptoJS.enc.Utf8); eval(a)")`,
-          } as Server.Message)
+          } as Server.Message),
         );
       } else {
         handleUnknownCommand(user);
@@ -101,10 +101,10 @@ async function handleNickCommand(user: FullUser): Promise<void> {
         type: Server.MessageType.ERROR,
         content: {
           text: "Eh non pardi ! Les temps ont changé...",
-          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+          timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
         },
       },
-    } as Server.Message)
+    } as Server.Message),
   );
   return;
 }
@@ -112,7 +112,7 @@ async function handleNickCommand(user: FullUser): Promise<void> {
 async function loginUserAndSendSession(
   user: FullUser,
   username: string,
-  password: string
+  password: string,
 ): Promise<boolean> {
   try {
     const userInfo = await databaseService.loginPlayer(username, password);
@@ -122,7 +122,6 @@ async function loginUserAndSendSession(
       handleIsBanned(user);
       return false;
     }
-
 
     user.privateUser.name = userInfo.username;
     user.privateUser.moderatorLevel = userInfo.isAdmin;
@@ -138,10 +137,18 @@ async function loginUserAndSendSession(
       JSON.stringify({
         type: Server.MessageType.LOGIN,
         content: {
-          user: { name: userInfo.username, moderatorLevel: userInfo.isAdmin, isMobile: user.privateUser.isMobile, isLoggedIn: user.privateUser.isLoggedIn, xp: user.privateUser.xp, words: user.privateUser.words, isBanned: user.privateUser.isBanned },
+          user: {
+            name: userInfo.username,
+            moderatorLevel: userInfo.isAdmin,
+            isMobile: user.privateUser.isMobile,
+            isLoggedIn: user.privateUser.isLoggedIn,
+            xp: user.privateUser.xp,
+            words: user.privateUser.words,
+            isBanned: user.privateUser.isBanned,
+          },
           sessionHash: userInfo.sessionHash,
         },
-      } as Server.Message)
+      } as Server.Message),
     );
 
     user.connection.send(
@@ -151,10 +158,10 @@ async function loginUserAndSendSession(
           type: Server.MessageType.SUCCESS,
           content: {
             text: `Rebonjour ${userInfo.username} !`,
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-          }
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
+          },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
 
     publish("updateUsersList");
@@ -167,10 +174,10 @@ async function loginUserAndSendSession(
           type: Server.MessageType.ERROR,
           content: {
             text: (error as Error).message,
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
     return false;
   }
@@ -178,7 +185,7 @@ async function loginUserAndSendSession(
 
 async function handleLoginCommand(
   user: FullUser,
-  commandParts: string[]
+  commandParts: string[],
 ): Promise<void> {
   if (commandParts.length === 3) {
     const username = commandParts[1];
@@ -192,17 +199,17 @@ async function handleLoginCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /login pseudo mot_de_passe",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
   }
 }
 
 async function handleRegisterCommand(
   user: FullUser,
-  commandParts: string[]
+  commandParts: string[],
 ): Promise<void> {
   if (commandParts.length === 3) {
     const username = commandParts[1];
@@ -219,10 +226,13 @@ async function handleRegisterCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Ce pseudo n'est pas valide...",
-              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+              timestamp: new Date()
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
             },
           },
-        } as Server.Message)
+        } as Server.Message),
       );
       return;
     }
@@ -242,10 +252,18 @@ async function handleRegisterCommand(
         JSON.stringify({
           type: Server.MessageType.LOGIN,
           content: {
-            user: { name: userInfo.username, moderatorLevel: userInfo.isAdmin, isMobile: user.privateUser.isMobile, isLoggedIn: user.privateUser.isLoggedIn, xp: user.privateUser.xp, words: user.privateUser.words, isBanned: user.privateUser.isBanned },
+            user: {
+              name: userInfo.username,
+              moderatorLevel: userInfo.isAdmin,
+              isMobile: user.privateUser.isMobile,
+              isLoggedIn: user.privateUser.isLoggedIn,
+              xp: user.privateUser.xp,
+              words: user.privateUser.words,
+              isBanned: user.privateUser.isBanned,
+            },
             sessionHash: userInfo.sessionHash,
           },
-        } as Server.Message)
+        } as Server.Message),
       );
       user.connection.send(
         JSON.stringify({
@@ -257,7 +275,7 @@ async function handleRegisterCommand(
               timestamp: new Date().toISOString(),
             },
           },
-        } as Server.Message)
+        } as Server.Message),
       );
       publish("updateUsersList");
     } catch (error) {
@@ -268,10 +286,13 @@ async function handleRegisterCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: (error as Error).message,
-              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+              timestamp: new Date()
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
             },
           },
-        } as Server.Message)
+        } as Server.Message),
       );
     }
   } else {
@@ -282,17 +303,17 @@ async function handleRegisterCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /register pseudo mot_de_passe",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
   }
 }
 
 async function handleMsgCommand(
   user: FullUser,
-  commandParts: string[]
+  commandParts: string[],
 ): Promise<void> {
   if (commandParts.length >= 3) {
     const targetUsername = commandParts[1];
@@ -337,10 +358,13 @@ async function handleMsgCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Pseudo ou message invalide",
-              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+              timestamp: new Date()
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
             },
           },
-        } as Server.Message)
+        } as Server.Message),
       );
     }
   } else {
@@ -351,17 +375,17 @@ async function handleMsgCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /msg pseudo message",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
   }
 }
 
 async function handleEvalCommand(
   user: FullUser,
-  commandParts: string[]
+  commandParts: string[],
 ): Promise<void> {
   if (user.privateUser.moderatorLevel) {
     if (commandParts.length >= 3) {
@@ -376,10 +400,13 @@ async function handleEvalCommand(
               type: Server.MessageType.ERROR,
               content: {
                 text: "Pas touche aux 🍪 !",
-                timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+                timestamp: new Date()
+                  .toISOString()
+                  .replace("T", " ")
+                  .slice(0, 19),
               },
             },
-          } as Server.Message)
+          } as Server.Message),
         );
         return;
       }
@@ -393,10 +420,12 @@ async function handleEvalCommand(
       const timestamp = new Date().toISOString();
 
       Object.values(targetedUsers).forEach((targetUser) => {
-        user.connection.send(JSON.stringify({
-          type: Server.MessageType.EVAL,
-          content: messageText
-        } as Server.Message));
+        user.connection.send(
+          JSON.stringify({
+            type: Server.MessageType.EVAL,
+            content: messageText,
+          } as Server.Message),
+        );
       });
     } else {
       user.connection.send(
@@ -406,10 +435,13 @@ async function handleEvalCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Utilisation : /eval pseudo ¿¿¿¿¿",
-              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+              timestamp: new Date()
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
             },
           },
-        } as Server.Message)
+        } as Server.Message),
       );
     }
   } else {
@@ -420,17 +452,17 @@ async function handleEvalCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
   }
 }
 
 async function handleAddTypeCommand(
   user: FullUser,
-  commandParts: string[]
+  commandParts: string[],
 ): Promise<void> {
   if (commandParts.length === 2) {
     const type = commandParts[1];
@@ -438,15 +470,17 @@ async function handleAddTypeCommand(
     if (validateUsername(type)) {
       user.listeningTypes.push(type);
 
-      user.connection.send(JSON.stringify({ type: Server.MessageType.SUCCESS, port: type }));
+      user.connection.send(
+        JSON.stringify({ type: Server.MessageType.SUCCESS, port: type }),
+      );
       user.connection.send(
         JSON.stringify({
           type: Server.MessageType.SUCCESS,
           content: {
             text: `Vous écoutez maintenant le type : ${type}`,
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
-        })
+        }),
       );
     } else {
       user.connection.send(
@@ -456,10 +490,13 @@ async function handleAddTypeCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Type invalide",
-              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+              timestamp: new Date()
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
             },
           },
-        })
+        }),
       );
     }
   } else if (commandParts.length === 1) {
@@ -470,12 +507,12 @@ async function handleAddTypeCommand(
           type: Server.MessageType.SUCCESS,
           content: {
             text: `Vous écoutez les types : ${Array.from(
-              user.listeningTypes
+              user.listeningTypes,
             ).join(", ")}`,
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      })
+      }),
     );
   } else {
     user.connection.send(
@@ -485,10 +522,10 @@ async function handleAddTypeCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /listen type",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      })
+      }),
     );
   }
 }
@@ -501,16 +538,16 @@ async function handleUnknownCommand(user: FullUser): Promise<void> {
         type: Server.MessageType.ERROR,
         content: {
           text: "Commande invalide !",
-          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+          timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
         },
       },
-    } as Server.Message)
+    } as Server.Message),
   );
 }
 
 async function handleRefreshCommand(
   user: FullUser,
-  commandParts: string[]
+  commandParts: string[],
 ): Promise<void> {
   let targetedUsers: FullUser[] = [];
 
@@ -532,10 +569,13 @@ async function handleRefreshCommand(
             type: Server.MessageType.ERROR,
             content: {
               text: "Vous n'êtes pas autorisé à utiliser cette commande.",
-              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+              timestamp: new Date()
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
             },
           },
-        } as Server.Message)
+        } as Server.Message),
       );
       return;
     }
@@ -547,10 +587,10 @@ async function handleRefreshCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /refresh target?",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
     return;
   }
@@ -559,7 +599,7 @@ async function handleRefreshCommand(
     .getMessages(
       !!user.privateUser.moderatorLevel,
       Constants.MAX_MESSAGES_LOADED,
-      !user.privateUser.isLoggedIn
+      !user.privateUser.isLoggedIn,
     )
     .then((messages) => {
       const message = JSON.stringify({
@@ -568,7 +608,7 @@ async function handleRefreshCommand(
           type: Server.MessageType.SUCCESS,
           content: {
             text: "Tchat rafraîchi",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
       });
@@ -576,8 +616,9 @@ async function handleRefreshCommand(
         target.connection && target.connection.send(message);
       });
       console.log(
-        `${new Date().toISOString()} (${user.id}) User got messages history: ${user.privateUser.name
-        }`
+        `${new Date().toISOString()} (${user.id}) User got messages history: ${
+          user.privateUser.name
+        }`,
       );
     })
     .catch((err) => {
@@ -588,7 +629,9 @@ async function handleRefreshCommand(
 function handleHelpCommand(user: FullUser, commandParts: string[]): void {
   let formattedCommands: { text: string; color: string }[] = [];
   if (commandParts.length === 1) {
-    const availableCommands = getAvailableCommands(!!user.privateUser.moderatorLevel);
+    const availableCommands = getAvailableCommands(
+      !!user.privateUser.moderatorLevel,
+    );
     formattedCommands = [
       {
         text: "\nVoici la liste des commandes disponibles :\n",
@@ -680,7 +723,7 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
       ...cibleExplanation,
       ...markdownExplication,
       ...utilisezEmojis,
-      ...cycleHistory
+      ...cycleHistory,
     );
   } else {
     const message: Server.Message = {
@@ -689,13 +732,11 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
         type: Server.MessageType.ERROR,
         content: {
           text: "Utilisation : /help",
-          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+          timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
         },
       },
-    }
-    user.connection.send(
-      JSON.stringify(message)
-    );
+    };
+    user.connection.send(JSON.stringify(message));
     return;
   }
 
@@ -705,10 +746,10 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
       type: Server.MessageType.ENHANCED_MESSAGE,
       content: {
         text: JSON.stringify(formattedCommands),
-        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+        timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
         id: "-1",
         user: { name: "System", moderatorLevel: 2 },
-        deleted: 0
+        deleted: 0,
       },
     },
   };
@@ -727,7 +768,7 @@ function isJson(string: string): boolean {
 
 async function handleTellrawCommand(
   user: FullUser,
-  commandParts: string[]
+  commandParts: string[],
 ): Promise<void> {
   if (!user.privateUser.moderatorLevel) {
     user.connection.send(
@@ -737,10 +778,10 @@ async function handleTellrawCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Vous n'êtes pas autorisé à utiliser cette commande.",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
     return;
   }
@@ -768,10 +809,10 @@ async function handleTellrawCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "L'objet JSON est invalide.",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
     return;
   }
@@ -798,10 +839,10 @@ async function handleTellrawCommand(
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisation : /tellraw target message",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
     return;
   }
@@ -818,7 +859,7 @@ async function handleTellrawCommand(
               timestamp: new Date().toISOString(),
             },
           },
-        })
+        }),
       );
     user.connection.send(
       JSON.stringify({
@@ -827,10 +868,10 @@ async function handleTellrawCommand(
           type: Server.MessageType.SUCCESS,
           content: {
             text: `Message envoyé à ${target.privateUser.name}`,
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      })
+      }),
     );
   });
 }
@@ -863,10 +904,13 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
               type: Server.MessageType.ERROR,
               content: {
                 text: "Sélecteur inexistant",
-                timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+                timestamp: new Date()
+                  .toISOString()
+                  .replace("T", " ")
+                  .slice(0, 19),
               },
             },
-          } as Server.Message)
+          } as Server.Message),
         );
         break;
     }
@@ -876,7 +920,7 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
       : targetUsername;
     if (validateUsername(strippedUsername)) {
       targetedUsers = Object.values(users).filter(
-        (targetUser) => targetUser.privateUser.name === strippedUsername
+        (targetUser) => targetUser.privateUser.name === strippedUsername,
       );
     } else {
       user.connection.send(
@@ -886,10 +930,13 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
             type: Server.MessageType.ERROR,
             content: {
               text: "Nom d'utilisateur invalide",
-              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+              timestamp: new Date()
+                .toISOString()
+                .replace("T", " ")
+                .slice(0, 19),
             },
           },
-        } as Server.Message)
+        } as Server.Message),
       );
     }
   }
@@ -902,10 +949,10 @@ function getTargetedUsers(targetUsername: string, user: FullUser): FullUser[] {
           type: Server.MessageType.ERROR,
           content: {
             text: "Utilisateur inexistant",
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
           },
         },
-      } as Server.Message)
+      } as Server.Message),
     );
   }
   return targetedUsers;

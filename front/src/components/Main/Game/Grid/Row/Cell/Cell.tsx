@@ -10,7 +10,12 @@ function Cell({ letter, confidential, cellSize }: CellProps): JSX.Element {
     : classes.empty;
   return (
     <td className={classes.td}>
-      <div className={classNames(classes.cell, letterStateClass, { [classes.noBorder]: cellSize })} style={{ width: cellSize, height: cellSize, fontSize: cellSize }}>
+      <div
+        className={classNames(classes.cell, letterStateClass, {
+          [classes.noBorder]: cellSize,
+        })}
+        style={{ width: cellSize, height: cellSize, fontSize: cellSize }}
+      >
         {letter && !confidential ? letter.letter : ""}
       </div>
     </td>

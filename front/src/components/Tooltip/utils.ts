@@ -14,7 +14,7 @@ export function getTooltipPosition(
   coordinates: Coordinates,
   tooltip: HTMLDivElement,
   offset: number,
-  anchor: Anchor
+  anchor: Anchor,
 ): { x: number; y: number } {
   const { x: clientX, y: clientY } = coordinates;
   const { width, height } = tooltip.getBoundingClientRect();

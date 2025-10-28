@@ -16,7 +16,7 @@ SOURCE_DB_NAME="surtom"
 TARGET_CONTAINER="surtom-mysql-1"
 TARGET_DB_NAME="surtom"
 TARGET_DB_USER="root"
-TARGET_DB_PASSWORD="password"
+TARGET_DB_PASSWORD="LeSiteDeLEteQuiGarantiUnSuccesPourToutUtilisateurVisAVisDeSaCarriereProfesionnelle!"
 
 # Migration file
 MIGRATION_FILE="migrate.sql"
@@ -105,3 +105,10 @@ docker exec $TARGET_CONTAINER mysql -h localhost -u $TARGET_DB_USER -p$TARGET_DB
 docker exec $TARGET_CONTAINER mysql -h localhost -u $TARGET_DB_USER -p$TARGET_DB_PASSWORD $TARGET_DB_NAME -e "SELECT m.ID, p.Username, m.Type, m.Timestamp FROM Message m JOIN Player p ON m.PlayerID = p.ID ORDER BY m.Timestamp DESC LIMIT 5;"
 
 echo "\n✅ Migration and verification complete!" 
+
+SCHEMA_FILE="schema.sql"
+echo "📝 Dumping final schema (no data) to $SCHEMA_FILE..."
+docker exec $TARGET_CONTAINER mysqldump -u $TARGET_DB_USER -p$TARGET_DB_PASSWORD $TARGET_DB_NAME \
+  --no-data --routines --triggers --single-transaction --add-drop-table --set-gtid-purged=OFF > $SCHEMA_FILE
+
+echo "✅ Final schema exported to $SCHEMA_FILE" 

@@ -23,9 +23,12 @@ function SlideInOut({
     setIsVisible(true);
 
     // Leaving animation timeout
-    setTimeout(() => {
-      setIsVisible(false);
-    }, (transitionDuration + lifeTime) * 1000);
+    setTimeout(
+      () => {
+        setIsVisible(false);
+      },
+      (transitionDuration + lifeTime) * 1000,
+    );
   }, [lifeTime, transitionDuration]);
 
   const handleAnimationEnd = () => {
@@ -40,7 +43,7 @@ function SlideInOut({
         classes[side],
         classes.slideInOut,
         { [classes.slideIn]: isVisible },
-        { [classes.slideOut]: !isVisible }
+        { [classes.slideOut]: !isVisible },
       )}
       style={
         {

@@ -22,10 +22,10 @@ const fontFile = new FontFace("Twemoji", `url(${twemoji})`, {
 
 document.fonts.add(fontFile);
 const twemojiPromise = fontFile.load().then(
-  () => { },
+  () => {},
   (err) => {
     console.error(err);
-  }
+  },
 );
 
 interface AppProp {

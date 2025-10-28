@@ -31,9 +31,11 @@ const useGameLogic = () => {
   useEffect(() => {
     if (!solution || gameFinished()) return;
     setLetters([{ letter: solution[0], state: LetterState.Correct }]);
-  }, [solution, setLetters]);
+  }, [solution, setLetters, gameFinished]);
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    console.log(event.key);
+
     if (!solution) return;
     if (event.key === "Backspace") {
       if (event.ctrlKey || event.metaKey) {
@@ -55,7 +57,7 @@ const useGameLogic = () => {
       setLetters(
         letters.length < solution.length
           ? [...letters, { letter: event.key.toUpperCase() }]
-          : letters
+          : letters,
       );
       skipFirstLetter.current = true;
     } else if (event.key === "Enter") {
@@ -88,8 +90,8 @@ const useGameLogic = () => {
         new Achievement(
           "Succès obtenu",
           "Ne pas savoir écrire",
-          AchievementIcon.BOOK
-        )
+          AchievementIcon.BOOK,
+        ),
       );
     }
   };
@@ -98,7 +100,7 @@ const useGameLogic = () => {
     setLetters([]);
     setVisibility("showEndPage", true);
     addAchievement(
-      new Achievement("VICTOIRE !", "👏👏👏", AchievementIcon.BOOK)
+      new Achievement("VICTOIRE !", "👏👏👏", AchievementIcon.BOOK),
     );
   };
 
@@ -109,8 +111,8 @@ const useGameLogic = () => {
       new Achievement(
         "Perdu",
         "Vous avez perdu, mais vous pouvez réessayer demain !",
-        AchievementIcon.BOOK
-      )
+        AchievementIcon.BOOK,
+      ),
     );
   };
 

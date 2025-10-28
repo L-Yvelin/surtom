@@ -16,7 +16,7 @@ class FullUser {
     id: string,
     privateUser: Server.PrivateUser,
     connection: WS,
-    ip: string = "unknown"
+    ip: string = "unknown",
   ) {
     this.id = id;
     this.privateUser = privateUser;

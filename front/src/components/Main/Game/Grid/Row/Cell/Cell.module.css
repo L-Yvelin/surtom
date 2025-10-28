@@ -23,13 +23,12 @@
 }
 
 .noBorder {
-  border: #4c4c4c .5px solid;
+  border: #4c4c4c 0.5px solid;
 }
 
 .cell:hover {
   background-color: #a1a1a1;
 }
-
 
 .correct {
   color: #16617a;

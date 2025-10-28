@@ -1,7 +1,8 @@
 .stats {
   display: flex;
   color: white;
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
     url("/src/assets/images/blocks/dirt_256.png");
   background-size: 5vh;
   background-clip: padding-box;
@@ -17,7 +18,7 @@
   align-items: center;
   gap: 1vh;
   padding: 2vh;
-  text-shadow: .25cqh .25cqh 0 rgba(0, 0, 0, 0.5);
+  text-shadow: 0.25cqh 0.25cqh 0 rgba(0, 0, 0, 0.5);
 }
 
 .stats.hidden {

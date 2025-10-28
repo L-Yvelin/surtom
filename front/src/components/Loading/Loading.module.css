@@ -10,7 +10,9 @@
   flex-direction: column;
   gap: 10vh;
   font-weight: 400;
-  transition: opacity 2s, display 2s allow-discrete;
+  transition:
+    opacity 2s,
+    display 2s allow-discrete;
   z-index: 1000;
 }
 
@@ -27,7 +29,7 @@
 }
 
 .logo {
-    width: min(50vh, 90vw);
+  width: min(50vh, 90vw);
 }
 
 .loadingBar {

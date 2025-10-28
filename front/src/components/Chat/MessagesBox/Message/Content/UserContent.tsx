@@ -30,7 +30,7 @@ const enhancedMessageContent = (text: string): JSX.Element => {
     text: string,
     color?: string,
     onClickAction?: string,
-    key?: number
+    key?: number,
   ) => {
     return (
       <span
@@ -56,14 +56,14 @@ const enhancedMessageContent = (text: string): JSX.Element => {
   return Array.isArray(parsedContent) ? (
     <>
       {parsedContent.map((message, index) =>
-        createMessage(message.text, message.color, message.clickable, index)
+        createMessage(message.text, message.color, message.clickable, index),
       )}
     </>
   ) : (
     createMessage(
       parsedContent.text,
       parsedContent.color,
-      parsedContent.clickable
+      parsedContent.clickable,
     )
   );
 };
@@ -85,9 +85,15 @@ function formatText(text: string): JSX.Element {
 
     const displayText = url.split("/")[2];
     result.push(
-      <a key={index} href={url} target="_blank" rel="noopener noreferrer" className={classes.link}>
+      <a
+        key={index}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={classes.link}
+      >
         {displayText}
-      </a>
+      </a>,
     );
 
     lastIndex = index + url.length;

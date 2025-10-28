@@ -18,7 +18,7 @@ export class Achievement {
   constructor(
     title: string,
     description: string,
-    icon: string = AchievementIcon.BOOK
+    icon: string = AchievementIcon.BOOK,
   ) {
     this.id = Math.random().toString(36).substring(2, 11);
     this.title = title;

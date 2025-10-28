@@ -12,7 +12,11 @@ function Loading({ display }: LoadingProps): JSX.Element {
       className={classNames(classes.loading, { [classes.hidden]: !display })}
     >
       <div className={classes.brand}>
-        <img src="/assets/mojang.png" alt="Mojang logo" className={classes.logo} />
+        <img
+          src="/assets/mojang.png"
+          alt="Mojang logo"
+          className={classes.logo}
+        />
       </div>
       <div className={classes.loadingBar}>
         <div className={classes.loadingProgress}></div>

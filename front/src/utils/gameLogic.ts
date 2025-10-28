@@ -3,8 +3,12 @@ import useGameStore from "../stores/useGameStore";
 
 export const gameFinished = (): boolean => {
   const { tries } = useGameStore.getState();
-  return tries[tries.length - 1]?.every((letter) => letter.state === LetterState.Correct) || false;
-}
+  return (
+    tries[tries.length - 1]?.every(
+      (letter) => letter.state === LetterState.Correct,
+    ) || false
+  );
+};
 
 export function isGuessValid(guess: string, solution: string): boolean {
   return guess.length === solution.length;
@@ -32,7 +36,7 @@ function getLetterMap(text: string): Record<string, number> {
 
 export function validateWord(
   guess: string[] | string,
-  solution: string
+  solution: string,
 ): LetterState[] {
   const solutionLettersCount = getLetterMap(solution);
   const result: LetterState[] = new Array(guess.length).fill(LetterState.Miss);
@@ -60,7 +64,7 @@ export function validateWord(
 
 export function getValidatedWords(
   guesses: string[][],
-  solution: string
+  solution: string,
 ): Word[] {
   return guesses.map((guess) => {
     const states = validateWord(guess, solution.toUpperCase());

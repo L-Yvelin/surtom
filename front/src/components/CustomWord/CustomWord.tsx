@@ -30,8 +30,8 @@ function CustomWord({ customWordButtonRef }: CustomWordProps): JSX.Element {
         new Achievement(
           "Succès obtenu !",
           "Jouer avec les limites",
-          AchievementIcon.QUESTION
-        )
+          AchievementIcon.QUESTION,
+        ),
       );
       return;
     }

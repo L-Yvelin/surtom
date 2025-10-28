@@ -11,16 +11,18 @@
   --size: 0.6vh;
   margin: calc(var(--size) * 2);
   box-shadow:
-  /* Background outline */ calc(-0.5 * var(--size)) 0 0 0
-      rgb(33 33 33),
+  /* Background outline */
+    calc(-0.5 * var(--size)) 0 0 0 rgb(33 33 33),
     0 calc(-0.5 * var(--size)) 0 0 rgb(33 33 33),
     calc(0.5 * var(--size)) 0 0 0 rgb(33 33 33),
     0 calc(0.5 * var(--size)) 0 0 rgb(33 33 33),
     /* Gray border */ calc(-1.5 * var(--size)) 0 0 0 #555555,
     0 calc(-1.5 * var(--size)) 0 0 #555555,
-    calc(1.5 * var(--size)) 0 0 0 #555555, 0 calc(1.5 * var(--size)) 0 0 #555555,
+    calc(1.5 * var(--size)) 0 0 0 #555555,
+    0 calc(1.5 * var(--size)) 0 0 #555555,
     /* Black border */ calc(-2 * var(--size)) 0 0 0 black,
-    0 calc(-2 * var(--size)) 0 0 black, calc(2 * var(--size)) 0 0 0 black,
+    0 calc(-2 * var(--size)) 0 0 black,
+    calc(2 * var(--size)) 0 0 0 black,
     0 calc(2 * var(--size)) 0 0 black,
     /* Gray angles */ calc(var(--size) * 1) calc(-1 * var(--size)) 0 0 #555555,
     calc(1.5 * var(--size)) calc(-0.5 * var(--size)) 0 0 #555555,

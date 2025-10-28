@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .4vh;
+  gap: 0.4vh;
 }
 
 .message {
