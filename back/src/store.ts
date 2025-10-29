@@ -1,4 +1,4 @@
-import FullUser from "./models/User.js";
+import FullUser from './models/User.js';
 
 interface State {
   users: { [key: string]: FullUser };

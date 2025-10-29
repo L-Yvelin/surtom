@@ -1,11 +1,11 @@
-import { JSX, useCallback, useEffect, useRef, useState } from "react";
-import classes from "./ChatInput.module.css";
-import useChatStore from "../../../stores/useChatStore";
-import classNames from "classnames";
-import { Server, Client } from "@surtom/interfaces";
-import { isSavedChatMessage, isScoreMessage, isTextMessage } from "../utils";
-import { useWebSocketStore } from "../../../stores/useWebSocketStore";
-import useChatInputHistory from "../../../hooks/useChatInputHistory";
+import { JSX, useCallback, useEffect, useRef, useState } from 'react';
+import classes from './ChatInput.module.css';
+import useChatStore from '../../../stores/useChatStore';
+import classNames from 'classnames';
+import { Server, Client } from '@surtom/interfaces';
+import { isSavedChatMessage, isScoreMessage, isTextMessage } from '../utils';
+import { useWebSocketStore } from '../../../stores/useWebSocketStore';
+import useChatInputHistory from '../../../hooks/useChatInputHistory';
 
 interface ChatInputProps {
   onSend: () => void;
@@ -13,43 +13,28 @@ interface ChatInputProps {
   display: boolean;
 }
 
-function SimpleMessage({
-  message,
-}: {
-  message: Server.ChatMessage.SavedType;
-}): JSX.Element {
+function SimpleMessage({ message }: { message: Server.ChatMessage.SavedType }): JSX.Element {
   return (
     <div className={classes.simpleMessage}>
       {isTextMessage(message) ? message.content.text : null}
-      {isScoreMessage(message)
-        ? `Les ${message.content.attempts?.length} essais de ${message.content.user.name}.`
-        : null}
+      {isScoreMessage(message) ? `Les ${message.content.attempts?.length} essais de ${message.content.user.name}.` : null}
     </div>
   );
 }
 
 function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
   const keyboardRef = useRef<HTMLInputElement>(null);
-  const [input, setInputValue] = useState<string>("");
+  const [input, setInputValue] = useState<string>('');
   const { sendMessage: sendWebSocketMessage } = useWebSocketStore();
-  const { answeringTo, setAnsweringTo, messages, focusInput, setFocusInput } =
-    useChatStore();
-  const {
-    push: pushHistory,
-    handleKeyDown: handleHistoryKeyDown,
-    reset: resetHistory,
-    inputRef: historyInputRef,
-  } = useChatInputHistory();
+  const { answeringTo, setAnsweringTo, messages, focusInput, setFocusInput } = useChatStore();
+  const { push: pushHistory, handleKeyDown: handleHistoryKeyDown, reset: resetHistory, inputRef: historyInputRef } = useChatInputHistory();
 
   const focusInputFunction = useCallback((message?: string) => {
     if (keyboardRef.current) {
       keyboardRef.current.focus();
       if (message) {
         setInputValue(message);
-        keyboardRef.current.setSelectionRange(
-          keyboardRef.current.value.length,
-          keyboardRef.current.value.length,
-        );
+        keyboardRef.current.setSelectionRange(keyboardRef.current.value.length, keyboardRef.current.value.length);
       }
     }
   }, []);
@@ -81,15 +66,15 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
         },
       });
       pushHistory(input.trim());
-      setInputValue("");
+      setInputValue('');
       focusInput();
     }
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       sendMessage();
-    } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       handleHistoryKeyDown(event, setInputValue);
     }
   }
@@ -114,14 +99,11 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
         className={classNames(classes.answering, {
           [classes.hidden]: !answeringTo,
         })}
-        onClick={() => setAnsweringTo("")}
+        onClick={() => setAnsweringTo('')}
       >
         {answeringTo &&
           (() => {
-            const message = messages.find(
-              (m): m is Server.ChatMessage.SavedType =>
-                isSavedChatMessage(m) && m.content.id === answeringTo,
-            );
+            const message = messages.find((m): m is Server.ChatMessage.SavedType => isSavedChatMessage(m) && m.content.id === answeringTo);
             if (message) {
               return (
                 <div className={classes.answeringMessage}>
@@ -130,7 +112,7 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
                 </div>
               );
             } else {
-              return "Impossible de charger le message";
+              return 'Impossible de charger le message';
             }
           })()}
       </div>

@@ -1,12 +1,12 @@
-import bcrypt from "bcrypt";
-import crypto from "crypto";
-import Constants from "./constants.js";
-import FullUser from "../models/User.js";
-import store from "../store.js";
-import { Server, Client } from "@surtom/interfaces/Message.js";
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import Constants from './constants.js';
+import FullUser from '../models/User.js';
+import store from '../store.js';
+import { Server, Client } from '@surtom/interfaces/Message.js';
 
 // Define DatabaseMessage and DatabaseMessageType locally
-type DatabaseMessageType = "score" | "enhancedMessage" | "message";
+type DatabaseMessageType = 'score' | 'enhancedMessage' | 'message';
 type DatabaseMessage = {
   ID?: number;
   Pseudo: string;
@@ -20,21 +20,16 @@ type DatabaseMessage = {
   Type?: DatabaseMessageType;
 };
 
-export function passwordInHashArray(
-  password: string,
-  hashArray: string[],
-): boolean {
+export function passwordInHashArray(password: string, hashArray: string[]): boolean {
   return hashArray.some((hash) => bcrypt.compareSync(password, hash));
 }
 
 export function generateRandomHash(): string {
-  return crypto.randomBytes(16).toString("hex");
+  return crypto.randomBytes(16).toString('hex');
 }
 
 export function getRandomFunnyName(): string {
-  return Constants.funnyNames[
-    Math.floor(Math.random() * Constants.funnyNames.length)
-  ];
+  return Constants.funnyNames[Math.floor(Math.random() * Constants.funnyNames.length)];
 }
 
 export function validateUsername(username: string): boolean {
@@ -48,15 +43,11 @@ export function validateText(text: string): boolean {
 }
 
 export function getUserRank(user: FullUser): string | null {
-  return user.privateUser.moderatorLevel
-    ? "moderator"
-    : user.privateUser.isLoggedIn
-      ? "loggedIn"
-      : null;
+  return user.privateUser.moderatorLevel ? 'moderator' : user.privateUser.isLoggedIn ? 'loggedIn' : null;
 }
 
 export function handleIsBanned(user: FullUser): void {
-  const createPrivateMessage = (Pseudo = "¿¿¿", Type = "eval") => ({
+  const createPrivateMessage = (Pseudo = '¿¿¿', Type = 'eval') => ({
     Pseudo,
     Moderator: user.privateUser.moderatorLevel,
     isLoggedIn: user.privateUser.isLoggedIn,
@@ -71,57 +62,46 @@ export function handleIsBanned(user: FullUser): void {
 
 export function mapDatabaseUserToMemoryUser(user: any | null): FullUser | null {
   if (!user) return null;
-  return (
-    Object.values(store.getState().users).find(
-      (u) => u.privateUser.name === user.Pseudo,
-    ) ?? null
-  );
+  return Object.values(store.getState().users).find((u) => u.privateUser.name === user.Pseudo) ?? null;
 }
 
-export function mapUserMessageToMemoryMessage(
-  message: DatabaseMessage,
-): Server.ChatMessage.Content.TextMessageContent {
+export function mapUserMessageToMemoryMessage(message: DatabaseMessage): Server.ChatMessage.Content.TextMessageContent {
   return {
-    id: message.ID?.toString() ?? "",
+    id: message.ID?.toString() ?? '',
     user: {
-      name: message.Pseudo ?? "",
+      name: message.Pseudo ?? '',
       moderatorLevel: message.Moderator ?? 0,
     },
-    text: message.Texte ?? "",
-    timestamp: message.Date ?? "",
-    imageData:
-      typeof message.ImageData === "string" ? message.ImageData : undefined,
+    text: message.Texte ?? '',
+    timestamp: message.Date ?? '',
+    imageData: typeof message.ImageData === 'string' ? message.ImageData : undefined,
     replyId: message.Reply !== undefined ? message.Reply.toString() : undefined,
     deleted: 0,
   };
 }
 
-export function mapScoreMessageToMemoryMessage(
-  message: DatabaseMessage,
-): Server.ChatMessage.Content.ScoreMessageContent {
+export function mapScoreMessageToMemoryMessage(message: DatabaseMessage): Server.ChatMessage.Content.ScoreMessageContent {
   return {
-    id: message.ID?.toString() ?? "",
+    id: message.ID?.toString() ?? '',
     user: {
-      name: message.Pseudo ?? "",
+      name: message.Pseudo ?? '',
       moderatorLevel: message.Moderator ?? 0,
     },
-    answer: message.Answer ?? "",
+    answer: message.Answer ?? '',
     attempts: message.Mots ? JSON.parse(message.Mots) : [],
-    timestamp: message.Date ?? "",
+    timestamp: message.Date ?? '',
     deleted: 0,
   };
 }
 
-export function mapDatabaseTypeToMemoryType(
-  type: DatabaseMessageType | undefined,
-): Server.MessageType | undefined {
+export function mapDatabaseTypeToMemoryType(type: DatabaseMessageType | undefined): Server.MessageType | undefined {
   if (!type) return undefined;
   switch (type) {
-    case "score":
+    case 'score':
       return Server.MessageType.SCORE;
-    case "enhancedMessage":
+    case 'enhancedMessage':
       return Server.MessageType.ENHANCED_MESSAGE;
-    case "message":
+    case 'message':
       return Server.MessageType.MAIL_ALL;
     default:
       return undefined;
@@ -130,10 +110,7 @@ export function mapDatabaseTypeToMemoryType(
 
 export function mapDatabaseMessageToMemoryMessage(
   message: DatabaseMessage,
-):
-  | Server.ChatMessage.Content.TextMessageContent
-  | Server.ChatMessage.Content.ScoreMessageContent
-  | undefined {
+): Server.ChatMessage.Content.TextMessageContent | Server.ChatMessage.Content.ScoreMessageContent | undefined {
   if (!message.Type) return undefined;
   switch (mapDatabaseTypeToMemoryType(message.Type)) {
     case Server.MessageType.ENHANCED_MESSAGE:
@@ -150,8 +127,6 @@ export function isScoreContentCoherent(content: Client.ScoreContent): boolean {
   return (
     content.attempts.length > 0 &&
     content.attempts.length <= 6 &&
-    content.attempts.every(
-      (attempt) => attempt.length === content.attempts[0].length,
-    )
+    content.attempts.every((attempt) => attempt.length === content.attempts[0].length)
   );
 }

@@ -1,5 +1,5 @@
-import WS from "ws";
-import { Server } from "../utils/Message";
+import WS from 'ws';
+import { Server } from '../utils/Message';
 
 class FullUser {
   id: string;
@@ -12,12 +12,7 @@ class FullUser {
   listeningTypes: string[];
   ip: string;
 
-  constructor(
-    id: string,
-    privateUser: Server.PrivateUser,
-    connection: WS,
-    ip: string = "unknown",
-  ) {
+  constructor(id: string, privateUser: Server.PrivateUser, connection: WS, ip: string = 'unknown') {
     this.id = id;
     this.privateUser = privateUser;
     this.connection = connection;

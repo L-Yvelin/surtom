@@ -22,18 +22,18 @@
 
 .normal {
   aspect-ratio: 10;
-  background-image: url("/src/assets/images/ui/button.png");
+  background-image: url('/src/assets/images/ui/button.png');
 }
 
 .normal:hover {
-  background-image: url("/src/assets/images/ui/button_highlighted.png");
+  background-image: url('/src/assets/images/ui/button_highlighted.png');
 }
 
 .square {
   aspect-ratio: 1;
-  background-image: url("/src/assets/images/ui/button_square.png");
+  background-image: url('/src/assets/images/ui/button_square.png');
 }
 
 .square:hover {
-  background-image: url("/src/assets/images/ui/button_highlighted_square.png");
+  background-image: url('/src/assets/images/ui/button_highlighted_square.png');
 }

@@ -15,14 +15,14 @@
 
 .qwerty {
   grid-template-areas:
-    "q w e r t y u i o p"
-    "a s d f g h j k l E"
-    "z x c v b n m R R E";
+    'q w e r t y u i o p'
+    'a s d f g h j k l E'
+    'z x c v b n m R R E';
 }
 
 .azerty {
   grid-template-areas:
-    "a z e r t y u i o p"
-    "q s d f g h j k l m"
-    "w x c v b n E E R R";
+    'a z e r t y u i o p'
+    'q s d f g h j k l m'
+    'w x c v b n E E R R';
 }

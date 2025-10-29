@@ -1,5 +1,5 @@
-import { JSX } from "react";
-import classes from "./MessageContextMenu.module.css";
+import { JSX } from 'react';
+import classes from './MessageContextMenu.module.css';
 
 interface MessageContextMenuProps {
   actions: {
@@ -9,17 +9,11 @@ interface MessageContextMenuProps {
   }[];
 }
 
-const MessageContextMenu = ({
-  actions,
-}: MessageContextMenuProps): JSX.Element => {
+const MessageContextMenu = ({ actions }: MessageContextMenuProps): JSX.Element => {
   return (
     <div className={classes.container}>
       {actions.map(({ label, icon, onClick }, index) => (
-        <button
-          key={`${index}-${label}`}
-          className={classes.action}
-          onClick={onClick}
-        >
+        <button key={`${index}-${label}`} className={classes.action} onClick={onClick}>
           <span>{label}</span>
           {icon ? <img src={icon} className={classes.icon} /> : null}
         </button>

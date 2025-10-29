@@ -1,13 +1,13 @@
-import { JSX, useEffect, useState } from "react";
-import classes from "./Main.module.css";
-import Tools, { Theme } from "./Tools/Tools";
-import Credits from "./Credits/Credits";
-import Keyboard from "./Keyboard/Keyboard";
-import classNames from "classnames";
-import { detectKeyboardLayout, KeyboardLayouts } from "./Keyboard/utils";
-import ExperienceBar from "./ExperienceBar/ExperienceBar";
-import Game from "./Game/Game";
-import useGameStore from "../../stores/useGameStore";
+import { JSX, useEffect, useState } from 'react';
+import classes from './Main.module.css';
+import Tools, { Theme } from './Tools/Tools';
+import Credits from './Credits/Credits';
+import Keyboard from './Keyboard/Keyboard';
+import classNames from 'classnames';
+import { detectKeyboardLayout, KeyboardLayouts } from './Keyboard/utils';
+import ExperienceBar from './ExperienceBar/ExperienceBar';
+import Game from './Game/Game';
+import useGameStore from '../../stores/useGameStore';
 
 interface MainProps {
   theme: Theme;

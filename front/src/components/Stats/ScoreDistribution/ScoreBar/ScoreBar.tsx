@@ -1,5 +1,5 @@
-import classNames from "classnames";
-import classes from "./ScoreBar.module.css";
+import classNames from 'classnames';
+import classes from './ScoreBar.module.css';
 
 type ScoreBarProps = {
   display: boolean;
@@ -9,13 +9,7 @@ type ScoreBarProps = {
   increaseFactor: number;
 };
 
-function ScoreBar({
-  display,
-  index,
-  value,
-  total,
-  increaseFactor,
-}: ScoreBarProps) {
+function ScoreBar({ display, index, value, total, increaseFactor }: ScoreBarProps) {
   const percentage = total > 0 ? (value / total) * (100 + increaseFactor) : 0;
   return (
     <div
@@ -23,7 +17,7 @@ function ScoreBar({
         [classes.display]: display,
       })}
       data-nb-games={value >= 1 ? value : undefined}
-      style={{ "--height": `${percentage}%` } as React.CSSProperties}
+      style={{ '--height': `${percentage}%` } as React.CSSProperties}
     >
       <div className={classes.number}>{index}</div>
       <div className={classes.rightFace}></div>

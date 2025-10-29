@@ -8,13 +8,13 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-image: url("/src/assets/images/ui/text_field.png");
+  background-image: url('/src/assets/images/ui/text_field.png');
   background-size: 100%;
   container-type: size;
 }
 
 .textField:hover {
-  background-image: url("/src/assets/images/ui/text_field_highlighted.png");
+  background-image: url('/src/assets/images/ui/text_field_highlighted.png');
 }
 
 .text {

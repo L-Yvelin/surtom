@@ -1,11 +1,11 @@
 export namespace Client {
   export enum MessageType {
-    DELETE_MESSAGE = "deleteMessage",
-    IS_TYPING = "isTyping",
-    PING = "ping",
-    CHAT_MESSAGE = "chatMessage",
-    SCORE_TO_CHAT = "scoreToChat",
-    TRY = "try",
+    DELETE_MESSAGE = 'deleteMessage',
+    IS_TYPING = 'isTyping',
+    PING = 'ping',
+    CHAT_MESSAGE = 'chatMessage',
+    SCORE_TO_CHAT = 'scoreToChat',
+    TRY = 'try',
   }
 
   export type Message =
@@ -34,32 +34,32 @@ export namespace Client {
 
 export namespace Server {
   export enum MessageType {
-    MESSAGE = "message",
-    SCORE = "score",
-    LOGIN = "login",
-    STATS = "stats",
-    USER_LIST = "usersList",
-    GET_MESSAGES = "getMessages",
-    LAST_TIME_MESSAGE = "lastTimeMessage",
-    DELETE_MESSAGE = "deleteMessage",
-    IS_TYPING = "isTyping",
-    PONG = "pong",
-    LOG = "log",
-    SUCCESS = "success",
-    ERROR = "error",
-    PRIVATE_MESSAGE = "privateMessage",
-    MAIL_ALL = "mailAll",
-    ENHANCED_MESSAGE = "enhancedMessage",
-    EVAL = "eval",
-    DAILY_WORDS = "dailyWords",
-    ATTEMPT = "attempt",
+    MESSAGE = 'message',
+    SCORE = 'score',
+    LOGIN = 'login',
+    STATS = 'stats',
+    USER_LIST = 'usersList',
+    GET_MESSAGES = 'getMessages',
+    LAST_TIME_MESSAGE = 'lastTimeMessage',
+    DELETE_MESSAGE = 'deleteMessage',
+    IS_TYPING = 'isTyping',
+    PONG = 'pong',
+    LOG = 'log',
+    SUCCESS = 'success',
+    ERROR = 'error',
+    PRIVATE_MESSAGE = 'privateMessage',
+    MAIL_ALL = 'mailAll',
+    ENHANCED_MESSAGE = 'enhancedMessage',
+    EVAL = 'eval',
+    DAILY_WORDS = 'dailyWords',
+    ATTEMPT = 'attempt',
   }
 
   export enum SavedMessageType {
-    MAIL_ALL = "mailAll",
-    PRIVATE_MESSAGE = "privateMessage",
-    ENHANCED_MESSAGE = "enhancedMessage",
-    SCORE = "score",
+    MAIL_ALL = 'mailAll',
+    PRIVATE_MESSAGE = 'privateMessage',
+    ENHANCED_MESSAGE = 'enhancedMessage',
+    SCORE = 'score',
   }
 
   export type Message =
@@ -105,19 +105,17 @@ export namespace Server {
     export type Status =
       | {
           type: MessageType.SUCCESS;
-          content: Pick<Content.TextMessageContent, "text"> &
-            Pick<Content.BaseMessageContent, "timestamp">;
+          content: Pick<Content.TextMessageContent, 'text'> & Pick<Content.BaseMessageContent, 'timestamp'>;
         }
       | {
           type: MessageType.ERROR;
-          content: Pick<Content.TextMessageContent, "text"> &
-            Pick<Content.BaseMessageContent, "timestamp">;
+          content: Pick<Content.TextMessageContent, 'text'> & Pick<Content.BaseMessageContent, 'timestamp'>;
         };
 
     export namespace Content {
       export interface BaseMessageContent {
         id: string;
-        user: Pick<Server.User, "name" | "moderatorLevel">;
+        user: Pick<Server.User, 'name' | 'moderatorLevel'>;
         timestamp: string;
         deleted: number;
       }

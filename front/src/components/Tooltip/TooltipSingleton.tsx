@@ -1,7 +1,7 @@
-import { createPortal } from "react-dom";
-import { ReactNode } from "react";
-import classNames from "classnames";
-import classes from "./Tooltip.module.css";
+import { createPortal } from 'react-dom';
+import { ReactNode } from 'react';
+import classNames from 'classnames';
+import classes from './Tooltip.module.css';
 
 interface Props {
   visible: boolean;
@@ -10,12 +10,7 @@ interface Props {
   tooltipRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export function TooltipSingleton({
-  visible,
-  content,
-  position,
-  tooltipRef,
-}: Props) {
+export function TooltipSingleton({ visible, content, position, tooltipRef }: Props) {
   if (!tooltipRef) {
     return;
   }

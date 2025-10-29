@@ -1,6 +1,6 @@
-import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
-import type { Message, MessageId } from "./Message";
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import type { Message, MessageId } from './Message';
 
 export interface ScoreContentAttributes {
   ID: number;
@@ -9,18 +9,12 @@ export interface ScoreContentAttributes {
   IsCustom: number;
 }
 
-export type ScoreContentPk = "ID";
+export type ScoreContentPk = 'ID';
 export type ScoreContentId = ScoreContent[ScoreContentPk];
-export type ScoreContentOptionalAttributes = "IsCustom";
-export type ScoreContentCreationAttributes = Optional<
-  ScoreContentAttributes,
-  ScoreContentOptionalAttributes
->;
+export type ScoreContentOptionalAttributes = 'IsCustom';
+export type ScoreContentCreationAttributes = Optional<ScoreContentAttributes, ScoreContentOptionalAttributes>;
 
-export class ScoreContent
-  extends Model<ScoreContentAttributes, ScoreContentCreationAttributes>
-  implements ScoreContentAttributes
-{
+export class ScoreContent extends Model<ScoreContentAttributes, ScoreContentCreationAttributes> implements ScoreContentAttributes {
   ID!: number;
   Answer!: string;
   Attempts!: string;
@@ -40,8 +34,8 @@ export class ScoreContent
           allowNull: false,
           primaryKey: true,
           references: {
-            model: "Message",
-            key: "ID",
+            model: 'Message',
+            key: 'ID',
           },
         },
         Answer: {
@@ -60,14 +54,14 @@ export class ScoreContent
       },
       {
         sequelize,
-        tableName: "ScoreContent",
+        tableName: 'ScoreContent',
         timestamps: false,
         indexes: [
           {
-            name: "PRIMARY",
+            name: 'PRIMARY',
             unique: true,
-            using: "BTREE",
-            fields: [{ name: "ID" }],
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
           },
         ],
       },

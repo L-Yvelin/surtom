@@ -1,18 +1,15 @@
-import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 
 export interface MotValideCombineAttributes {
   ID: number;
   MotValide: string;
 }
 
-export type MotValideCombinePk = "ID";
+export type MotValideCombinePk = 'ID';
 export type MotValideCombineId = MotValideCombine[MotValideCombinePk];
-export type MotValideCombineOptionalAttributes = "ID" | "MotValide";
-export type MotValideCombineCreationAttributes = Optional<
-  MotValideCombineAttributes,
-  MotValideCombineOptionalAttributes
->;
+export type MotValideCombineOptionalAttributes = 'ID' | 'MotValide';
+export type MotValideCombineCreationAttributes = Optional<MotValideCombineAttributes, MotValideCombineOptionalAttributes>;
 
 export class MotValideCombine
   extends Model<MotValideCombineAttributes, MotValideCombineCreationAttributes>
@@ -33,19 +30,19 @@ export class MotValideCombine
         MotValide: {
           type: DataTypes.STRING(255),
           allowNull: false,
-          defaultValue: "",
+          defaultValue: '',
         },
       },
       {
         sequelize,
-        tableName: "MotValideCombine",
+        tableName: 'MotValideCombine',
         timestamps: false,
         indexes: [
           {
-            name: "PRIMARY",
+            name: 'PRIMARY',
             unique: true,
-            using: "BTREE",
-            fields: [{ name: "ID" }],
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
           },
         ],
       },

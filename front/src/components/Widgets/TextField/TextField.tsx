@@ -1,6 +1,6 @@
-import { JSX, useEffect, useRef } from "react";
-import classes from "./TextField.module.css";
-import classNames from "classnames";
+import { JSX, useEffect, useRef } from 'react';
+import classes from './TextField.module.css';
+import classNames from 'classnames';
 
 interface TextFieldProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -9,12 +9,7 @@ interface TextFieldProps {
   autoFocus?: boolean;
 }
 
-function TextField({
-  onChange,
-  pattern,
-  className,
-  autoFocus,
-}: TextFieldProps): JSX.Element {
+function TextField({ onChange, pattern, className, autoFocus }: TextFieldProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
   const regex = pattern ? new RegExp(`^${pattern}$`) : null;
 
@@ -34,13 +29,7 @@ function TextField({
 
   return (
     <div className={classNames(classes.textField, className)}>
-      <input
-        ref={inputRef}
-        className={classes.text}
-        onChange={handleInput}
-        type="text"
-        maxLength={15}
-      />
+      <input ref={inputRef} className={classes.text} onChange={handleInput} type="text" maxLength={15} />
     </div>
   );
 }

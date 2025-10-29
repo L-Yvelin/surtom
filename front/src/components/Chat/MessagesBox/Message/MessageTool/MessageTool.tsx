@@ -1,5 +1,5 @@
-import { JSX } from "react";
-import classes from "./MessageTool.module.css";
+import { JSX } from 'react';
+import classes from './MessageTool.module.css';
 
 interface MessageProps {
   onDelete: () => void;

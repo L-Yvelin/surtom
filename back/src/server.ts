@@ -1,52 +1,43 @@
-import WS, { WebSocketServer } from "ws";
-import { store } from "./store.js";
-import { Server, Client } from "@surtom/interfaces/Message.js";
-import FullUser from "./models/User.js";
-import databaseService from "./services/databaseService.js";
-import Constants from "./utils/constants.js";
-import { handleCommand, subscribe } from "./handlers/commandHandler.js";
-import {
-  generateRandomHash,
-  getRandomFunnyName,
-  validateText,
-} from "./utils/helpers.js";
+import WS, { WebSocketServer } from 'ws';
+import { store } from './store.js';
+import { Server, Client } from '@surtom/interfaces/Message.js';
+import FullUser from './models/User.js';
+import databaseService from './services/databaseService.js';
+import Constants from './utils/constants.js';
+import { handleCommand, subscribe } from './handlers/commandHandler.js';
+import { generateRandomHash, getRandomFunnyName, validateText } from './utils/helpers.js';
 
-subscribe("updateUsersList", updateUsersList);
+subscribe('updateUsersList', updateUsersList);
 
-console.log("SERVER STARTING...");
+console.log('SERVER STARTING...');
 
 const wss = new WebSocketServer({ port: 27020 });
 
-wss.on("error", (err) => {
-  console.error("Websocket error:", err);
+wss.on('error', (err) => {
+  console.error('Websocket error:', err);
 });
 
-wss.on("listening", () => {
-  console.log("Websocket server listening on port 27020");
+wss.on('listening', () => {
+  console.log('Websocket server listening on port 27020');
 });
 
-wss.on("connection", async (connection, req) => {
-  console.log("New connection");
+wss.on('connection', async (connection, req) => {
+  console.log('New connection');
 
   try {
-    const cookies = req.headers?.cookie
-      ?.split(";")
-      .reduce((acc: { [key: string]: string }, cookie) => {
-        let [key, value] = cookie.split("=");
-        acc[key.trim()] = value.trim();
-        return acc;
-      }, {});
+    const cookies = req.headers?.cookie?.split(';').reduce((acc: { [key: string]: string }, cookie) => {
+      let [key, value] = cookie.split('=');
+      acc[key.trim()] = value.trim();
+      return acc;
+    }, {});
 
     console.log(cookies);
 
-    const ip = (
-      req.headers["x-forwarded-for"] || req.socket.remoteAddress
-    )?.toString();
+    const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress)?.toString();
 
     let sessionUser: FullUser | null = null;
     const sessionHash = (cookies && cookies.modHash) || undefined;
-    const usesMobileDevice =
-      (cookies && cookies.mobileDevice === "true") || false;
+    const usesMobileDevice = (cookies && cookies.mobileDevice === 'true') || false;
     if (sessionHash) {
       const player = await databaseService.getPlayerBySessionHash(sessionHash);
       if (player) {
@@ -60,12 +51,7 @@ wss.on("connection", async (connection, req) => {
           isBanned: !!player.isBanned,
           xp: await databaseService.getPlayerXp(player.username),
         };
-        sessionUser = new FullUser(
-          generateRandomHash(),
-          privateUser,
-          connection,
-          ip,
-        );
+        sessionUser = new FullUser(generateRandomHash(), privateUser, connection, ip);
       }
     }
 
@@ -82,12 +68,7 @@ wss.on("connection", async (connection, req) => {
           xp: 0,
         };
 
-    const user = new FullUser(
-      generateRandomHash(),
-      privateUser,
-      connection,
-      ip,
-    );
+    const user = new FullUser(generateRandomHash(), privateUser, connection, ip);
 
     const userInfoMessage: Server.Message = {
       type: Server.MessageType.LOGIN,
@@ -99,9 +80,7 @@ wss.on("connection", async (connection, req) => {
 
     const statsMessage: Server.Message = {
       type: Server.MessageType.STATS,
-      content: await databaseService.getScoreDistribution(
-        user.privateUser.name,
-      ),
+      content: await databaseService.getScoreDistribution(user.privateUser.name),
     };
     user.connection.send(JSON.stringify(statsMessage));
 
@@ -112,9 +91,9 @@ wss.on("connection", async (connection, req) => {
     let isAlive = true;
     const isDeadInterval = setInterval(() => {
       if (!isAlive) {
-        console.log("/!\\");
-        console.log("/!\\ Connection is dead, closing");
-        console.log("/!\\");
+        console.log('/!\\');
+        console.log('/!\\ Connection is dead, closing');
+        console.log('/!\\');
         connection.terminate();
         updateUsersList();
         clearInterval(isDeadInterval);
@@ -124,32 +103,25 @@ wss.on("connection", async (connection, req) => {
       connection.ping();
     }, 30000);
 
-    connection.on("message", (stringMessage: string) => {
+    connection.on('message', (stringMessage: string) => {
       isAlive = true;
 
       const message: Client.Message = JSON.parse(stringMessage);
 
-      if (
-        message.type !== Client.MessageType.PING &&
-        message.type !== Client.MessageType.IS_TYPING
-      ) {
-        const text = JSON.stringify(message.content) ?? "";
+      if (message.type !== Client.MessageType.PING && message.type !== Client.MessageType.IS_TYPING) {
+        const text = JSON.stringify(message.content) ?? '';
 
         const truncatedTexte =
-          text.length > 100
-            ? text.slice(0, 50) + "..." + text.slice(-50)
-            : text.length > 50
-              ? text.slice(0, 50) + "..."
-              : text;
+          text.length > 100 ? text.slice(0, 50) + '...' + text.slice(-50) : text.length > 50 ? text.slice(0, 50) + '...' : text;
 
-        console.log("Received message:", `${message.type}: ${truncatedTexte}`);
+        console.log('Received message:', `${message.type}: ${truncatedTexte}`);
       }
 
       handleMessage(user, message);
     });
 
-    connection.on("close", () => {
-      console.log("Connection closed");
+    connection.on('close', () => {
+      console.log('Connection closed');
 
       clearInterval(isDeadInterval);
       const currentState = store.getState();
@@ -171,11 +143,7 @@ function initializeConnection(user: FullUser): void {
   console.log(`New connection: [${user.ip}] ${user.privateUser.name}`);
 
   databaseService
-    .getMessages(
-      !!user.privateUser.moderatorLevel,
-      Constants.MAX_MESSAGES_LOADED,
-      !user.privateUser.isLoggedIn,
-    )
+    .getMessages(!!user.privateUser.moderatorLevel, Constants.MAX_MESSAGES_LOADED, !user.privateUser.isLoggedIn)
     .then((DBmessages) => {
       if (DBmessages) {
         const userMessages = DBmessages.filter(
@@ -192,88 +160,65 @@ function initializeConnection(user: FullUser): void {
       }
     })
     .catch((err) => {
-      console.error("Error getting last message timestamp:", err);
+      console.error('Error getting last message timestamp:', err);
     });
 
   databaseService.getOrCreateTodaysWord().then((word) => {
     if (word) {
-      databaseService
-        .getValidWords(word.toUpperCase())
-        .then(async (validWords) => {
-          const attempts = await databaseService.getTodaysTriesForPlayer(
-            user.privateUser.name,
-          );
-          const message: Server.Message = {
-            type: Server.MessageType.DAILY_WORDS,
-            content: {
-              words: [
-                ...validWords.map((w) => w.toUpperCase()),
-                word.toUpperCase(),
-              ],
-              attempts: attempts,
-            },
-          };
-          user.connection.send(JSON.stringify(message));
-        });
+      databaseService.getValidWords(word.toUpperCase()).then(async (validWords) => {
+        const attempts = await databaseService.getTodaysTriesForPlayer(user.privateUser.name);
+        const message: Server.Message = {
+          type: Server.MessageType.DAILY_WORDS,
+          content: {
+            words: [...validWords.map((w) => w.toUpperCase()), word.toUpperCase()],
+            attempts: attempts,
+          },
+        };
+        user.connection.send(JSON.stringify(message));
+      });
     } else {
-      console.error("No word found for today");
+      console.error('No word found for today');
     }
   });
 }
 
 function logMessage(message: string, user: FullUser): void {
-  const logMessage = `${new Date().toISOString()} (${user.id}) <${
-    user.privateUser.name
-  }> ${message}`;
+  const logMessage = `${new Date().toISOString()} (${user.id}) <${user.privateUser.name}> ${message}`;
   console.log(logMessage);
-  fetch("https://ntfy.sh/surtom3630", {
-    method: "PUT",
+  fetch('https://ntfy.sh/surtom3630', {
+    method: 'PUT',
     body: `<${user.privateUser.name}> ${message}`,
     headers: {
-      "Content-Type": "text/plain",
-      Title: "SURTOM",
-      Click: "https://surtom.yvelin.net/",
-      "X-Icon": "https://surtom.yvelin.net/images/diamond_block.png",
+      'Content-Type': 'text/plain',
+      Title: 'SURTOM',
+      Click: 'https://surtom.yvelin.net/',
+      'X-Icon': 'https://surtom.yvelin.net/images/diamond_block.png',
     },
   });
 }
 
-async function handleMessage(
-  user: FullUser,
-  message: Client.Message,
-): Promise<void> {
+async function handleMessage(user: FullUser, message: Client.Message): Promise<void> {
   if (message.type === Client.MessageType.PING) {
     return;
   }
 
   // Handle command
-  if (
-    message.type === Client.MessageType.CHAT_MESSAGE &&
-    message.content.text.startsWith("/")
-  ) {
+  if (message.type === Client.MessageType.CHAT_MESSAGE && message.content.text.startsWith('/')) {
     const command = message.content.text.slice(1).trim();
     handleCommand(user, command);
     return;
   }
 
   // Increment message count and handle rate limiting
-  if (
-    !user.privateUser.moderatorLevel &&
-    message.type !== Client.MessageType.IS_TYPING
-  ) {
+  if (!user.privateUser.moderatorLevel && message.type !== Client.MessageType.IS_TYPING) {
     user.messageCount++;
 
     if (user.messageCount > 5) {
       if (user.lastMessageTimestamp !== null) {
-        const timeSinceLastMessage =
-          Date.now() - new Date(user.lastMessageTimestamp).getTime();
+        const timeSinceLastMessage = Date.now() - new Date(user.lastMessageTimestamp).getTime();
         if (timeSinceLastMessage < user.messageCooldown * 1000) {
           user.messageCooldown *= user.cooldownMultiplier;
-          console.log(
-            `${new Date().toISOString()} (${user.id}) ${
-              user.privateUser.name
-            } Message cooldown in effect`,
-          );
+          console.log(`${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Message cooldown in effect`);
           return;
         } else {
           user.messageCooldown = 1;
@@ -308,20 +253,15 @@ async function handleMessage(
   }
 }
 
-async function handleChatMessage(
-  user: FullUser,
-  chatMessage: Client.ChatMessage,
-): Promise<void> {
+async function handleChatMessage(user: FullUser, chatMessage: Client.ChatMessage): Promise<void> {
   switch (chatMessage.type) {
     case Client.MessageType.SCORE_TO_CHAT:
       await handleScoreToChat(user, chatMessage);
       break;
     case Client.MessageType.CHAT_MESSAGE:
       if (
-        (!user.privateUser.moderatorLevel &&
-          !validateText(chatMessage.content.text.trim())) ||
-        (chatMessage.content.imageData &&
-          chatMessage.content.imageData.length > 110 * 1024)
+        (!user.privateUser.moderatorLevel && !validateText(chatMessage.content.text.trim())) ||
+        (chatMessage.content.imageData && chatMessage.content.imageData.length > 110 * 1024)
       ) {
         return;
       }
@@ -330,32 +270,19 @@ async function handleChatMessage(
   }
 }
 
-async function handleMailAll(
-  user: FullUser,
-  chatMessage: Extract<
-    Client.ChatMessage,
-    { type: Client.MessageType.CHAT_MESSAGE }
-  >,
-) {
+async function handleMailAll(user: FullUser, chatMessage: Extract<Client.ChatMessage, { type: Client.MessageType.CHAT_MESSAGE }>) {
   try {
-    const savedMessage = await databaseService.saveMessage(
-      user.privateUser,
-      chatMessage,
-    );
+    const savedMessage = await databaseService.saveMessage(user.privateUser, chatMessage);
 
     if (!savedMessage) {
-      console.error(
-        `${new Date().toISOString()} (${user.id}) ${
-          user.privateUser.name
-        } Failed to save message`,
-      );
+      console.error(`${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Failed to save message`);
       return;
     }
 
     sendMessagesAll(savedMessage);
     logMessage(chatMessage.content.text, user);
   } catch (err) {
-    console.error("Error saving message:", err);
+    console.error('Error saving message:', err);
   }
 }
 
@@ -369,8 +296,8 @@ async function handleScoreToChat(
       content: {
         type: Server.MessageType.ERROR,
         content: {
-          text: "Vous avez déjà partagé votre score...",
-          timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
+          text: 'Vous avez déjà partagé votre score...',
+          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
         },
       },
     };
@@ -379,19 +306,13 @@ async function handleScoreToChat(
     return;
   }
 
-  if (
-    !message.content.attempts ||
-    !Array.isArray(message.content.attempts) ||
-    message.content.attempts.length > 6
-  ) {
-    console.error(
-      `${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Invalid score data: invalid attempts`,
-    );
+  if (!message.content.attempts || !Array.isArray(message.content.attempts) || message.content.attempts.length > 6) {
+    console.error(`${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Invalid score data: invalid attempts`);
     return;
   }
 
   let scoreSolution: string | undefined = undefined;
-  if (message.content.custom && typeof message.content.custom === "string") {
+  if (message.content.custom && typeof message.content.custom === 'string') {
     scoreSolution = message.content.custom;
   } else {
     scoreSolution = (await databaseService.getTodaysWord())?.toUpperCase();
@@ -408,7 +329,7 @@ async function handleScoreToChat(
     (attempt) =>
       Array.isArray(attempt) &&
       attempt.length === scoreSolution!.length &&
-      attempt.every((letter) => typeof letter === "string") &&
+      attempt.every((letter) => typeof letter === 'string') &&
       attempt[0][0] === scoreSolution![0],
   );
 
@@ -420,38 +341,25 @@ async function handleScoreToChat(
   }
 
   try {
-    const savedMessage = await databaseService.saveMessage(
-      user.privateUser,
-      message,
-    );
+    const savedMessage = await databaseService.saveMessage(user.privateUser, message);
 
     if (!savedMessage) {
-      console.error(
-        `${new Date().toISOString()} (${user.id}) ${
-          user.privateUser.name
-        } Failed to save score message`,
-      );
+      console.error(`${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Failed to save score message`);
       return;
     }
 
     sendMessagesAll(savedMessage);
-    logMessage("Score sent", user);
+    logMessage('Score sent', user);
   } catch (err) {
-    console.error("Error saving score message:", err);
+    console.error('Error saving score message:', err);
   }
 }
 
-async function handleDeleteMessage(
-  user: FullUser,
-  messageId: number,
-): Promise<void> {
+async function handleDeleteMessage(user: FullUser, messageId: number): Promise<void> {
   if (!user.privateUser.moderatorLevel || isNaN(messageId)) return;
 
   try {
-    const deleted = await databaseService.toggleMessage(
-      messageId,
-      user.privateUser,
-    );
+    const deleted = await databaseService.toggleMessage(messageId, user.privateUser);
 
     if (deleted) {
       user.connection.send(
@@ -474,33 +382,24 @@ async function handleDeleteMessage(
       );
     }
   } catch (err) {
-    console.error("Error deleting message:", err);
+    console.error('Error deleting message:', err);
   }
 }
 
-async function handleTryMessage(
-  user: FullUser,
-  content: string,
-): Promise<void> {
+async function handleTryMessage(user: FullUser, content: string): Promise<void> {
   try {
     const attempt = content.trim();
-    if (!attempt) throw new Error("Tentative vide.");
+    if (!attempt) throw new Error('Tentative vide.');
 
     const player = await databaseService.getPlayerByName(user.privateUser.name);
-    if (!player) throw new Error("Utilisateur introuvable.");
+    if (!player) throw new Error('Utilisateur introuvable.');
 
-    const { wordHistoryId, todaysWord } =
-      await databaseService.getTodaysWordAndHistoryId();
+    const { wordHistoryId, todaysWord } = await databaseService.getTodaysWordAndHistoryId();
 
-    const { attempts, win } = await databaseService.getOrCreateTry(
-      player.id,
-      wordHistoryId,
-    );
+    const { attempts, win } = await databaseService.getOrCreateTry(player.id, wordHistoryId);
 
     if (attempt.length !== todaysWord.length) {
-      console.log(
-        `Tentative invalide: longueur attendue ${todaysWord.length}, reçu ${attempt.length}`,
-      );
+      console.log(`Tentative invalide: longueur attendue ${todaysWord.length}, reçu ${attempt.length}`);
       user.connection.send(
         JSON.stringify({
           type: Server.MessageType.MESSAGE,
@@ -508,10 +407,7 @@ async function handleTryMessage(
             type: Server.MessageType.ERROR,
             content: {
               text: `Le mot doit faire ${todaysWord.length} lettres.`,
-              timestamp: new Date()
-                .toISOString()
-                .replace("T", " ")
-                .slice(0, 19),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         }),
@@ -519,9 +415,7 @@ async function handleTryMessage(
       return;
     }
     if (attempt[0].toUpperCase() !== todaysWord[0]) {
-      console.log(
-        `Tentative invalide: première lettre attendue '${todaysWord[0]}', reçu '${attempt[0]}'`,
-      );
+      console.log(`Tentative invalide: première lettre attendue '${todaysWord[0]}', reçu '${attempt[0]}'`);
       user.connection.send(
         JSON.stringify({
           type: Server.MessageType.MESSAGE,
@@ -529,10 +423,7 @@ async function handleTryMessage(
             type: Server.MessageType.ERROR,
             content: {
               text: `Le mot doit commencer par '${todaysWord[0]}'.`,
-              timestamp: new Date()
-                .toISOString()
-                .replace("T", " ")
-                .slice(0, 19),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         }),
@@ -540,18 +431,15 @@ async function handleTryMessage(
       return;
     }
     if (attempts.length >= 6) {
-      console.log("Tentative invalide: nombre maximum de tentatives atteint.");
+      console.log('Tentative invalide: nombre maximum de tentatives atteint.');
       user.connection.send(
         JSON.stringify({
           type: Server.MessageType.MESSAGE,
           content: {
             type: Server.MessageType.ERROR,
             content: {
-              text: "Nombre maximum de tentatives atteint.",
-              timestamp: new Date()
-                .toISOString()
-                .replace("T", " ")
-                .slice(0, 19),
+              text: 'Nombre maximum de tentatives atteint.',
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         }),
@@ -567,10 +455,7 @@ async function handleTryMessage(
             type: Server.MessageType.ERROR,
             content: {
               text: "Vous avez déjà trouvé le mot aujourd'hui !",
-              timestamp: new Date()
-                .toISOString()
-                .replace("T", " ")
-                .slice(0, 19),
+              timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
             },
           },
         }),
@@ -582,12 +467,7 @@ async function handleTryMessage(
     const isWin = attempt.toUpperCase() === todaysWord;
     const newWin = win || isWin;
 
-    await databaseService.updateTry(
-      player.id,
-      wordHistoryId,
-      newAttempts,
-      newWin,
-    );
+    await databaseService.updateTry(player.id, wordHistoryId, newAttempts, newWin);
 
     user.connection.send(
       JSON.stringify({
@@ -595,10 +475,8 @@ async function handleTryMessage(
         content: {
           type: Server.MessageType.SUCCESS,
           content: {
-            text: isWin
-              ? "Bravo, vous avez trouvé le mot !"
-              : "Tentative enregistrée !",
-            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
+            text: isWin ? 'Bravo, vous avez trouvé le mot !' : 'Tentative enregistrée !',
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       }),
@@ -611,7 +489,7 @@ async function handleTryMessage(
           type: Server.MessageType.ERROR,
           content: {
             text: (err as Error).message,
-            timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           },
         },
       }),
@@ -619,11 +497,7 @@ async function handleTryMessage(
   }
 }
 
-function handleCustomMessageType(
-  user: FullUser,
-  messageType: string,
-  messageContent: any,
-): void {
+function handleCustomMessageType(user: FullUser, messageType: string, messageContent: any): void {
   const listeningTypes = Object.values(store.getState().users).reduce<{
     [key: string]: WS[];
   }>((acc, user) => {
@@ -637,11 +511,7 @@ function handleCustomMessageType(
   }, {});
 
   if (listeningTypes[messageType]) {
-    console.log(
-      `${new Date().toISOString()} (${user.id}) ${
-        user.privateUser.name
-      } Sent to custom type (${messageType})`,
-    );
+    console.log(`${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Sent to custom type (${messageType})`);
 
     listeningTypes[messageType].forEach((connection) => {
       connection.send(
@@ -652,11 +522,7 @@ function handleCustomMessageType(
       );
     });
   } else {
-    console.log(
-      `${new Date().toISOString()} (${user.id}) ${
-        user.privateUser.name
-      } Wrong message type or empty (${messageType})`,
-    );
+    console.log(`${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Wrong message type or empty (${messageType})`);
   }
 }
 

@@ -1,7 +1,7 @@
-import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
-import type { Player, PlayerId } from "./Player";
-import type { WordHistory, WordHistoryId } from "./WordHistory";
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import type { Player, PlayerId } from './Player';
+import type { WordHistory, WordHistoryId } from './WordHistory';
 
 export interface TryAttributes {
   PlayerID: number;
@@ -11,18 +11,12 @@ export interface TryAttributes {
   AttemptCount: number;
 }
 
-export type TryPk = "PlayerID" | "WordHistoryID";
+export type TryPk = 'PlayerID' | 'WordHistoryID';
 export type TryId = Try[TryPk];
-export type TryOptionalAttributes = "Win" | "AttemptCount";
-export type TryCreationAttributes = Optional<
-  TryAttributes,
-  TryOptionalAttributes
->;
+export type TryOptionalAttributes = 'Win' | 'AttemptCount';
+export type TryCreationAttributes = Optional<TryAttributes, TryOptionalAttributes>;
 
-export class Try
-  extends Model<TryAttributes, TryCreationAttributes>
-  implements TryAttributes
-{
+export class Try extends Model<TryAttributes, TryCreationAttributes> implements TryAttributes {
   PlayerID!: number;
   WordHistoryID!: number;
   Attempts!: string;
@@ -37,10 +31,7 @@ export class Try
   // Try belongsTo WordHistory via WordHistoryID
   WordHistory!: WordHistory;
   getWordHistory!: Sequelize.BelongsToGetAssociationMixin<WordHistory>;
-  setWordHistory!: Sequelize.BelongsToSetAssociationMixin<
-    WordHistory,
-    WordHistoryId
-  >;
+  setWordHistory!: Sequelize.BelongsToSetAssociationMixin<WordHistory, WordHistoryId>;
   createWordHistory!: Sequelize.BelongsToCreateAssociationMixin<WordHistory>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Try {
@@ -51,8 +42,8 @@ export class Try
           allowNull: false,
           primaryKey: true,
           references: {
-            model: "Player",
-            key: "ID",
+            model: 'Player',
+            key: 'ID',
           },
         },
         WordHistoryID: {
@@ -60,8 +51,8 @@ export class Try
           allowNull: false,
           primaryKey: true,
           references: {
-            model: "WordHistory",
-            key: "ID",
+            model: 'WordHistory',
+            key: 'ID',
           },
         },
         Attempts: {
@@ -81,19 +72,19 @@ export class Try
       },
       {
         sequelize,
-        tableName: "Try",
+        tableName: 'Try',
         timestamps: false,
         indexes: [
           {
-            name: "PRIMARY",
+            name: 'PRIMARY',
             unique: true,
-            using: "BTREE",
-            fields: [{ name: "PlayerID" }, { name: "WordHistoryID" }],
+            using: 'BTREE',
+            fields: [{ name: 'PlayerID' }, { name: 'WordHistoryID' }],
           },
           {
-            name: "Try_fk_WordHistory",
-            using: "BTREE",
-            fields: [{ name: "WordHistoryID" }],
+            name: 'Try_fk_WordHistory',
+            using: 'BTREE',
+            fields: [{ name: 'WordHistoryID' }],
           },
         ],
       },

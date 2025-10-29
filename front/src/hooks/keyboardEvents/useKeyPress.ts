@@ -1,9 +1,9 @@
-import { useEffect } from "react";
-import useShortcuts from "./useShortcuts";
-import useGameLogic from "./useGameLogic";
-import useGameStore from "../../stores/useGameStore";
-import useUIStore from "../../stores/useUIStore";
-import useChatStore from "../../stores/useChatStore";
+import { useEffect } from 'react';
+import useShortcuts from './useShortcuts';
+import useGameLogic from './useGameLogic';
+import useGameStore from '../../stores/useGameStore';
+import useUIStore from '../../stores/useUIStore';
+import useChatStore from '../../stores/useChatStore';
 
 const useKeyPress = () => {
   const { gameFinished } = useGameStore();
@@ -14,11 +14,10 @@ const useKeyPress = () => {
   const gameLogicState = useGameLogic();
 
   useEffect(() => {
-    const isGameKey = (event: KeyboardEvent) =>
-      ["Enter", "Backspace"].includes(event.key) || /^[a-z]$/.test(event.key);
+    const isGameKey = (event: KeyboardEvent) => ['Enter', 'Backspace'].includes(event.key) || /^[a-z]$/.test(event.key);
 
-    const handleKeyPress = (event: KeyboardEvent, state: "up" | "down") => {
-      if (state === "down") {
+    const handleKeyPress = (event: KeyboardEvent, state: 'up' | 'down') => {
+      if (state === 'down') {
         if (showChat && isGameKey(event)) {
           focusInput();
         } else if (!isGameKey(event) || gameFinished() || event.altKey) {
@@ -31,15 +30,15 @@ const useKeyPress = () => {
       }
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => handleKeyPress(e, "down");
-    const handleKeyUp = (e: KeyboardEvent) => handleKeyPress(e, "up");
+    const handleKeyDown = (e: KeyboardEvent) => handleKeyPress(e, 'down');
+    const handleKeyUp = (e: KeyboardEvent) => handleKeyPress(e, 'up');
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
     };
   }, [
     showChat,

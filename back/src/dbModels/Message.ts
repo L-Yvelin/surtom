@@ -1,91 +1,50 @@
-import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
-import type { Player, PlayerId } from "./Player";
-import type {
-  ScoreContent,
-  ScoreContentCreationAttributes,
-  ScoreContentId,
-} from "./ScoreContent";
-import type {
-  TextContent,
-  TextContentCreationAttributes,
-  TextContentId,
-} from "./TextContent";
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import type { Player, PlayerId } from './Player';
+import type { ScoreContent, ScoreContentCreationAttributes, ScoreContentId } from './ScoreContent';
+import type { TextContent, TextContentCreationAttributes, TextContentId } from './TextContent';
 
 export interface MessageAttributes {
   ID: number;
   PlayerID: number;
   Timestamp: Date;
-  Type: "MAIL_ALL" | "ENHANCED_MESSAGE" | "SCORE";
+  Type: 'MAIL_ALL' | 'ENHANCED_MESSAGE' | 'SCORE';
   Deleted?: number;
 }
 
-export type MessagePk = "ID";
+export type MessagePk = 'ID';
 export type MessageId = Message[MessagePk];
-export type MessageOptionalAttributes = "ID" | "Deleted";
-export type MessageCreationAttributes = Optional<
-  MessageAttributes,
-  MessageOptionalAttributes
->;
+export type MessageOptionalAttributes = 'ID' | 'Deleted';
+export type MessageCreationAttributes = Optional<MessageAttributes, MessageOptionalAttributes>;
 
-export class Message
-  extends Model<MessageAttributes, MessageCreationAttributes>
-  implements MessageAttributes
-{
+export class Message extends Model<MessageAttributes, MessageCreationAttributes> implements MessageAttributes {
   ID!: number;
   PlayerID!: number;
   Timestamp!: Date;
-  Type!: "MAIL_ALL" | "ENHANCED_MESSAGE" | "SCORE";
+  Type!: 'MAIL_ALL' | 'ENHANCED_MESSAGE' | 'SCORE';
   Deleted?: number;
 
   // Message hasOne ScoreContent via ID
   ScoreContent!: ScoreContent;
   getScoreContent!: Sequelize.HasOneGetAssociationMixin<ScoreContent>;
-  setScoreContent!: Sequelize.HasOneSetAssociationMixin<
-    ScoreContent,
-    ScoreContentId
-  >;
+  setScoreContent!: Sequelize.HasOneSetAssociationMixin<ScoreContent, ScoreContentId>;
   createScoreContent!: Sequelize.HasOneCreateAssociationMixin<ScoreContent>;
   // Message hasOne TextContent via ID
   TextContent!: TextContent;
   getTextContent!: Sequelize.HasOneGetAssociationMixin<TextContent>;
-  setTextContent!: Sequelize.HasOneSetAssociationMixin<
-    TextContent,
-    TextContentId
-  >;
+  setTextContent!: Sequelize.HasOneSetAssociationMixin<TextContent, TextContentId>;
   createTextContent!: Sequelize.HasOneCreateAssociationMixin<TextContent>;
   // Message hasMany TextContent via ReplyID
   Reply_TextContents!: TextContent[];
   getReply_TextContents!: Sequelize.HasManyGetAssociationsMixin<TextContent>;
-  setReply_TextContents!: Sequelize.HasManySetAssociationsMixin<
-    TextContent,
-    TextContentId
-  >;
-  addReply_TextContent!: Sequelize.HasManyAddAssociationMixin<
-    TextContent,
-    TextContentId
-  >;
-  addReply_TextContents!: Sequelize.HasManyAddAssociationsMixin<
-    TextContent,
-    TextContentId
-  >;
+  setReply_TextContents!: Sequelize.HasManySetAssociationsMixin<TextContent, TextContentId>;
+  addReply_TextContent!: Sequelize.HasManyAddAssociationMixin<TextContent, TextContentId>;
+  addReply_TextContents!: Sequelize.HasManyAddAssociationsMixin<TextContent, TextContentId>;
   createReply_TextContent!: Sequelize.HasManyCreateAssociationMixin<TextContent>;
-  removeReply_TextContent!: Sequelize.HasManyRemoveAssociationMixin<
-    TextContent,
-    TextContentId
-  >;
-  removeReply_TextContents!: Sequelize.HasManyRemoveAssociationsMixin<
-    TextContent,
-    TextContentId
-  >;
-  hasReply_TextContent!: Sequelize.HasManyHasAssociationMixin<
-    TextContent,
-    TextContentId
-  >;
-  hasReply_TextContents!: Sequelize.HasManyHasAssociationsMixin<
-    TextContent,
-    TextContentId
-  >;
+  removeReply_TextContent!: Sequelize.HasManyRemoveAssociationMixin<TextContent, TextContentId>;
+  removeReply_TextContents!: Sequelize.HasManyRemoveAssociationsMixin<TextContent, TextContentId>;
+  hasReply_TextContent!: Sequelize.HasManyHasAssociationMixin<TextContent, TextContentId>;
+  hasReply_TextContents!: Sequelize.HasManyHasAssociationsMixin<TextContent, TextContentId>;
   countReply_TextContents!: Sequelize.HasManyCountAssociationsMixin;
   // Message belongsTo Player via PlayerID
   Player!: Player;
@@ -106,8 +65,8 @@ export class Message
           type: DataTypes.INTEGER,
           allowNull: false,
           references: {
-            model: "Player",
-            key: "ID",
+            model: 'Player',
+            key: 'ID',
           },
         },
         Timestamp: {
@@ -115,7 +74,7 @@ export class Message
           allowNull: false,
         },
         Type: {
-          type: DataTypes.ENUM("MAIL_ALL", "ENHANCED_MESSAGE", "SCORE"),
+          type: DataTypes.ENUM('MAIL_ALL', 'ENHANCED_MESSAGE', 'SCORE'),
           allowNull: false,
         },
         Deleted: {
@@ -125,19 +84,19 @@ export class Message
       },
       {
         sequelize,
-        tableName: "Message",
+        tableName: 'Message',
         timestamps: false,
         indexes: [
           {
-            name: "PRIMARY",
+            name: 'PRIMARY',
             unique: true,
-            using: "BTREE",
-            fields: [{ name: "ID" }],
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
           },
           {
-            name: "PlayerID",
-            using: "BTREE",
-            fields: [{ name: "PlayerID" }],
+            name: 'PlayerID',
+            using: 'BTREE',
+            fields: [{ name: 'PlayerID' }],
           },
         ],
       },

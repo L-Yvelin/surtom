@@ -1,6 +1,6 @@
-import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
-import type { WordHistory, WordHistoryId } from "./WordHistory";
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import type { WordHistory, WordHistoryId } from './WordHistory';
 
 export interface MotMinecraftAttributes {
   ID: number;
@@ -9,18 +9,12 @@ export interface MotMinecraftAttributes {
   Rotation: number;
 }
 
-export type MotMinecraftPk = "ID";
+export type MotMinecraftPk = 'ID';
 export type MotMinecraftId = MotMinecraft[MotMinecraftPk];
-export type MotMinecraftOptionalAttributes = "ID" | "Date" | "Rotation";
-export type MotMinecraftCreationAttributes = Optional<
-  MotMinecraftAttributes,
-  MotMinecraftOptionalAttributes
->;
+export type MotMinecraftOptionalAttributes = 'ID' | 'Date' | 'Rotation';
+export type MotMinecraftCreationAttributes = Optional<MotMinecraftAttributes, MotMinecraftOptionalAttributes>;
 
-export class MotMinecraft
-  extends Model<MotMinecraftAttributes, MotMinecraftCreationAttributes>
-  implements MotMinecraftAttributes
-{
+export class MotMinecraft extends Model<MotMinecraftAttributes, MotMinecraftCreationAttributes> implements MotMinecraftAttributes {
   ID!: number;
   MotMinecraft!: string;
   Date?: string;
@@ -29,35 +23,14 @@ export class MotMinecraft
   // MotMinecraft hasMany WordHistory via WordID
   WordHistories!: WordHistory[];
   getWordHistories!: Sequelize.HasManyGetAssociationsMixin<WordHistory>;
-  setWordHistories!: Sequelize.HasManySetAssociationsMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  addWordHistory!: Sequelize.HasManyAddAssociationMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  addWordHistories!: Sequelize.HasManyAddAssociationsMixin<
-    WordHistory,
-    WordHistoryId
-  >;
+  setWordHistories!: Sequelize.HasManySetAssociationsMixin<WordHistory, WordHistoryId>;
+  addWordHistory!: Sequelize.HasManyAddAssociationMixin<WordHistory, WordHistoryId>;
+  addWordHistories!: Sequelize.HasManyAddAssociationsMixin<WordHistory, WordHistoryId>;
   createWordHistory!: Sequelize.HasManyCreateAssociationMixin<WordHistory>;
-  removeWordHistory!: Sequelize.HasManyRemoveAssociationMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  removeWordHistories!: Sequelize.HasManyRemoveAssociationsMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  hasWordHistory!: Sequelize.HasManyHasAssociationMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  hasWordHistories!: Sequelize.HasManyHasAssociationsMixin<
-    WordHistory,
-    WordHistoryId
-  >;
+  removeWordHistory!: Sequelize.HasManyRemoveAssociationMixin<WordHistory, WordHistoryId>;
+  removeWordHistories!: Sequelize.HasManyRemoveAssociationsMixin<WordHistory, WordHistoryId>;
+  hasWordHistory!: Sequelize.HasManyHasAssociationMixin<WordHistory, WordHistoryId>;
+  hasWordHistories!: Sequelize.HasManyHasAssociationsMixin<WordHistory, WordHistoryId>;
   countWordHistories!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof MotMinecraft {
@@ -85,14 +58,14 @@ export class MotMinecraft
       },
       {
         sequelize,
-        tableName: "MotMinecraft",
+        tableName: 'MotMinecraft',
         timestamps: false,
         indexes: [
           {
-            name: "PRIMARY",
+            name: 'PRIMARY',
             unique: true,
-            using: "BTREE",
-            fields: [{ name: "ID" }],
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
           },
         ],
       },

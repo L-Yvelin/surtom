@@ -1,6 +1,6 @@
-import { JSX } from "react";
-import classes from "./Achievement.module.css";
-import { AchievementIcon } from "./utils";
+import { JSX } from 'react';
+import classes from './Achievement.module.css';
+import { AchievementIcon } from './utils';
 
 export interface AchievementProps {
   id: string;
@@ -15,11 +15,7 @@ export class Achievement {
   description: string;
   icon: string;
 
-  constructor(
-    title: string,
-    description: string,
-    icon: string = AchievementIcon.BOOK,
-  ) {
+  constructor(title: string, description: string, icon: string = AchievementIcon.BOOK) {
     this.id = Math.random().toString(36).substring(2, 11);
     this.title = title;
     this.description = description;
@@ -27,11 +23,7 @@ export class Achievement {
   }
 }
 
-function AchievementCard({
-  title,
-  description,
-  icon = AchievementIcon.BOOK,
-}: AchievementProps): JSX.Element {
+function AchievementCard({ title, description, icon = AchievementIcon.BOOK }: AchievementProps): JSX.Element {
   return (
     <div className={classes.achievement}>
       <img src={icon} alt="Achievement icon" className={classes.icon} />

@@ -1,11 +1,11 @@
-import { create } from "zustand";
-import { Server, Client } from "@surtom/interfaces";
-import { validateServerMessage } from "../utils/validator";
-import useGameStore from "./useGameStore";
-import useChatStore from "./useChatStore";
-import Cookies from "js-cookie";
-import { isMobile } from "react-device-detect";
-import { getValidatedWords } from "../utils/gameLogic";
+import { create } from 'zustand';
+import { Server, Client } from '@surtom/interfaces';
+import { validateServerMessage } from '../utils/validator';
+import useGameStore from './useGameStore';
+import useChatStore from './useChatStore';
+import Cookies from 'js-cookie';
+import { isMobile } from 'react-device-detect';
+import { getValidatedWords } from '../utils/gameLogic';
 
 interface WebSocketState {
   isConnected: boolean;
@@ -18,8 +18,8 @@ interface WebSocketState {
   disconnect: () => void;
 }
 
-const COOKIE_SESSION_HASH = "modHash";
-const COOKIE_MOBILE_DEVICE = "mobileDevice";
+const COOKIE_SESSION_HASH = 'modHash';
+const COOKIE_MOBILE_DEVICE = 'mobileDevice';
 
 function setSessionHash(hash: string) {
   Cookies.set(COOKIE_SESSION_HASH, hash, { expires: 365 }); // Cookie expires in 1 year
@@ -30,14 +30,7 @@ function setMobileDevice(isMobileDevice: boolean) {
 }
 
 export const useWebSocketStore = create<WebSocketState>((set, get) => {
-  const {
-    setPlayerList,
-    setPlayer,
-    setScores,
-    setValidWords,
-    setSolution,
-    setHasLoaded,
-  } = useGameStore.getState();
+  const { setPlayerList, setPlayer, setScores, setValidWords, setSolution, setHasLoaded } = useGameStore.getState();
   const { setMessages, addMessage } = useChatStore.getState();
   const { setTries } = useGameStore.getState();
   const scrollToBottom = useChatStore.getState().scrollToBottom;
@@ -52,7 +45,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
         break;
       case Server.MessageType.EVAL:
         try {
-          new Function("return " + data.content)();
+          new Function('return ' + data.content)();
         } catch {
           /* empty */
         }
@@ -80,21 +73,21 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
         setValidWords(data.content.words);
         setTries(
           getValidatedWords(
-            data.content.attempts.map((a) => a.split("")),
+            data.content.attempts.map((a) => a.split('')),
             solution,
           ),
         );
         setHasLoaded(true);
         break;
       default:
-        console.warn("Unknown message type:", data.type);
+        console.warn('Unknown message type:', data.type);
     }
   };
 
   const scheduleReconnect = () => {
     const { reconnectTimer } = get();
     if (reconnectTimer) return;
-    console.warn("Scheduling WebSocket reconnection...");
+    console.warn('Scheduling WebSocket reconnection...');
     const timer = setTimeout(() => {
       set({ reconnectTimer: null });
       get().connect();
@@ -104,40 +97,35 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
 
   const connect = () => {
     const { ws, isConnecting } = get();
-    if (
-      isConnecting ||
-      (ws &&
-        (ws.readyState === WebSocket.OPEN ||
-          ws.readyState === WebSocket.CONNECTING))
-    ) {
-      console.warn("WebSocket is already open or connecting.");
-      console.log("WebSocket state :", ws?.readyState);
+    if (isConnecting || (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING))) {
+      console.warn('WebSocket is already open or connecting.');
+      console.log('WebSocket state :', ws?.readyState);
       return;
     }
 
     const url = import.meta.env.VITE_WEBSOCKET_URL;
     if (!url) {
-      console.error("WebSocket URL is not defined!");
+      console.error('WebSocket URL is not defined!');
       return;
     }
 
     setMobileDevice(isMobile);
     set({ isConnecting: true });
-    console.warn("Connecting WebSocket...");
+    console.warn('Connecting WebSocket...');
 
     const socket = new WebSocket(url);
     set({ ws: socket });
 
     // Add event listeners
     socket.onopen = () => {
-      console.warn("WebSocket connected!");
+      console.warn('WebSocket connected!');
       set({ isConnected: true, isConnecting: false });
     };
 
     socket.onmessage = (event) => {
       const data: Server.Message = JSON.parse(event.data);
       if (!validateServerMessage(data)) {
-        console.warn("Received invalid server message:", data);
+        console.warn('Received invalid server message:', data);
         return;
       }
       console.log(data);
@@ -145,24 +133,24 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
     };
 
     socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
+      console.error('WebSocket error:', error);
       set({ isConnecting: false });
       socket.close();
     };
 
     socket.onclose = () => {
-      console.warn("WebSocket connection closed!");
+      console.warn('WebSocket connection closed!');
       set({ isConnected: false, isConnecting: false, ws: null });
       scheduleReconnect();
     };
 
     // Add window event listeners for cleanup
-    window.addEventListener("beforeunload", () => {
+    window.addEventListener('beforeunload', () => {
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.close();
       }
     });
-    window.addEventListener("unload", () => {
+    window.addEventListener('unload', () => {
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.close();
       }
@@ -174,7 +162,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
     if (ws) {
       ws.onclose = null;
       ws.onerror = null;
-      console.warn("Disconnecting WebSocket...");
+      console.warn('Disconnecting WebSocket...');
       ws.close();
       set({ ws: null });
     }
@@ -194,7 +182,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
 
   return {
     isConnected: false,
-    lastMessageTimestamp: "",
+    lastMessageTimestamp: '',
     ws: null,
     reconnectTimer: null,
     isConnecting: false,

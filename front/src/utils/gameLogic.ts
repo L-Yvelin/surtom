@@ -1,13 +1,9 @@
-import { Word, LetterState } from "./Message";
-import useGameStore from "../stores/useGameStore";
+import { Word, LetterState } from './Message';
+import useGameStore from '../stores/useGameStore';
 
 export const gameFinished = (): boolean => {
   const { tries } = useGameStore.getState();
-  return (
-    tries[tries.length - 1]?.every(
-      (letter) => letter.state === LetterState.Correct,
-    ) || false
-  );
+  return tries[tries.length - 1]?.every((letter) => letter.state === LetterState.Correct) || false;
 };
 
 export function isGuessValid(guess: string, solution: string): boolean {
@@ -34,10 +30,7 @@ function getLetterMap(text: string): Record<string, number> {
   return letterMap;
 }
 
-export function validateWord(
-  guess: string[] | string,
-  solution: string,
-): LetterState[] {
+export function validateWord(guess: string[] | string, solution: string): LetterState[] {
   const solutionLettersCount = getLetterMap(solution);
   const result: LetterState[] = new Array(guess.length).fill(LetterState.Miss);
 
@@ -62,10 +55,7 @@ export function validateWord(
   return result;
 }
 
-export function getValidatedWords(
-  guesses: string[][],
-  solution: string,
-): Word[] {
+export function getValidatedWords(guesses: string[][], solution: string): Word[] {
   return guesses.map((guess) => {
     const states = validateWord(guess, solution.toUpperCase());
     return guess.map((char, i) => ({

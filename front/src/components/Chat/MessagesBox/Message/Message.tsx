@@ -1,32 +1,23 @@
-import { JSX, memo } from "react";
-import classes from "./Message.module.css";
-import { Server, Client } from "@surtom/interfaces";
-import MessageTool from "./MessageTool/MessageTool";
-import classNames from "classnames";
-import SwipeActions from "../../../Widgets/SwipeActions/SwipeActions";
-import useChatStore from "../../../../stores/useChatStore";
-import CustomContextMenu from "../../../CustomContextMenu/CustomContextMenu";
-import MessageContextMenu from "./MessageContextMenu/MessageContextMenu";
-import useGameStore from "../../../../stores/useGameStore";
-import answerIcon from "../../../../assets/images/ui/answer.svg";
-import deleteIcon from "../../../../assets/images/ui/delete.svg";
-import {
-  isSavedChatMessage,
-  isScoreMessage,
-  isStatusMessage,
-  isTextMessage,
-} from "../../utils";
-import { isMobile } from "react-device-detect";
-import StatusContent from "./Content/StatusContent";
-import ScoreContent from "./Content/ScoreContent";
-import UserContent from "./Content/UserContent";
-import { useWebSocketStore } from "../../../../stores/useWebSocketStore";
+import { JSX, memo } from 'react';
+import classes from './Message.module.css';
+import { Server, Client } from '@surtom/interfaces';
+import MessageTool from './MessageTool/MessageTool';
+import classNames from 'classnames';
+import SwipeActions from '../../../Widgets/SwipeActions/SwipeActions';
+import useChatStore from '../../../../stores/useChatStore';
+import CustomContextMenu from '../../../CustomContextMenu/CustomContextMenu';
+import MessageContextMenu from './MessageContextMenu/MessageContextMenu';
+import useGameStore from '../../../../stores/useGameStore';
+import answerIcon from '../../../../assets/images/ui/answer.svg';
+import deleteIcon from '../../../../assets/images/ui/delete.svg';
+import { isSavedChatMessage, isScoreMessage, isStatusMessage, isTextMessage } from '../../utils';
+import { isMobile } from 'react-device-detect';
+import StatusContent from './Content/StatusContent';
+import ScoreContent from './Content/ScoreContent';
+import UserContent from './Content/UserContent';
+import { useWebSocketStore } from '../../../../stores/useWebSocketStore';
 
-const MessageContent = ({
-  message,
-}: {
-  message: Server.ChatMessage.Type;
-}): JSX.Element => {
+const MessageContent = ({ message }: { message: Server.ChatMessage.Type }): JSX.Element => {
   if (isStatusMessage(message)) {
     return <StatusContent message={message} />;
   } else if (isSavedChatMessage(message)) {
@@ -44,19 +35,15 @@ const MessageContent = ({
   }
 };
 
-function Message({
-  message,
-}: {
-  message: Server.ChatMessage.Type;
-}): JSX.Element {
+function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element {
   const { setAnsweringTo, focusInput } = useChatStore();
   const { sendMessage } = useWebSocketStore();
   const username = useGameStore((state) => state.player.name);
   const myModeratorLevel = useGameStore((state) => state.player.moderatorLevel);
 
-  let id = "";
+  let id = '';
   let user: { name: string; moderatorLevel: number } = {
-    name: "",
+    name: '',
     moderatorLevel: 0,
   };
   if (isTextMessage(message) || isScoreMessage(message)) {
@@ -80,8 +67,8 @@ function Message({
 
   const date = new Date(message.content.timestamp);
   const timeString = date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   return (
@@ -92,18 +79,16 @@ function Message({
             ...(isSavedChatMessage(message) && id
               ? [
                   {
-                    label: "Répondre",
+                    label: 'Répondre',
                     icon: answerIcon,
                     onClick: () => handleRespond(id),
                   },
                 ]
               : []),
-            ...(!isSavedChatMessage(message) ||
-            (user && myModeratorLevel > user.moderatorLevel) ||
-            user.name === username
+            ...(!isSavedChatMessage(message) || (user && myModeratorLevel > user.moderatorLevel) || user.name === username
               ? [
                   {
-                    label: "Supprimer",
+                    label: 'Supprimer',
                     icon: deleteIcon,
                     onClick: () => handleDelete(id),
                   },
@@ -115,21 +100,14 @@ function Message({
       offset={5}
     >
       {isMobile ? (
-        <SwipeActions
-          direction="left"
-          onSwipeOne={() => handleRespond(id)}
-          onSwipeTwo={() => handleDelete(id)}
-        >
+        <SwipeActions direction="left" onSwipeOne={() => handleRespond(id)} onSwipeTwo={() => handleDelete(id)}>
           <div className={classNames(classes.message)} id={id}>
             <div className={classes.content}>
               <MessageContent message={message} />
             </div>
           </div>
           <div className={classes.tool}>
-            <MessageTool
-              onDelete={() => handleDelete(id)}
-              onRespond={() => handleRespond(id)}
-            />
+            <MessageTool onDelete={() => handleDelete(id)} onRespond={() => handleRespond(id)} />
           </div>
         </SwipeActions>
       ) : (

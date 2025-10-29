@@ -1,6 +1,6 @@
 .scoreBar {
   width: 100%;
-  background-image: url("/src/assets/images/blocks/dirt_256.png");
+  background-image: url('/src/assets/images/blocks/dirt_256.png');
   background-size: 100%;
   position: relative;
   transform-style: preserve-3d;
@@ -56,37 +56,27 @@
 
 .scoreBar1 .rightFace,
 .scoreBar1 .topFace {
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)),
-    url(/src/assets/images/blocks/diamond_block.png);
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)), url(/src/assets/images/blocks/diamond_block.png);
 }
 
 .scoreBar2 .rightFace,
 .scoreBar2 .topFace {
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)),
-    url(/src/assets/images/blocks/gold_block.png);
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)), url(/src/assets/images/blocks/gold_block.png);
 }
 
 .scoreBar3 .rightFace,
 .scoreBar3 .topFace {
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)),
-    url(/src/assets/images/blocks/stone.png);
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)), url(/src/assets/images/blocks/stone.png);
 }
 
 .scoreBar4 .rightFace,
 .scoreBar4 .topFace {
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)),
-    url(/src/assets/images/blocks/sand_256.png);
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)), url(/src/assets/images/blocks/sand_256.png);
 }
 
 .scoreBar5 .rightFace,
 .scoreBar5 .topFace {
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)),
-    url(/src/assets/images/blocks/gravel_256.png);
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)), url(/src/assets/images/blocks/gravel_256.png);
 }
 
 .rightFace {
@@ -96,9 +86,7 @@
   background-size: 100%;
   transform: rotateY(-90deg);
   transform-origin: right;
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)),
-    url(/src/assets/images/blocks/dirt_256.png);
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)), url(/src/assets/images/blocks/dirt_256.png);
   filter: brightness(0.8);
 }
 
@@ -109,9 +97,7 @@
   background-size: 100%;
   transform: rotateX(-90deg);
   transform-origin: top;
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)),
-    url(/src/assets/images/blocks/dirt_256.png);
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)), url(/src/assets/images/blocks/dirt_256.png);
   filter: brightness(0.8);
 }
 

@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { Coordinates, Anchor } from "../components/Tooltip/utils";
+import { create } from 'zustand';
+import { Coordinates, Anchor } from '../components/Tooltip/utils';
 
 interface TooltipState {
   isVisible: boolean;
@@ -8,13 +8,7 @@ interface TooltipState {
   anchor: Anchor;
   offset: number;
   triggerElement: HTMLElement | null;
-  show: (args: {
-    content: React.ReactNode;
-    coords: Coordinates;
-    anchor?: Anchor;
-    offset?: number;
-    trigger: HTMLElement;
-  }) => void;
+  show: (args: { content: React.ReactNode; coords: Coordinates; anchor?: Anchor; offset?: number; trigger: HTMLElement }) => void;
   hide: () => void;
   updatePosition: (coords: Coordinates) => void;
 }

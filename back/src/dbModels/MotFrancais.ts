@@ -1,23 +1,17 @@
-import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 
 export interface MotFrancaisAttributes {
   ID: number;
   MotFrancais: string;
 }
 
-export type MotFrancaisPk = "ID";
+export type MotFrancaisPk = 'ID';
 export type MotFrancaisId = MotFrancais[MotFrancaisPk];
-export type MotFrancaisOptionalAttributes = "ID";
-export type MotFrancaisCreationAttributes = Optional<
-  MotFrancaisAttributes,
-  MotFrancaisOptionalAttributes
->;
+export type MotFrancaisOptionalAttributes = 'ID';
+export type MotFrancaisCreationAttributes = Optional<MotFrancaisAttributes, MotFrancaisOptionalAttributes>;
 
-export class MotFrancais
-  extends Model<MotFrancaisAttributes, MotFrancaisCreationAttributes>
-  implements MotFrancaisAttributes
-{
+export class MotFrancais extends Model<MotFrancaisAttributes, MotFrancaisCreationAttributes> implements MotFrancaisAttributes {
   ID!: number;
   MotFrancais!: string;
 
@@ -37,14 +31,14 @@ export class MotFrancais
       },
       {
         sequelize,
-        tableName: "MotFrancais",
+        tableName: 'MotFrancais',
         timestamps: false,
         indexes: [
           {
-            name: "PRIMARY",
+            name: 'PRIMARY',
             unique: true,
-            using: "BTREE",
-            fields: [{ name: "ID" }],
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
           },
         ],
       },

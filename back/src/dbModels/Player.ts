@@ -1,8 +1,8 @@
-import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
-import type { Message, MessageId } from "./Message";
-import type { Try, TryId } from "./Try";
-import type { WordHistory, WordHistoryId } from "./WordHistory";
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import type { Message, MessageId } from './Message';
+import type { Try, TryId } from './Try';
+import type { WordHistory, WordHistoryId } from './WordHistory';
 
 export interface PlayerAttributes {
   ID: number;
@@ -14,22 +14,12 @@ export interface PlayerAttributes {
   IsBanned: number;
 }
 
-export type PlayerPk = "ID";
+export type PlayerPk = 'ID';
 export type PlayerId = Player[PlayerPk];
-export type PlayerOptionalAttributes =
-  | "ID"
-  | "SessionHash"
-  | "IsAdmin"
-  | "IsBanned";
-export type PlayerCreationAttributes = Optional<
-  PlayerAttributes,
-  PlayerOptionalAttributes
->;
+export type PlayerOptionalAttributes = 'ID' | 'SessionHash' | 'IsAdmin' | 'IsBanned';
+export type PlayerCreationAttributes = Optional<PlayerAttributes, PlayerOptionalAttributes>;
 
-export class Player
-  extends Model<PlayerAttributes, PlayerCreationAttributes>
-  implements PlayerAttributes
-{
+export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> implements PlayerAttributes {
   ID!: number;
   Username!: string;
   Password!: string;
@@ -65,35 +55,14 @@ export class Player
   // Player belongsToMany WordHistory via PlayerID and WordHistoryID
   WordHistoryID_WordHistories!: WordHistory[];
   getWordHistoryID_WordHistories!: Sequelize.BelongsToManyGetAssociationsMixin<WordHistory>;
-  setWordHistoryID_WordHistories!: Sequelize.BelongsToManySetAssociationsMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  addWordHistoryID_WordHistory!: Sequelize.BelongsToManyAddAssociationMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  addWordHistoryID_WordHistories!: Sequelize.BelongsToManyAddAssociationsMixin<
-    WordHistory,
-    WordHistoryId
-  >;
+  setWordHistoryID_WordHistories!: Sequelize.BelongsToManySetAssociationsMixin<WordHistory, WordHistoryId>;
+  addWordHistoryID_WordHistory!: Sequelize.BelongsToManyAddAssociationMixin<WordHistory, WordHistoryId>;
+  addWordHistoryID_WordHistories!: Sequelize.BelongsToManyAddAssociationsMixin<WordHistory, WordHistoryId>;
   createWordHistoryID_WordHistory!: Sequelize.BelongsToManyCreateAssociationMixin<WordHistory>;
-  removeWordHistoryID_WordHistory!: Sequelize.BelongsToManyRemoveAssociationMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  removeWordHistoryID_WordHistories!: Sequelize.BelongsToManyRemoveAssociationsMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  hasWordHistoryID_WordHistory!: Sequelize.BelongsToManyHasAssociationMixin<
-    WordHistory,
-    WordHistoryId
-  >;
-  hasWordHistoryID_WordHistories!: Sequelize.BelongsToManyHasAssociationsMixin<
-    WordHistory,
-    WordHistoryId
-  >;
+  removeWordHistoryID_WordHistory!: Sequelize.BelongsToManyRemoveAssociationMixin<WordHistory, WordHistoryId>;
+  removeWordHistoryID_WordHistories!: Sequelize.BelongsToManyRemoveAssociationsMixin<WordHistory, WordHistoryId>;
+  hasWordHistoryID_WordHistory!: Sequelize.BelongsToManyHasAssociationMixin<WordHistory, WordHistoryId>;
+  hasWordHistoryID_WordHistories!: Sequelize.BelongsToManyHasAssociationsMixin<WordHistory, WordHistoryId>;
   countWordHistoryID_WordHistories!: Sequelize.BelongsToManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Player {
@@ -108,7 +77,7 @@ export class Player
         Username: {
           type: DataTypes.STRING(255),
           allowNull: false,
-          unique: "Username",
+          unique: 'Username',
         },
         Password: {
           type: DataTypes.STRING(255),
@@ -135,20 +104,20 @@ export class Player
       },
       {
         sequelize,
-        tableName: "Player",
+        tableName: 'Player',
         timestamps: false,
         indexes: [
           {
-            name: "PRIMARY",
+            name: 'PRIMARY',
             unique: true,
-            using: "BTREE",
-            fields: [{ name: "ID" }],
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
           },
           {
-            name: "Username",
+            name: 'Username',
             unique: true,
-            using: "BTREE",
-            fields: [{ name: "Username" }],
+            using: 'BTREE',
+            fields: [{ name: 'Username' }],
           },
         ],
       },

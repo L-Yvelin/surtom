@@ -1,9 +1,7 @@
 .stats {
   display: flex;
   color: white;
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    url("/src/assets/images/blocks/dirt_256.png");
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/src/assets/images/blocks/dirt_256.png');
   background-size: 5vh;
   background-clip: padding-box;
   border: #5f5f5f solid 0.2vh;

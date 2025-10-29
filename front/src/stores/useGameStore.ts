@@ -1,7 +1,7 @@
-import { AchievementProps } from "../components/AchievementsStack/Achievement/Achievement";
-import { Tries, LetterState, Server, Word } from "@surtom/interfaces";
-import { ScoreStats } from "../components/Stats/utils";
-import { create } from "zustand";
+import { AchievementProps } from '../components/AchievementsStack/Achievement/Achievement';
+import { Tries, LetterState, Server, Word } from '@surtom/interfaces';
+import { ScoreStats } from '../components/Stats/utils';
+import { create } from 'zustand';
 
 interface GameState {
   solution: string | undefined;
@@ -30,7 +30,7 @@ interface GameState {
 }
 
 export const defaultPlayer: Server.User = {
-  name: "",
+  name: '',
   isMobile: false,
   isLoggedIn: false,
   moderatorLevel: 0,
@@ -66,8 +66,7 @@ const useGameStore = create<GameState>((set, get) => ({
     })),
   playerList: [],
   setPlayerList: (players) => set({ playerList: players }),
-  addPlayer: (player) =>
-    set((state) => ({ playerList: [...(state.playerList || []), player] })),
+  addPlayer: (player) => set((state) => ({ playerList: [...(state.playerList || []), player] })),
   removePlayer: (playerName) =>
     set((state) => ({
       playerList: state.playerList?.filter((p) => p.name !== playerName) || [],
@@ -81,8 +80,7 @@ const useGameStore = create<GameState>((set, get) => ({
     })),
   removeAchievement: (achievementId) =>
     set((state) => ({
-      achievements:
-        state.achievements?.filter((a) => a.id !== achievementId) || [],
+      achievements: state.achievements?.filter((a) => a.id !== achievementId) || [],
     })),
   hasLoaded: false,
   setHasLoaded: (hasLoaded) => set({ hasLoaded }),

@@ -20,7 +20,7 @@
 }
 
 .tooltip::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0.11em;
   right: -0.11em;
@@ -32,20 +32,15 @@
 }
 
 .tooltip::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0.125em;
   right: 0;
   bottom: 0.125em;
   left: 0;
   border: 0.125em solid #2d0a63;
-  border-image: -webkit-linear-gradient(
-      rgba(80, 0, 255, 0.31),
-      rgba(40, 0, 127, 0.31)
-    )
-    1;
-  border-image: linear-gradient(rgba(80, 0, 255, 0.31), rgba(40, 0, 127, 0.31))
-    1;
+  border-image: -webkit-linear-gradient(rgba(80, 0, 255, 0.31), rgba(40, 0, 127, 0.31)) 1;
+  border-image: linear-gradient(rgba(80, 0, 255, 0.31), rgba(40, 0, 127, 0.31)) 1;
 }
 
 .title {

@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { useWebSocketStore } from "../stores/useWebSocketStore";
-import { Client } from "./Message";
+import { useEffect } from 'react';
+import { useWebSocketStore } from '../stores/useWebSocketStore';
+import { Client } from './Message';
 
 const WebSocketPingHandler = () => {
   const { isConnected, sendMessage } = useWebSocketStore();
@@ -8,15 +8,13 @@ const WebSocketPingHandler = () => {
   useEffect(() => {
     if (!isConnected) return;
 
-    const pingWorker: Worker = new Worker(
-      new URL("./pingWorker.ts", import.meta.url),
-    );
+    const pingWorker: Worker = new Worker(new URL('./pingWorker.ts', import.meta.url));
 
-    pingWorker.postMessage("");
+    pingWorker.postMessage('');
 
     pingWorker.onmessage = () => {
       if (isConnected) {
-        console.log("ping");
+        console.log('ping');
 
         sendMessage({ type: Client.MessageType.PING });
       }

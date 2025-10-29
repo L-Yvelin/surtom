@@ -1,7 +1,7 @@
-import { create } from "zustand";
-import { Server } from "@surtom/interfaces";
-import { defaultPlayer } from "./useGameStore";
-import { isSavedChatMessage } from "../components/Chat/utils";
+import { create } from 'zustand';
+import { Server } from '@surtom/interfaces';
+import { defaultPlayer } from './useGameStore';
+import { isSavedChatMessage } from '../components/Chat/utils';
 
 interface ChatStore {
   messages: Server.ChatMessage.Type[];
@@ -19,9 +19,9 @@ interface ChatStore {
 const defaultMessage: Server.ChatMessage.Type = {
   type: Server.MessageType.MAIL_ALL,
   content: {
-    id: "1",
+    id: '1',
     user: defaultPlayer,
-    text: "En cours de chargement",
+    text: 'En cours de chargement',
     timestamp: new Date().toISOString(),
     deleted: 0,
   },
@@ -34,13 +34,9 @@ const useChatStore = create<ChatStore>((set) => ({
   setAnsweringTo: (id) => set({ answeringTo: id }),
   removeMessage: (messageId) =>
     set((state) => ({
-      messages:
-        state.messages?.filter(
-          (m) => isSavedChatMessage(m) && m.content.id !== messageId,
-        ) || [],
+      messages: state.messages?.filter((m) => isSavedChatMessage(m) && m.content.id !== messageId) || [],
     })),
-  addMessage: (message) =>
-    set((state) => ({ messages: [...(state.messages || []), message] })),
+  addMessage: (message) => set((state) => ({ messages: [...(state.messages || []), message] })),
   scrollToBottom: () => {},
   setScrollToBottom: (fn) => set({ scrollToBottom: fn }),
   focusInput: () => {},

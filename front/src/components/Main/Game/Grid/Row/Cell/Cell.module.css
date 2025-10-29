@@ -32,7 +32,7 @@
 
 .correct {
   color: #16617a;
-  background-image: url("/src/assets/images/blocks/diamond_block.png");
+  background-image: url('/src/assets/images/blocks/diamond_block.png');
   background-size: cover;
   image-rendering: pixelated;
   /* background-color: #DD2E44; */
@@ -40,7 +40,7 @@
 
 .misplaced {
   color: #6e6e23;
-  background-image: url("/src/assets/images/blocks/gold_block.png");
+  background-image: url('/src/assets/images/blocks/gold_block.png');
   background-size: cover;
   image-rendering: pixelated;
   /* background-color:#FDCB58;
@@ -49,7 +49,7 @@
 
 .missed {
   color: #313232;
-  background-image: url("/src/assets/images/blocks/stone.png");
+  background-image: url('/src/assets/images/blocks/stone.png');
   background-size: cover;
   image-rendering: pixelated;
 }

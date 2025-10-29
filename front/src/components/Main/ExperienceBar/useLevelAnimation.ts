@@ -1,10 +1,7 @@
-import { useEffect, useRef } from "react";
-import levelUpSound from "../../../assets/sounds/level_up.mp3";
+import { useEffect, useRef } from 'react';
+import levelUpSound from '../../../assets/sounds/level_up.mp3';
 
-export function useLevelAnimation(
-  level: number,
-  setRealtimeLevel: React.Dispatch<React.SetStateAction<number>>,
-): void {
+export function useLevelAnimation(level: number, setRealtimeLevel: React.Dispatch<React.SetStateAction<number>>): void {
   const previousLevelRef = useRef(level);
 
   useEffect(() => {

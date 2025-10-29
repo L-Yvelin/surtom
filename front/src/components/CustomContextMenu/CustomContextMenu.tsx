@@ -1,8 +1,8 @@
-import { JSX, ReactNode, useRef, useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { getTooltipPosition, Coordinates, Anchor } from "../Tooltip/utils";
-import classes from "./CustomContextMenu.module.css";
-import classNames from "classnames";
+import { JSX, ReactNode, useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { getTooltipPosition, Coordinates, Anchor } from '../Tooltip/utils';
+import classes from './CustomContextMenu.module.css';
+import classNames from 'classnames';
 
 interface CustomContextMenuProps {
   children: ReactNode;
@@ -10,11 +10,7 @@ interface CustomContextMenuProps {
   offset?: number;
 }
 
-function CustomContextMenu({
-  children,
-  menuContent,
-  offset = 10,
-}: CustomContextMenuProps): JSX.Element {
+function CustomContextMenu({ children, menuContent, offset = 10 }: CustomContextMenuProps): JSX.Element {
   const [position, setPosition] = useState<Coordinates>({ x: 0, y: 0 });
   const [visible, setVisible] = useState<boolean>(false);
   const [event, setEvent] = useState<React.MouseEvent | null>(null);
@@ -23,14 +19,7 @@ function CustomContextMenu({
   useEffect(() => {
     if (!visible || !event || !menuRef.current) return;
 
-    setPosition(
-      getTooltipPosition(
-        { x: event.clientX, y: event.clientY },
-        menuRef.current,
-        offset,
-        Anchor.BOTTOM_RIGHT,
-      ),
-    );
+    setPosition(getTooltipPosition({ x: event.clientX, y: event.clientY }, menuRef.current, offset, Anchor.BOTTOM_RIGHT));
   }, [visible, event, offset]);
 
   const closeMenu = () => {
@@ -44,7 +33,7 @@ function CustomContextMenu({
         e.preventDefault();
         setEvent(e);
         setVisible(true);
-        document.addEventListener("click", closeMenu, { once: true });
+        document.addEventListener('click', closeMenu, { once: true });
       }}
     >
       {children}

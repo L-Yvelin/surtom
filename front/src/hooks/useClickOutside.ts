@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 function useClickOutside<T extends HTMLElement>(
   ref: React.RefObject<T | null>,
@@ -8,7 +8,7 @@ function useClickOutside<T extends HTMLElement>(
   useEffect(() => {
     const hasIgnoreAttribute = (element: Element | null): boolean => {
       if (!element) return false;
-      if (element.getAttribute("data-ignore-click-outside")) return true;
+      if (element.getAttribute('data-ignore-click-outside')) return true;
       return hasIgnoreAttribute(element.parentElement);
     };
 
@@ -18,10 +18,7 @@ function useClickOutside<T extends HTMLElement>(
       if (
         !ref ||
         (target instanceof Node && ref.current?.contains(target)) ||
-        ignoredRefs.some(
-          (ignoredRef) =>
-            target instanceof Node && ignoredRef.current?.contains(target),
-        ) ||
+        ignoredRefs.some((ignoredRef) => target instanceof Node && ignoredRef.current?.contains(target)) ||
         (target instanceof Element && hasIgnoreAttribute(target))
       ) {
         return;
@@ -30,10 +27,10 @@ function useClickOutside<T extends HTMLElement>(
       handler();
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [ref, handler, ignoredRefs]);
 }

@@ -62,7 +62,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  content: "";
+  content: '';
   height: 0.5em;
   width: 0.5em;
   border-radius: 10%;

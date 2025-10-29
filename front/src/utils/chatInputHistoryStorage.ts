@@ -1,4 +1,4 @@
-const STORAGE_KEY = "chatInputHistory";
+const STORAGE_KEY = 'chatInputHistory';
 
 export function loadHistory(): string[] {
   try {
@@ -16,9 +16,7 @@ export function saveHistory(history: string[]) {
 }
 
 export function filterHistory(history: string[], input: string): string[] {
-  return history.filter(
-    (msg) => input === "" || msg.toLowerCase().includes(input.toLowerCase()),
-  );
+  return history.filter((msg) => input === '' || msg.toLowerCase().includes(input.toLowerCase()));
 }
 
 export function pushHistory(history: string[], input: string): string[] {
@@ -26,13 +24,9 @@ export function pushHistory(history: string[], input: string): string[] {
   return history[history.length - 1] === input ? history : [...history, input];
 }
 
-export function navigateHistory<T>(
-  filtered: T[],
-  index: number | null,
-  direction: "up" | "down",
-): number | null {
+export function navigateHistory<T>(filtered: T[], index: number | null, direction: 'up' | 'down'): number | null {
   if (filtered.length === 0) return null;
-  if (direction === "up") {
+  if (direction === 'up') {
     if (index === null) return filtered.length - 1;
     return Math.max(0, index - 1);
   } else {

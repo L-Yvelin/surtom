@@ -1,7 +1,5 @@
 .customWord {
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    url("/src/assets/images/blocks/dirt_256.png");
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/src/assets/images/blocks/dirt_256.png');
   -webkit-backdrop-filter: brightness(30%);
   backdrop-filter: brightness(30%);
   background-size: 5vh;

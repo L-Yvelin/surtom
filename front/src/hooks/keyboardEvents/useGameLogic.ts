@@ -1,28 +1,15 @@
-import { useEffect, useRef } from "react";
-import { Achievement } from "../../components/AchievementsStack/Achievement/Achievement";
-import { AchievementIcon } from "../../components/AchievementsStack/Achievement/utils";
-import { LetterState } from "@surtom/interfaces";
-import {
-  isGuessValid,
-  validateWord,
-  areWinningColors,
-} from "../../utils/gameLogic";
-import useGameStore from "../../stores/useGameStore";
-import useUIStore from "../../stores/useUIStore";
-import { useWebSocketStore } from "../../stores/useWebSocketStore";
-import { Client } from "@surtom/interfaces";
+import { useEffect, useRef } from 'react';
+import { Achievement } from '../../components/AchievementsStack/Achievement/Achievement';
+import { AchievementIcon } from '../../components/AchievementsStack/Achievement/utils';
+import { LetterState } from '@surtom/interfaces';
+import { isGuessValid, validateWord, areWinningColors } from '../../utils/gameLogic';
+import useGameStore from '../../stores/useGameStore';
+import useUIStore from '../../stores/useUIStore';
+import { useWebSocketStore } from '../../stores/useWebSocketStore';
+import { Client } from '@surtom/interfaces';
 
 const useGameLogic = () => {
-  const {
-    letters,
-    setLetters,
-    tries,
-    addTry,
-    solution,
-    addAchievement,
-    validWords,
-    gameFinished,
-  } = useGameStore();
+  const { letters, setLetters, tries, addTry, solution, addAchievement, validWords, gameFinished } = useGameStore();
 
   const { setVisibility } = useUIStore();
   const skipFirstLetter = useRef(true);
@@ -37,7 +24,7 @@ const useGameLogic = () => {
     console.log(event.key);
 
     if (!solution) return;
-    if (event.key === "Backspace") {
+    if (event.key === 'Backspace') {
       if (event.ctrlKey || event.metaKey) {
         setLetters(letters.slice(0, 1));
       } else {
@@ -46,21 +33,13 @@ const useGameLogic = () => {
     } else if (event.metaKey || event.ctrlKey) {
       return;
     } else if (/^[a-zA-Z]$/.test(event.key)) {
-      if (
-        event.key.toUpperCase() === solution[0] &&
-        letters.length === 1 &&
-        skipFirstLetter.current
-      ) {
+      if (event.key.toUpperCase() === solution[0] && letters.length === 1 && skipFirstLetter.current) {
         skipFirstLetter.current = false;
         return;
       }
-      setLetters(
-        letters.length < solution.length
-          ? [...letters, { letter: event.key.toUpperCase() }]
-          : letters,
-      );
+      setLetters(letters.length < solution.length ? [...letters, { letter: event.key.toUpperCase() }] : letters);
       skipFirstLetter.current = true;
-    } else if (event.key === "Enter") {
+    } else if (event.key === 'Enter') {
       processGuess();
     }
   };
@@ -69,7 +48,7 @@ const useGameLogic = () => {
     if (!solution) return;
     const guess = letters
       .map((l) => l.letter)
-      .join("")
+      .join('')
       .toUpperCase();
 
     if (isGuessValid(guess, solution) && validWords.includes(guess)) {
@@ -86,34 +65,20 @@ const useGameLogic = () => {
         resetLetters();
       }
     } else {
-      addAchievement(
-        new Achievement(
-          "Succès obtenu",
-          "Ne pas savoir écrire",
-          AchievementIcon.BOOK,
-        ),
-      );
+      addAchievement(new Achievement('Succès obtenu', 'Ne pas savoir écrire', AchievementIcon.BOOK));
     }
   };
 
   const handleWin = () => {
     setLetters([]);
-    setVisibility("showEndPage", true);
-    addAchievement(
-      new Achievement("VICTOIRE !", "👏👏👏", AchievementIcon.BOOK),
-    );
+    setVisibility('showEndPage', true);
+    addAchievement(new Achievement('VICTOIRE !', '👏👏👏', AchievementIcon.BOOK));
   };
 
   const handleLoss = () => {
     setLetters([]);
-    setVisibility("showEndPage", true);
-    addAchievement(
-      new Achievement(
-        "Perdu",
-        "Vous avez perdu, mais vous pouvez réessayer demain !",
-        AchievementIcon.BOOK,
-      ),
-    );
+    setVisibility('showEndPage', true);
+    addAchievement(new Achievement('Perdu', 'Vous avez perdu, mais vous pouvez réessayer demain !', AchievementIcon.BOOK));
   };
 
   const resetLetters = () => {

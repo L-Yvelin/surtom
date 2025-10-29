@@ -1,13 +1,7 @@
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 
-type UIKeys =
-  | "showTab"
-  | "showStats"
-  | "showCustomWord"
-  | "showEndPage"
-  | "showChat"
-  | "showCustomRightClick";
+type UIKeys = 'showTab' | 'showStats' | 'showCustomWord' | 'showEndPage' | 'showChat' | 'showCustomRightClick';
 
 interface UIState {
   showTab: boolean;
@@ -23,9 +17,7 @@ interface UIHandlers {
   setVisibility: (key: UIKeys, value: boolean) => void;
 }
 
-const useUIStore = create<
-  UIState & UIHandlers & { isAnyInterfaceOpen: () => boolean }
->()(
+const useUIStore = create<UIState & UIHandlers & { isAnyInterfaceOpen: () => boolean }>()(
   immer((set, get) => ({
     showTab: false,
     showStats: false,
@@ -43,13 +35,7 @@ const useUIStore = create<
       }),
     isAnyInterfaceOpen: () => {
       const state = get();
-      return (
-        state.showTab ||
-        state.showStats ||
-        state.showCustomWord ||
-        state.showEndPage ||
-        state.showChat
-      );
+      return state.showTab || state.showStats || state.showCustomWord || state.showEndPage || state.showChat;
     },
   })),
 );

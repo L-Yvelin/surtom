@@ -1,55 +1,32 @@
-import { CSSProperties, JSX } from "react";
-import Row from "./Row/Row";
-import classes from "./Grid.module.css";
-import { Tries } from "@surtom/interfaces";
+import { CSSProperties, JSX } from 'react';
+import Row from './Row/Row';
+import classes from './Grid.module.css';
+import { Tries } from '@surtom/interfaces';
 
 interface GridProps {
   solution: string;
   tries: Tries;
   confidential?: boolean;
   className?: string;
-  cellSize?: CSSProperties["width"];
+  cellSize?: CSSProperties['width'];
 }
 
-function Grid({
-  solution,
-  tries,
-  confidential = false,
-  className,
-  cellSize,
-}: GridProps): JSX.Element {
+function Grid({ solution, tries, confidential = false, className, cellSize }: GridProps): JSX.Element {
   const height = 6;
   const size = solution.length;
 
   const rows = [
     ...tries
       .slice(0, 6)
-      .map((word, trIndex) => (
-        <Row
-          key={trIndex}
-          word={word}
-          size={size}
-          confidential={confidential}
-          cellSize={cellSize}
-        />
-      )),
+      .map((word, trIndex) => <Row key={trIndex} word={word} size={size} confidential={confidential} cellSize={cellSize} />),
     ...Array.from({ length: height - tries.length }).map((_, trIndex) => (
-      <Row
-        key={trIndex + tries.length}
-        word={null}
-        size={size}
-        confidential={confidential}
-        cellSize={cellSize}
-      />
+      <Row key={trIndex + tries.length} word={null} size={size} confidential={confidential} cellSize={cellSize} />
     )),
   ];
 
   return (
     <div className={className}>
-      <table
-        className={classes.grille}
-        style={{ "--squares": `${size}` } as React.CSSProperties}
-      >
+      <table className={classes.grille} style={{ '--squares': `${size}` } as React.CSSProperties}>
         <tbody className={classes.tbody}>{rows}</tbody>
       </table>
     </div>

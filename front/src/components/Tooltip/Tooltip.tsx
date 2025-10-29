@@ -1,7 +1,7 @@
-import { ReactNode, useEffect } from "react";
-import { useTooltip } from "./useTooltip";
-import { getTooltipPosition, Anchor } from "./utils";
-import { isDesktop } from "react-device-detect";
+import { ReactNode, useEffect } from 'react';
+import { useTooltip } from './useTooltip';
+import { getTooltipPosition, Anchor } from './utils';
+import { isDesktop } from 'react-device-detect';
 
 interface Props {
   children: ReactNode;
@@ -11,23 +11,12 @@ interface Props {
   activeOnMobile?: boolean;
 }
 
-function Tooltip({
-  children,
-  tooltipContent,
-  offset = 10,
-  anchor = Anchor.TOP_LEFT,
-  activeOnMobile = false,
-}: Props) {
+function Tooltip({ children, tooltipContent, offset = 10, anchor = Anchor.TOP_LEFT, activeOnMobile = false }: Props) {
   const { setVisible, setContent, setPosition, tooltipRef } = useTooltip();
 
   const updatePosition = (x: number, y: number) => {
     if (!tooltipRef.current) return;
-    const pos = getTooltipPosition(
-      { x, y },
-      tooltipRef.current,
-      offset,
-      anchor,
-    );
+    const pos = getTooltipPosition({ x, y }, tooltipRef.current, offset, anchor);
     setPosition(pos);
   };
 
@@ -42,10 +31,10 @@ function Tooltip({
     if (!activeOnMobile || isDesktop) return;
 
     const handleTouch = () => setVisible(false);
-    document.addEventListener("touchstart", handleTouch);
+    document.addEventListener('touchstart', handleTouch);
 
     return () => {
-      document.removeEventListener("touchstart", handleTouch);
+      document.removeEventListener('touchstart', handleTouch);
     };
   }, [activeOnMobile, setVisible]);
 

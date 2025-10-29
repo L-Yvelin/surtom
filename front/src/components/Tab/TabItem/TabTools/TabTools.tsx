@@ -1,6 +1,6 @@
-import classes from "./TabTools.module.css";
-import greenBars from "../../../../assets/images/tools/green_bars.png";
-import { JSX } from "react";
+import classes from './TabTools.module.css';
+import greenBars from '../../../../assets/images/tools/green_bars.png';
+import { JSX } from 'react';
 
 function TabTools(): JSX.Element {
   return (

@@ -1,5 +1,5 @@
-import { LetterState } from "@surtom/interfaces";
-import rowClasses from "./Row/Cell/Cell.module.css";
+import { LetterState } from '@surtom/interfaces';
+import rowClasses from './Row/Cell/Cell.module.css';
 
 export function getClassForState(state: LetterState | undefined): string {
   switch (state) {

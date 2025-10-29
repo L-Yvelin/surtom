@@ -1,6 +1,6 @@
-import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
-import type { Message, MessageId } from "./Message";
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import type { Message, MessageId } from './Message';
 
 export interface TextContentAttributes {
   ID: number;
@@ -9,18 +9,12 @@ export interface TextContentAttributes {
   ReplyID?: number;
 }
 
-export type TextContentPk = "ID";
+export type TextContentPk = 'ID';
 export type TextContentId = TextContent[TextContentPk];
-export type TextContentOptionalAttributes = "ImageData" | "ReplyID";
-export type TextContentCreationAttributes = Optional<
-  TextContentAttributes,
-  TextContentOptionalAttributes
->;
+export type TextContentOptionalAttributes = 'ImageData' | 'ReplyID';
+export type TextContentCreationAttributes = Optional<TextContentAttributes, TextContentOptionalAttributes>;
 
-export class TextContent
-  extends Model<TextContentAttributes, TextContentCreationAttributes>
-  implements TextContentAttributes
-{
+export class TextContent extends Model<TextContentAttributes, TextContentCreationAttributes> implements TextContentAttributes {
   ID!: number;
   Text!: string;
   ImageData?: string;
@@ -45,8 +39,8 @@ export class TextContent
           allowNull: false,
           primaryKey: true,
           references: {
-            model: "Message",
-            key: "ID",
+            model: 'Message',
+            key: 'ID',
           },
         },
         Text: {
@@ -61,26 +55,26 @@ export class TextContent
           type: DataTypes.INTEGER,
           allowNull: true,
           references: {
-            model: "Message",
-            key: "ID",
+            model: 'Message',
+            key: 'ID',
           },
         },
       },
       {
         sequelize,
-        tableName: "TextContent",
+        tableName: 'TextContent',
         timestamps: false,
         indexes: [
           {
-            name: "PRIMARY",
+            name: 'PRIMARY',
             unique: true,
-            using: "BTREE",
-            fields: [{ name: "ID" }],
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
           },
           {
-            name: "ReplyID",
-            using: "BTREE",
-            fields: [{ name: "ReplyID" }],
+            name: 'ReplyID',
+            using: 'BTREE',
+            fields: [{ name: 'ReplyID' }],
           },
         ],
       },

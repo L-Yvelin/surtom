@@ -1,22 +1,16 @@
-import React, { JSX, useEffect, useState } from "react";
-import classes from "./SlideInOut.module.css";
-import classNames from "classnames";
+import React, { JSX, useEffect, useState } from 'react';
+import classes from './SlideInOut.module.css';
+import classNames from 'classnames';
 
 interface SlideInOutProps {
   child: JSX.Element;
   lifeTime: number;
   transitionDuration: number;
-  side?: "top" | "bottom" | "left" | "right";
+  side?: 'top' | 'bottom' | 'left' | 'right';
   onComplete?: () => void;
 }
 
-function SlideInOut({
-  child,
-  lifeTime,
-  transitionDuration,
-  side = "bottom",
-  onComplete,
-}: SlideInOutProps): JSX.Element {
+function SlideInOut({ child, lifeTime, transitionDuration, side = 'bottom', onComplete }: SlideInOutProps): JSX.Element {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -39,15 +33,10 @@ function SlideInOut({
 
   return (
     <div
-      className={classNames(
-        classes[side],
-        classes.slideInOut,
-        { [classes.slideIn]: isVisible },
-        { [classes.slideOut]: !isVisible },
-      )}
+      className={classNames(classes[side], classes.slideInOut, { [classes.slideIn]: isVisible }, { [classes.slideOut]: !isVisible })}
       style={
         {
-          "--transitionDuration": `${transitionDuration}s`,
+          '--transitionDuration': `${transitionDuration}s`,
         } as React.CSSProperties
       }
       onAnimationEnd={handleAnimationEnd}

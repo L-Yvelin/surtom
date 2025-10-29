@@ -5,7 +5,7 @@ services:
       - ./front/.env.production
     build: ./front
     ports:
-      - "5173:5173"
+      - '5173:5173'
     command: serve -s dist -l 5173
     depends_on:
       - backend
@@ -16,7 +16,7 @@ services:
       - ./back/.env
     build: ./back
     ports:
-      - "27020:27020"
+      - '27020:27020'
     # command: sh -c "echo 'hello' && sleep infinity"
     command: node dist/src/server.js
     depends_on:
@@ -28,12 +28,12 @@ services:
       - ./back/.env
     image: mysql:8.0
     ports:
-      - "3307:3306"
+      - '3307:3306'
     volumes:
       - mysql_data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       timeout: 5s
       retries: 40
 
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
     image: phpmyadmin/phpmyadmin
     ports:
-      - "8669:80"
+      - '8669:80'
     environment:
       - PMA_HOST=mysql
     depends_on:

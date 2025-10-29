@@ -1,14 +1,9 @@
-import { JSX } from "react";
-import { Server } from "@surtom/interfaces";
-import classes from "../Message.module.css";
-import PlayerName from "../PlayerName/PlayerName";
-import {
-  isTextMessage,
-  extractImageUrls,
-  isEnhancedMessage,
-  extractUrls,
-} from "../../../utils";
-import classNames from "classnames";
+import { JSX } from 'react';
+import { Server } from '@surtom/interfaces';
+import classes from '../Message.module.css';
+import PlayerName from '../PlayerName/PlayerName';
+import { isTextMessage, extractImageUrls, isEnhancedMessage, extractUrls } from '../../../utils';
+import classNames from 'classnames';
 
 const enhancedMessageContent = (text: string): JSX.Element => {
   type enhancedMessageContent = {
@@ -22,16 +17,11 @@ const enhancedMessageContent = (text: string): JSX.Element => {
   try {
     parsedContent = JSON.parse(text);
   } catch (err) {
-    console.error("Error while parsing enhanced message", err);
+    console.error('Error while parsing enhanced message', err);
     return <>Unable to generate message</>;
   }
 
-  const createMessage = (
-    text: string,
-    color?: string,
-    onClickAction?: string,
-    key?: number,
-  ) => {
+  const createMessage = (text: string, color?: string, onClickAction?: string, key?: number) => {
     return (
       <span
         key={key}
@@ -42,7 +32,7 @@ const enhancedMessageContent = (text: string): JSX.Element => {
               const action = new Function(onClickAction);
               action();
             } catch {
-              console.error("Error while executing action", onClickAction);
+              console.error('Error while executing action', onClickAction);
             }
           }
         }}
@@ -54,17 +44,9 @@ const enhancedMessageContent = (text: string): JSX.Element => {
   };
 
   return Array.isArray(parsedContent) ? (
-    <>
-      {parsedContent.map((message, index) =>
-        createMessage(message.text, message.color, message.clickable, index),
-      )}
-    </>
+    <>{parsedContent.map((message, index) => createMessage(message.text, message.color, message.clickable, index))}</>
   ) : (
-    createMessage(
-      parsedContent.text,
-      parsedContent.color,
-      parsedContent.clickable,
-    )
+    createMessage(parsedContent.text, parsedContent.color, parsedContent.clickable)
   );
 };
 
@@ -83,15 +65,9 @@ function formatText(text: string): JSX.Element {
       result.push(text.slice(lastIndex, index));
     }
 
-    const displayText = url.split("/")[2];
+    const displayText = url.split('/')[2];
     result.push(
-      <a
-        key={index}
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={classes.link}
-      >
+      <a key={index} href={url} target="_blank" rel="noopener noreferrer" className={classes.link}>
         {displayText}
       </a>,
     );
@@ -106,11 +82,7 @@ function formatText(text: string): JSX.Element {
   return <p>{result}</p>;
 }
 
-function UserContent({
-  message,
-}: {
-  message: Server.ChatMessage.Text;
-}): JSX.Element {
+function UserContent({ message }: { message: Server.ChatMessage.Text }): JSX.Element {
   const user = message.content.user;
   return (
     <>
@@ -127,24 +99,16 @@ function UserContent({
           return (
             <>
               <span className={classes.text}>
-                {isEnhancedMessage(message)
-                  ? enhancedMessageContent(message.content.text)
-                  : formatText(message.content.text)}
+                {isEnhancedMessage(message) ? enhancedMessageContent(message.content.text) : formatText(message.content.text)}
               </span>
               {message.content.imageData ? (
                 <div className={classes.image}>
-                  <img
-                    src={message.content.imageData}
-                    onError={(e) => e.currentTarget.remove()}
-                  />
+                  <img src={message.content.imageData} onError={(e) => e.currentTarget.remove()} />
                 </div>
               ) : null}
               {imageUrls.length ? (
                 <div className={classes.image}>
-                  <img
-                    src={imageUrls[0]}
-                    onError={(e) => e.currentTarget.remove()}
-                  />
+                  <img src={imageUrls[0]} onError={(e) => e.currentTarget.remove()} />
                 </div>
               ) : null}
             </>

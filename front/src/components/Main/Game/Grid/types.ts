@@ -1,41 +1,41 @@
-import { CSSProperties } from "react";
-import { Letter, LetterState, Word } from "@surtom/interfaces";
+import { CSSProperties } from 'react';
+import { Letter, LetterState, Word } from '@surtom/interfaces';
 
 export interface CellProps {
   letter: Letter | undefined;
   confidential?: boolean;
-  cellSize?: CSSProperties["width"];
+  cellSize?: CSSProperties['width'];
 }
 
 export interface RowProps {
   word: Word | null;
   size: number;
   confidential?: boolean;
-  cellSize?: CSSProperties["width"];
+  cellSize?: CSSProperties['width'];
 }
 
 export function getLetterColor(letter: LetterState): string {
   switch (letter) {
     case LetterState.Correct:
-      return "🟦";
+      return '🟦';
     case LetterState.Misplaced:
-      return "🟨";
+      return '🟨';
     case LetterState.Miss:
-      return "⬜";
+      return '⬜';
     default:
-      return "⬜";
+      return '⬜';
   }
 }
 
 export function getKeyColorClassName(state: LetterState): string {
   switch (state) {
     case LetterState.Correct:
-      return "correct";
+      return 'correct';
     case LetterState.Misplaced:
-      return "misplaced";
+      return 'misplaced';
     case LetterState.Miss:
-      return "miss";
+      return 'miss';
     default:
-      return "";
+      return '';
   }
 }
