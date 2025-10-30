@@ -667,7 +667,7 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
   const finalMessage: Server.Message = {
     type: Server.MessageType.MESSAGE,
     content: {
-      type: Server.MessageType.ENHANCED_MESSAGE,
+      type: Server.MessageType.ENHANCED,
       content: {
         text: JSON.stringify(formattedCommands),
         timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),

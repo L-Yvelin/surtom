@@ -32,17 +32,16 @@
   flex-direction: row;
   gap: 0.5em;
   width: 100%;
+  aspect-ratio: 10;
 }
 
 .shareInTchat {
-  aspect-ratio: 9;
-  width: 90%;
+  aspect-ratio: unset;
   background-size: 100% 100%;
 }
 
 .copyScore {
   width: 10%;
-  height: 100%;
 }
 
 .copyIcon {

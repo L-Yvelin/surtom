@@ -100,9 +100,9 @@ export function mapDatabaseTypeToMemoryType(type: DatabaseMessageType | undefine
     case 'score':
       return Server.MessageType.SCORE;
     case 'enhancedMessage':
-      return Server.MessageType.ENHANCED_MESSAGE;
+      return Server.MessageType.ENHANCED;
     case 'message':
-      return Server.MessageType.MAIL_ALL;
+      return Server.MessageType.TEXT;
     default:
       return undefined;
   }
@@ -113,8 +113,8 @@ export function mapDatabaseMessageToMemoryMessage(
 ): Server.ChatMessage.Content.TextMessageContent | Server.ChatMessage.Content.ScoreMessageContent | undefined {
   if (!message.Type) return undefined;
   switch (mapDatabaseTypeToMemoryType(message.Type)) {
-    case Server.MessageType.ENHANCED_MESSAGE:
-    case Server.MessageType.MAIL_ALL:
+    case Server.MessageType.ENHANCED:
+    case Server.MessageType.TEXT:
       return mapUserMessageToMemoryMessage(message);
     case Server.MessageType.SCORE:
       return mapScoreMessageToMemoryMessage(message);

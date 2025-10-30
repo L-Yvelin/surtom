@@ -24,19 +24,19 @@ echo "📊 Database Statistics:"
 
 # Check tables
 echo "📋 Tables in database:"
-docker exec surtom-mysql-1 mysql -u root -p"$DB_PASSWORD" surtom -e "SHOW TABLES;" 2>/dev/null
+docker exec surtom-mysql-1 mysql -u root -p"$DB_PASSWORD" surtom -e "SHOW TABLES;"
 
 echo ""
 echo "👥 Player count:"
-docker exec surtom-mysql-1 mysql -u root -p"$DB_PASSWORD" surtom -e "SELECT COUNT(*) as player_count FROM Player;" 2>/dev/null
+docker exec surtom-mysql-1 mysql -u root -p"$DB_PASSWORD" surtom -e "SELECT COUNT(*) as player_count FROM Player;"
 
 echo ""
 echo "💬 Message count:"
-docker exec surtom-mysql-1 mysql -u root -p"$DB_PASSWORD" surtom -e "SELECT COUNT(*) as message_count FROM Message;" 2>/dev/null
+docker exec surtom-mysql-1 mysql -u root -p"$DB_PASSWORD" surtom -e "SELECT COUNT(*) as message_count FROM Message;"
 
 echo ""
 echo "🎮 Score messages count:"
-docker exec surtom-mysql-1 mysql -u root -p"$DB_PASSWORD" surtom -e "SELECT COUNT(*) as score_count FROM Message WHERE Type = 'SCORE';" 2>/dev/null
+docker exec surtom-mysql-1 mysql -u root -p"$DB_PASSWORD" surtom -e "SELECT COUNT(*) as score_count FROM Message WHERE Type = 'SCORE';"
 
 echo ""
 echo "📝 Recent messages (last 5):"
@@ -49,7 +49,7 @@ SELECT
 FROM Message m
 JOIN Player p ON m.PlayerID = p.ID
 ORDER BY m.Timestamp DESC
-LIMIT 5;" 2>/dev/null
+LIMIT 5;"
 
 echo ""
 echo "✅ Migration verification completed!"

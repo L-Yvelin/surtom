@@ -25,13 +25,13 @@ DROP TABLE IF EXISTS `Message`;
 CREATE TABLE `Message` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `PlayerID` int NOT NULL,
-  `Timestamp` datetime NOT NULL,
-  `Type` enum('MAIL_ALL','ENHANCED_MESSAGE','SCORE') COLLATE utf8mb4_general_ci NOT NULL,
-  `Deleted` tinyint DEFAULT NULL,
+  `Timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Type` enum('TEXT','ENHANCED','SCORE') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'TEXT',
+  `Deleted` tinyint DEFAULT '0',
   PRIMARY KEY (`ID`),
   KEY `PlayerID` (`PlayerID`),
   CONSTRAINT `Message_fk_Player` FOREIGN KEY (`PlayerID`) REFERENCES `Player` (`ID`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=53643 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54398 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -109,7 +109,7 @@ CREATE TABLE `Player` (
   `IsBanned` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `Username` (`Username`)
-) ENGINE=InnoDB AUTO_INCREMENT=149 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,7 +184,7 @@ CREATE TABLE `WordHistory` (
   PRIMARY KEY (`ID`),
   KEY `WordID` (`WordID`),
   CONSTRAINT `WordHistory_ibfk_1` FOREIGN KEY (`WordID`) REFERENCES `MotMinecraft` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=502 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=610 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,4 +200,4 @@ CREATE TABLE `WordHistory` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-27  9:21:30
+-- Dump completed on 2025-10-30 19:03:09

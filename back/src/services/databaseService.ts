@@ -169,10 +169,10 @@ class DatabaseService {
       } as Server.ChatMessage.SavedType;
     } else {
       const messageType =
-        row.Type === 'ENHANCED_MESSAGE'
-          ? Server.MessageType.ENHANCED_MESSAGE
-          : row.Type === 'MAIL_ALL'
-            ? Server.MessageType.MAIL_ALL
+        row.Type === 'ENHANCED'
+          ? Server.MessageType.ENHANCED
+          : row.Type === 'TEXT'
+            ? Server.MessageType.TEXT
             : Server.MessageType.PRIVATE_MESSAGE;
       return {
         type: messageType,
@@ -188,7 +188,7 @@ class DatabaseService {
 
   getHelpMessage(): Server.ChatMessage.SavedType {
     return {
-      type: Server.MessageType.ENHANCED_MESSAGE,
+      type: Server.MessageType.ENHANCED,
       content: {
         id: '0',
         user: { name: 'System', moderatorLevel: 2 },
@@ -252,7 +252,7 @@ class DatabaseService {
         return {
           type: Server.MessageType.MESSAGE,
           content: {
-            type: Server.MessageType.MAIL_ALL,
+            type: Server.MessageType.TEXT,
             content: {
               id: messageId.toString(),
               text: text,
@@ -279,7 +279,7 @@ class DatabaseService {
         return 'SCORE';
       case Client.MessageType.CHAT_MESSAGE:
       default:
-        return 'MAIL_ALL';
+        return 'TEXT';
     }
   }
 

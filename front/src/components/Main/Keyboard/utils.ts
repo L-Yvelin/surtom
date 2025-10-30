@@ -66,7 +66,7 @@ export function getKeyStyle(key: string): React.CSSProperties {
 
 export async function detectKeyboardLayout(): Promise<KeyboardLayouts | undefined> {
   const keyboard = (navigator as any).keyboard;
-  const keyboardLayout = await keyboard.getLayoutMap().then((k: any) => {
+  const keyboardLayout = await keyboard?.getLayoutMap().then((k: any) => {
     return (k.get('KeyQ') + k.get('KeyW') + k.get('KeyE') + k.get('KeyR') + k.get('KeyT') + k.get('KeyY')).toUpperCase();
   });
 

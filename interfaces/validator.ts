@@ -75,9 +75,9 @@ function isServerUser(user: any): boolean {
 function isSavedType(obj: any): boolean {
   if (!obj || typeof obj !== 'object' || typeof obj.type !== 'string') return false;
   switch (obj.type) {
-    case Server.MessageType.MAIL_ALL:
+    case Server.MessageType.TEXT:
     case Server.MessageType.PRIVATE_MESSAGE:
-    case Server.MessageType.ENHANCED_MESSAGE:
+    case Server.MessageType.ENHANCED:
       return isTextContent(obj.content);
     case Server.MessageType.SCORE:
       return isServerScoreContent(obj.content);
@@ -111,9 +111,9 @@ export function validateServerMessage(msg: Server.Message): boolean {
       if (!msg.content || typeof msg.content !== 'object' || typeof (msg.content as any).type !== 'string') return false;
       const innerType: Server.ChatMessage.Type['type'] = (msg.content as any).type;
       switch (innerType) {
-        case Server.MessageType.MAIL_ALL:
+        case Server.MessageType.TEXT:
         case Server.MessageType.PRIVATE_MESSAGE:
-        case Server.MessageType.ENHANCED_MESSAGE:
+        case Server.MessageType.ENHANCED:
           return isTextContent((msg.content as any).content);
         case Server.MessageType.SCORE:
           return isServerScoreContent((msg.content as any).content);

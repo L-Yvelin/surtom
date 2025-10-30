@@ -17,7 +17,7 @@ interface ChatStore {
 }
 
 const defaultMessage: Server.ChatMessage.Type = {
-  type: Server.MessageType.MAIL_ALL,
+  type: Server.MessageType.TEXT,
   content: {
     id: '1',
     user: defaultPlayer,

@@ -25,8 +25,9 @@
 }
 
 .content {
-  display: grid;
+  display: flex;
   grid-gap: 0.8vh;
+  flex-direction: column;
 }
 
 .textField {

@@ -9,14 +9,14 @@ set -e
 SOURCE_DB_HOST="127.0.0.1"
 SOURCE_DB_PORT="3306"
 SOURCE_DB_USER="surtom_user"
-SOURCE_DB_PASSWORD="LeSiteDeLEteQuiGarantiUnSuccesPourToutUtilisateurVisAVisDeSaCarriereProfesionnelle!"
+SOURCE_DB_PASSWORD="Y2WSJWc4wL9mkXo1"
 SOURCE_DB_NAME="surtom"
 
 # Target database connection (Docker MySQL)
 TARGET_CONTAINER="surtom-mysql-1"
 TARGET_DB_NAME="surtom"
 TARGET_DB_USER="root"
-TARGET_DB_PASSWORD="LeSiteDeLEteQuiGarantiUnSuccesPourToutUtilisateurVisAVisDeSaCarriereProfesionnelle!"
+TARGET_DB_PASSWORD="Y2WSJWc4wL9mkXo1"
 
 # Migration file
 MIGRATION_FILE="migrate.sql"
@@ -59,7 +59,6 @@ echo "🐳 Starting fresh MySQL Docker container..."
 docker compose up -d mysql
 
 echo "⏳ Waiting for MySQL container to be ready..."
-sleep 20
 
 # Wait for MySQL to be ready with more robust checking
 echo "🔍 Checking MySQL readiness..."
@@ -84,8 +83,7 @@ echo "📥 Importing data into Docker MySQL..."
 docker exec -i $TARGET_CONTAINER mysql -h localhost -u $TARGET_DB_USER -p$TARGET_DB_PASSWORD $TARGET_DB_NAME < temp_data.sql
 
 echo "🔄 Running migration script to transform data..."
-# Prepend SET SESSION group_concat_max_len to migrate.sql to avoid GROUP_CONCAT truncation
-sed -i '1iSET SESSION group_concat_max_len = 1000000;' migrate.sql
+docker exec -i $TARGET_CONTAINER mysql -h localhost -u $TARGET_DB_USER -p$TARGET_DB_PASSWORD $TARGET_DB_NAME -e "SET SESSION sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';"
 docker exec -i $TARGET_CONTAINER mysql -h localhost -u $TARGET_DB_USER -p$TARGET_DB_PASSWORD $TARGET_DB_NAME < migrate.sql
 
 echo "🧹 Cleaning up obsolete tables..."

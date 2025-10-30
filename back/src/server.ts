@@ -148,9 +148,7 @@ function initializeConnection(user: FullUser): void {
       if (DBmessages) {
         const userMessages = DBmessages.filter(
           (msg) =>
-            msg.type === Server.MessageType.MAIL_ALL ||
-            msg.type === Server.MessageType.ENHANCED_MESSAGE ||
-            msg.type === Server.MessageType.SCORE,
+            msg.type === Server.MessageType.TEXT || msg.type === Server.MessageType.ENHANCED || msg.type === Server.MessageType.SCORE,
         ) as Server.ChatMessage.SavedType[];
         const message: Server.Message = {
           type: Server.MessageType.GET_MESSAGES,

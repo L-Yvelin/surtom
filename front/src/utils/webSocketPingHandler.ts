@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useWebSocketStore } from '../stores/useWebSocketStore';
-import { Client } from './Message';
+import { Client } from '@surtom/interfaces';
 
 const WebSocketPingHandler = () => {
   const { isConnected, sendMessage } = useWebSocketStore();

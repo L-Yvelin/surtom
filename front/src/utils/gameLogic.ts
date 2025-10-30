@@ -1,4 +1,4 @@
-import { Word, LetterState } from './Message';
+import { Word, LetterState } from '@surtom/interfaces';
 import useGameStore from '../stores/useGameStore';
 
 export const gameFinished = (): boolean => {

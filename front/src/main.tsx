@@ -7,7 +7,7 @@ import useGameStore from './stores/useGameStore';
 
 const RootComponent = () => {
   const [haveAssetsLoaded, setHaveAssetsLoaded] = useState(false);
-  const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
   const { hasLoaded: hasReceivedDailyWords } = useGameStore();
 
   useEffect(() => {

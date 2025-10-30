@@ -58,8 +58,8 @@ describe('initializeConnection', () => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.spyOn(serverModule, 'updateUsersList').mockImplementation(() => {});
     mockedDatabaseService.getMessages.mockResolvedValue([
-      { type: ServerNS.MessageType.MAIL_ALL },
-      { type: ServerNS.MessageType.ENHANCED_MESSAGE },
+      { type: ServerNS.MessageType.TEXT },
+      { type: ServerNS.MessageType.ENHANCED },
       { type: ServerNS.MessageType.SCORE },
       { type: 'OTHER' },
     ]);
@@ -81,7 +81,7 @@ describe('initializeConnection', () => {
   it('should send filtered messages to user', async () => {
     await initializeConnection(user);
     expect(mockSend).toHaveBeenCalledWith(expect.stringContaining('GET_MESSAGES'));
-    // Only MAIL_ALL, ENHANCED_MESSAGE, SCORE types should be sent
+    // Only TEXT, ENHANCED, SCORE types should be sent
     const sent = JSON.parse(mockSend.mock.calls[0][0]);
     expect(sent.content.length).toBe(3);
   });

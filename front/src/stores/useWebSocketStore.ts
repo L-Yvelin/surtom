@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Server, Client } from '@surtom/interfaces';
-import { validateServerMessage } from '../utils/validator';
+import { validateServerMessage } from '@surtom/interfaces';
 import useGameStore from './useGameStore';
 import useChatStore from './useChatStore';
 import Cookies from 'js-cookie';

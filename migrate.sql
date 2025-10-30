@@ -1,5 +1,4 @@
-SET SESSION group_concat_max_len = 1000000;
-SET SESSION group_concat_max_len = 1000000;
+SET SESSION sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 SET SESSION group_concat_max_len = 1000000;
 START TRANSACTION;
 
@@ -40,9 +39,9 @@ WHERE Pseudo NOT IN (SELECT Username FROM Player);
 CREATE TABLE Message (
   ID INT NOT NULL AUTO_INCREMENT,
   PlayerID INT NOT NULL,
-  Timestamp DATETIME NOT NULL,
-  Type ENUM('MAIL_ALL', 'ENHANCED_MESSAGE', 'SCORE') NOT NULL,
-  Deleted TINYINT(4) DEFAULT NULL,
+  Timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  Type ENUM('TEXT', 'ENHANCED', 'SCORE') NOT NULL DEFAULT 'TEXT',
+  Deleted TINYINT(4) DEFAULT 0,
   PRIMARY KEY (ID),
   KEY PlayerID (PlayerID),
   CONSTRAINT Message_fk_Player FOREIGN KEY (PlayerID) REFERENCES Player (ID) ON DELETE CASCADE
@@ -85,8 +84,8 @@ SELECT
   (SELECT ID FROM Player WHERE Username = Messages.Pseudo LIMIT 1),
   `Date`,
   CASE Type
-    WHEN 'message' THEN 'MAIL_ALL'
-    WHEN 'enhancedMessage' THEN 'ENHANCED_MESSAGE'
+    WHEN 'message' THEN 'TEXT'
+    WHEN 'enhancedMessage' THEN 'ENHANCED'
   END,
   Supprime
 FROM Messages
@@ -135,7 +134,11 @@ SELECT
   m.PlayerID,
   wh.ID AS WordHistoryID,
   sc.Attempts,
-  JSON_UNQUOTE(JSON_EXTRACT(sc.Attempts, CONCAT('$[', JSON_LENGTH(sc.Attempts) - 1, ']'))) = sc.Answer AS Win,
+  CASE
+    WHEN JSON_LENGTH(sc.Attempts) > 0
+    THEN JSON_UNQUOTE(JSON_EXTRACT(sc.Attempts, CONCAT('$[', JSON_LENGTH(sc.Attempts) - 1, ']'))) = sc.Answer
+    ELSE 0
+  END AS Win,
   JSON_LENGTH(sc.Attempts) AS AttemptCount
 FROM (
   SELECT

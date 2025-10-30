@@ -71,9 +71,9 @@ export function getPlayerColor(moderatorLevel: number, pseudo: string): string {
 
 export function isTextMessage(message: Server.ChatMessage.Type): message is Server.ChatMessage.Text {
   return (
-    message.type === Server.MessageType.MAIL_ALL ||
+    message.type === Server.MessageType.TEXT ||
     message.type === Server.MessageType.PRIVATE_MESSAGE ||
-    message.type === Server.MessageType.ENHANCED_MESSAGE
+    message.type === Server.MessageType.ENHANCED
   );
 }
 
@@ -95,14 +95,14 @@ export function isSavedChatMessage(message: Server.ChatMessage.Type): message is
 
 export function isEnhancedMessage(
   message: Server.ChatMessage.Type,
-): message is Extract<Server.ChatMessage.Text, { type: Server.MessageType.ENHANCED_MESSAGE }> {
-  return message.type === Server.MessageType.ENHANCED_MESSAGE;
+): message is Extract<Server.ChatMessage.Text, { type: Server.MessageType.ENHANCED }> {
+  return message.type === Server.MessageType.ENHANCED;
 }
 
 export function isMailAllMessage(
   message: Server.ChatMessage.Type,
-): message is Extract<Server.ChatMessage.Text, { type: Server.MessageType.MAIL_ALL }> {
-  return message.type === Server.MessageType.MAIL_ALL;
+): message is Extract<Server.ChatMessage.Text, { type: Server.MessageType.TEXT }> {
+  return message.type === Server.MessageType.TEXT;
 }
 
 type URL = `https://${string}.${'jpg' | 'jpeg' | 'png' | 'webp' | 'avif' | 'gif' | 'svg'}${`?${string}` | ''}`;

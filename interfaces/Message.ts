@@ -48,17 +48,17 @@ export namespace Server {
     SUCCESS = 'success',
     ERROR = 'error',
     PRIVATE_MESSAGE = 'privateMessage',
-    MAIL_ALL = 'mailAll',
-    ENHANCED_MESSAGE = 'enhancedMessage',
+    TEXT = 'text',
+    ENHANCED = 'enhanced',
     EVAL = 'eval',
     DAILY_WORDS = 'dailyWords',
     ATTEMPT = 'attempt',
   }
 
   export enum SavedMessageType {
-    MAIL_ALL = 'mailAll',
+    TEXT = 'text',
     PRIVATE_MESSAGE = 'privateMessage',
-    ENHANCED_MESSAGE = 'enhancedMessage',
+    ENHANCED = 'enhanced',
     SCORE = 'score',
   }
 
@@ -87,13 +87,13 @@ export namespace Server {
     export type SavedType = Text | Score;
 
     export type Text =
-      | { type: MessageType.MAIL_ALL; content: Content.TextMessageContent }
+      | { type: MessageType.TEXT; content: Content.TextMessageContent }
       | {
           type: MessageType.PRIVATE_MESSAGE;
           content: Content.TextMessageContent;
         }
       | {
-          type: MessageType.ENHANCED_MESSAGE;
+          type: MessageType.ENHANCED;
           content: Content.TextMessageContent;
         };
 
