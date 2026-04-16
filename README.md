@@ -4,6 +4,42 @@ A Minecraft Wordle.
 
 React front and Node back, connected via WebSocket.
 
+## Monorepo Architecture
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                    SURTOM Monorepo (npm Workspaces)                          │
+│                                                                              │
+│   ┌─────────────────────┐          ┌──────────────────────┐                  │
+│   │       front         │          │     interfaces       │                  │
+│   │                     │◄────────►│                      │                  │
+│   │  React + Vite       │          │  Shared TypeScript   │                  │
+│   │  + TypeScript       │          │  Package             │                  │
+│   │                     │          │  • Message.ts        │                  │
+│   │  Frontend UI        │          │  • validator.ts      │                  │
+│   │  & WebSocket Client │          │  • index.ts          │                  │
+│   └─────────────────────┘          └──────────────────────┘                  │
+│            ▲                           ▲          ▲                          │
+│            │                           │          │                          │
+│            └──────────────┬────────────┘          │                          │
+│                           │                       │                          │
+│                 Real-time WebSocket               │                          │
+│                 (ws://localhost:27020)            │                          │
+│                           │                       │                          │
+│                           ▼                       │                          │
+│   ┌─────────────────────┐                         │                          │
+│   │        back         │                         │                          │
+│   │                     │                         │                          │
+│   │  Node.js + WebSocket│                         │                          │
+│   │  Server + TypeScript│                         │                          │
+│   │                     │                         │                          │
+│   │  Game logic         │                         │                          │
+│   │  WS handling        │─────────────────────────┘                          │
+│   │  MySQL integration  │                                                    │
+│   └─────────────────────┘                                                    │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
 ## Prerequisites
 
 - Node.js
