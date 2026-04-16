@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `Player` (
   `Username` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `Password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `SessionHash` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `RegistrationDate` date NOT NULL,
+  `RegistrationDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `IsAdmin` tinyint(1) NOT NULL DEFAULT '0',
   `IsBanned` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`),
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `ScoreContent` (
 CREATE TABLE IF NOT EXISTS `WordHistory` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `WordID` int NOT NULL,
-  `AssignedDate` date NOT NULL,
+  `AssignedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`),
   KEY `WordID` (`WordID`),
   CONSTRAINT `WordHistory_ibfk_1` FOREIGN KEY (`WordID`) REFERENCES `MotMinecraft` (`ID`)
