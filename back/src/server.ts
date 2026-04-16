@@ -417,7 +417,7 @@ async function handleTryMessage(user: FullUser, content: string): Promise<void> 
       return;
     }
 
-    const newAttempts = [...attempts, attempt.toUpperCase()];
+    const newAttempts = [...attempts, attempt.toUpperCase().split('')];
     const isWin = attempt.toUpperCase() === todaysWord;
     const newWin = win || isWin;
 
