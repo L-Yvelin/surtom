@@ -441,7 +441,7 @@ class DatabaseService {
     await this.pool.query(
       `INSERT INTO Try (PlayerID, WordHistoryID, Attempts, Win, AttemptCount) VALUES (?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE Attempts = VALUES(Attempts), Win = VALUES(Win), AttemptCount = VALUES(AttemptCount);`,
-      [playerId, wordHistoryId, JSON.stringify(attempts), win, attempts.length],
+      [playerId, wordHistoryId, JSON.stringify(attempts.map((a) => a.split(''))), win, attempts.length],
     );
   }
 
