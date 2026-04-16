@@ -24,7 +24,7 @@
   color: white;
   padding: 0.7vh;
   flex-grow: 1;
-  font-size: 1.8vh;
+  font-size: max(16px, 1.8vh);
 }
 
 .answering {

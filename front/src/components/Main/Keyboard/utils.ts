@@ -76,6 +76,6 @@ export async function detectKeyboardLayout(): Promise<KeyboardLayouts | undefine
     case 'AZERTY':
       return KeyboardLayouts.AZERTY;
     default:
-      return KeyboardLayouts.QWERTY;
+      return undefined;
   }
 }
