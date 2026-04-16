@@ -424,17 +424,27 @@ class DatabaseService {
     return parsed.map((letters) => letters.join(''));
   }
 
-  async getOrCreateTry(playerId: number, wordHistoryId: number): Promise<{ attempts: string[]; win: boolean }> {
+  async getOrCreateTry(playerId: number, wordHistoryId: number): Promise<{ attempts: string[][]; win: boolean }> {
     const [rows] = await this.pool.query<(Pick<TryAttributes, 'Attempts' | 'Win'> & RowDataPacket)[]>(
       `SELECT Attempts, Win FROM Try WHERE PlayerID = ? AND WordHistoryID = ?`,
       [playerId, wordHistoryId],
     );
+
     if (Array.isArray(rows) && rows.length > 0) {
       const row = rows[0];
-      return { attempts: JSON.parse(row.Attempts || '[]'), win: !!row.Win };
-    } else {
-      return { attempts: [], win: false };
+
+      const attempts: string[][] = row.Attempts ? JSON.parse(row.Attempts) : [];
+
+      return {
+        attempts: Array.isArray(attempts) ? attempts.map((w) => (Array.isArray(w) ? w : [])) : [],
+        win: Boolean(row.Win),
+      };
     }
+
+    return {
+      attempts: [],
+      win: false,
+    };
   }
 
   async updateTry(playerId: number, wordHistoryId: number, attempts: string[], win: boolean): Promise<void> {
