@@ -1,0 +1,32 @@
+.main {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+  background-image: url('/src/assets/images/blocks/dirt_256.png');
+  background-repeat: repeat;
+  background-size: 17dvmin 17dvmin;
+  image-rendering: pixelated;
+  flex-grow: 1;
+  transition: background-image ease 1s;
+}
+
+.dark {
+  background-image: url('/src/assets/images/blocks/netherrack_256.png');
+}
+
+.main :not([data-backdrop]) {
+  z-index: 1;
+}
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25));
+  z-index: 0;
+}

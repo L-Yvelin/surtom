@@ -1,0 +1,7 @@
+interfaces/dist
+back/node_modules
+back/dist
+front/node_modules
+front/dist
+.git
+.vscode

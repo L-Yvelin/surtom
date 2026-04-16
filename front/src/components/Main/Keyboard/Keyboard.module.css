@@ -1,0 +1,28 @@
+.keyboardWrapper {
+  font-family: minecraft;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keyboard {
+  --keySize: min(6vh, calc((100vw / 10) - 0.5vh));
+  display: grid;
+  grid-template-columns: repeat(10, var(--keySize));
+  grid-template-rows: repeat(3, var(--keySize));
+  gap: 0.4vh;
+}
+
+.qwerty {
+  grid-template-areas:
+    'q w e r t y u i o p'
+    'a s d f g h j k l E'
+    'z x c v b n m R R E';
+}
+
+.azerty {
+  grid-template-areas:
+    'a z e r t y u i o p'
+    'q s d f g h j k l m'
+    'w x c v b n E E R R';
+}

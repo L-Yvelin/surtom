@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+logs/
+*.log
+.vscode/
+.idea/
+*.swp
+.env*
+!.env.example
+.DS_Store
+Thumbs.db
+coverage/
+*.sql
+mysql.json

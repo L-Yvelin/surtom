@@ -1,0 +1,45 @@
+@keyframes slideIn {
+  from {
+    transform: var(--startPosition);
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: var(--startPosition);
+  }
+}
+
+.slideInOut {
+  animation-duration: var(--transitionDuration);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+  transform: var(--startPosition);
+}
+
+.slideIn {
+  animation-name: slideIn;
+}
+
+.slideOut {
+  animation-name: slideOut;
+}
+
+.top {
+  --startPosition: translateY(-100%);
+}
+.bottom {
+  --startPosition: translateY(100%);
+}
+.left {
+  --startPosition: translateX(-100%);
+}
+.right {
+  --startPosition: translateX(100%);
+}

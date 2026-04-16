@@ -1,0 +1,29 @@
+{
+  "name": "surtom",
+  "private": true,
+  "workspaces": [
+    "interfaces",
+    "front",
+    "back"
+  ],
+  "scripts": {
+    "format": "npx pretty-quick",
+    "lint:secrets": "secretlint \"**/*\"",
+    "prepare": "husky install || true",
+    "dev": "concurrently \"npm:dev:*\"",
+    "dev:back": "npm run dev --workspace=back",
+    "dev:front": "npm run dev --workspace=front",
+    "build": "npm run build --workspaces",
+    "build:back": "npm run build --workspace=back",
+    "build:front": "npm run build --workspace=front",
+    "test": "npm run test --workspaces",
+    "test:back": "npm run test --workspace=back"
+  },
+  "devDependencies": {
+    "@secretlint/secretlint-rule-preset-recommend": "^10.1.1",
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.0",
+    "prettier": "^3.6.1",
+    "secretlint": "^10.1.1"
+  }
+}

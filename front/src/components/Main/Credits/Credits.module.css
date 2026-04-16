@@ -1,0 +1,17 @@
+.nocle {
+  color: rgba(240, 240, 240, 0.9);
+  text-decoration: none;
+}
+
+.nocle:hover {
+  color: #0077c7;
+}
+
+.credits {
+  text-align: center;
+  color: rgba(240, 240, 240, 0.9);
+  margin-left: 2vmin;
+  margin-right: 2vmin;
+  font-size: 1.8vh;
+  filter: drop-shadow(0 0.5vh 0.2vh rgb(0, 0, 0, 0.8));
+}

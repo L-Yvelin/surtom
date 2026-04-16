@@ -1,0 +1,35 @@
+.messages {
+  display: flex;
+  flex-direction: column-reverse;
+  flex: 1;
+  max-height: 100%;
+  min-height: 0;
+  flex-shrink: 1;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(1px);
+  padding: 0.4vh;
+  gap: 0.2vh;
+  overflow: scroll;
+  user-select: text;
+}
+
+.messages::-webkit-scrollbar {
+  display: none;
+}
+
+.date {
+  color: #cacaca;
+  display: flex;
+  gap: 1vh;
+  justify-content: space-around;
+  align-items: center;
+  text-transform: capitalize;
+  padding: 1vh 1vh;
+}
+
+.dateLeftBar,
+.dateRightBar {
+  flex-grow: 1;
+  height: 0.3vh;
+  background-color: #727272;
+}

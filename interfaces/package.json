@@ -1,0 +1,21 @@
+{
+  "name": "@surtom/interfaces",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tspc -b"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "ts-patch": "^3.3.0",
+    "typia": "^12.0.2"
+  }
+}
