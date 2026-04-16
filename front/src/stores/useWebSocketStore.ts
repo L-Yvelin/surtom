@@ -30,7 +30,7 @@ function setMobileDevice(isMobileDevice: boolean) {
 }
 
 export const useWebSocketStore = create<WebSocketState>((set, get) => {
-  const { setPlayerList, setPlayer, setScores, setValidWords, setSolution, setHasLoaded } = useGameStore.getState();
+  const { setPlayerList, setPlayer, setScores, setValidWords, setSolution, setHasLoaded, setXP } = useGameStore.getState();
   const { setMessages, addMessage } = useChatStore.getState();
   const { setTries } = useGameStore.getState();
   const scrollToBottom = useChatStore.getState().scrollToBottom;
@@ -78,6 +78,9 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
           ),
         );
         setHasLoaded(true);
+        break;
+      case Server.MessageType.XP:
+        setXP(data.content);
         break;
       default:
         console.warn('Unknown message type:', data.type);

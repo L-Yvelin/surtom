@@ -53,6 +53,7 @@ export namespace Server {
     EVAL = 'eval',
     DAILY_WORDS = 'dailyWords',
     ATTEMPT = 'attempt',
+    XP = 'xp',
   }
 
   export enum SavedMessageType {
@@ -80,7 +81,8 @@ export namespace Server {
         type: MessageType.DAILY_WORDS;
         content: { words: string[]; attempts: string[] };
       }
-    | { type: MessageType.ATTEMPT; content: string };
+    | { type: MessageType.ATTEMPT; content: string }
+    | { type: MessageType.XP; content: number };
 
   export namespace ChatMessage {
     export type Type = Text | Score | Status;

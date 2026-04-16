@@ -16,6 +16,7 @@ interface GameState {
   setLetters: (letters: Word) => void;
   player: Server.User;
   setPlayer: (updatedPlayer: Partial<Server.User>) => void;
+  setXP: (xp: number) => void;
   playerList: Server.User[];
   setPlayerList: (players: Server.User[]) => void;
   addPlayer: (player: Server.User) => void;
@@ -62,6 +63,13 @@ const useGameStore = create<GameState>((set, get) => ({
         ...defaultPlayer,
         ...state.player,
         ...updatedPlayer,
+      },
+    })),
+  setXP: (xp) =>
+    set((state) => ({
+      player: {
+        ...state.player,
+        xp,
       },
     })),
   playerList: [],

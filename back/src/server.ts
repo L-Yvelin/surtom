@@ -424,6 +424,14 @@ async function handleTryMessage(user: FullUser, content: string): Promise<void> 
     await databaseService.updateTry(player.id, wordHistoryId, newAttempts, newWin);
 
     sendSuccess(user.connection, isWin ? 'Bravo, vous avez trouvé le mot !' : 'Tentative enregistrée !');
+
+    if (isWin || newAttempts.length >= 6) {
+      const xp = await databaseService.getPlayerXp(player.username);
+      sendToUser(user.connection, {
+        type: Server.MessageType.XP,
+        content: xp,
+      });
+    }
   } catch (err) {
     sendError(user.connection, (err as Error).message);
   }
