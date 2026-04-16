@@ -7,7 +7,6 @@ services:
       dockerfile: front/Dockerfile
     ports: ['27021:27021']
     command: serve -s dist -l 27021
-    working_dir: /app/front
 
   backend:
     restart: unless-stopped
