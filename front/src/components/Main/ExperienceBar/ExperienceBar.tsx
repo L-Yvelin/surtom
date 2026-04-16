@@ -3,6 +3,7 @@ import classes from './ExperienceBar.module.css';
 import ExperienceBackground from '../../../assets/images/ui/experience_bar_background.png';
 import ExperienceProgress from '../../../assets/images/ui/experience_bar_progress.png';
 import { useLevelAnimation } from './useLevelAnimation';
+import useGameStore from '../../../stores/useGameStore';
 
 interface ExperienceBarProps {
   xp: number;
@@ -10,12 +11,13 @@ interface ExperienceBarProps {
 
 function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
   const level = getLevel(xp);
+  const { hasLoaded } = useGameStore.getState();
 
   const [realtimeLevel, setRealtimeLevel] = useState<number>(level);
   const integerPart = Math.floor(realtimeLevel);
   const decimalPart = String(Math.ceil(realtimeLevel * 100)).slice(-2);
 
-  useLevelAnimation(level, setRealtimeLevel);
+  useLevelAnimation(level, setRealtimeLevel, hasLoaded);
 
   function getLevel(xp: number) {
     if (xp <= 352) {
