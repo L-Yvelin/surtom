@@ -1,22 +1,18 @@
-FROM node:19-alpine
-
+FROM node:22-alpine
 WORKDIR /app
 
-# Copy workspace root configuration
 COPY package*.json ./
+COPY interfaces/package*.json ./interfaces/
+COPY back/package*.json ./back/
 
-# Copy workspaces
+RUN npm ci --omit=dev
+
 COPY interfaces/ ./interfaces/
 COPY back/ ./back/
 
-# Install all workspace dependencies at root
-RUN npm ci
-
-# Build interfaces first
 WORKDIR /app/interfaces
 RUN npm run build
 
-# Build backend
 WORKDIR /app/back
 RUN npm run build
 

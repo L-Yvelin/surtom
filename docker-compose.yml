@@ -1,39 +1,31 @@
 services:
   frontend:
     restart: unless-stopped
-    env_file:
-      - ./front/.env
+    env_file: ./front/.env
     build:
       context: .
       dockerfile: front/Dockerfile
-    ports:
-      - '27021:27021'
+    ports: ['27021:27021']
     command: serve -s dist -l 27021
     working_dir: /app/front
 
   backend:
     restart: unless-stopped
-    env_file:
-      - ./back/.env.production
+    env_file: ./back/.env.production
     build:
       context: .
       dockerfile: back/Dockerfile
-    ports:
-      - '27020:27020'
+    ports: ['27020:27020']
     command: node dist/server.js
     working_dir: /app/back
-    depends_on:
-      - mysql
+    depends_on: [mysql]
 
   mysql:
     restart: unless-stopped
-    env_file:
-      - ./back/.env.production
+    env_file: ./back/.env.production
     image: mysql:8.0
-    ports:
-      - '27022:3306'
-    volumes:
-      - mysql_data:/var/lib/mysql
+    ports: ['27022:3306']
+    volumes: [mysql_data:/var/lib/mysql]
     command: --default-authentication-plugin=mysql_native_password
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
@@ -43,10 +35,9 @@ services:
   phpmyadmin:
     restart: unless-stopped
     image: phpmyadmin/phpmyadmin
-    ports:
-      - '27023:80'
+    ports: ['27023:80']
     environment:
-      - PMA_HOST=mysql
+      PMA_HOST: mysql
 
 volumes:
   mysql_data:

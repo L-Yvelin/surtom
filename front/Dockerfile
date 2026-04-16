@@ -1,26 +1,23 @@
-FROM node:19-alpine
-
+FROM node:22-alpine AS build
 WORKDIR /app
 
-# Copy workspace root configuration
 COPY package*.json ./
+COPY interfaces/package*.json ./interfaces/
+COPY front/package*.json ./front/
 
-# Copy workspaces
+RUN npm ci
+
 COPY interfaces/ ./interfaces/
 COPY front/ ./front/
 
-# Install all workspace dependencies at root
-RUN npm ci
-
-# Build interfaces first
 WORKDIR /app/interfaces
 RUN npm run build
 
-# Build frontend
 WORKDIR /app/front
 RUN npm run build
 
-# Install serve globally
+FROM node:22-alpine
 RUN npm install -g serve
-
+COPY --from=build /app/front/dist /app/dist
+WORKDIR /app
 EXPOSE 27021
