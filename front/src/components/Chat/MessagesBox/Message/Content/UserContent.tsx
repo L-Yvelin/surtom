@@ -4,6 +4,7 @@ import classes from '../Message.module.css';
 import PlayerName from '../PlayerName/PlayerName';
 import { isTextMessage, extractImageUrls, isEnhancedMessage, extractUrls } from '../../../utils';
 import classNames from 'classnames';
+import { formatMarkdown } from './formatMarkdown';
 
 const enhancedMessageContent = (text: string): JSX.Element => {
   type enhancedMessageContent = {
@@ -25,7 +26,7 @@ const enhancedMessageContent = (text: string): JSX.Element => {
     const parts = text.split('\n');
     return parts.map((part, i) => (
       <span key={i}>
-        {part}
+        {formatMarkdown(part, classes.spoiler)}
         {i < parts.length - 1 && <br />}
       </span>
     ));
@@ -62,7 +63,7 @@ const enhancedMessageContent = (text: string): JSX.Element => {
 
 function formatText(text: string): JSX.Element {
   const urls = extractUrls(text);
-  if (urls.length === 0) return <p>{text}</p>;
+  if (urls.length === 0) return <p>{formatMarkdown(text, classes.spoiler)}</p>;
 
   const result: (string | JSX.Element)[] = [];
   let lastIndex = 0;
@@ -72,7 +73,7 @@ function formatText(text: string): JSX.Element {
     if (index === -1) return;
 
     if (index > lastIndex) {
-      result.push(text.slice(lastIndex, index));
+      result.push(<span key={`t${lastIndex}`}>{formatMarkdown(text.slice(lastIndex, index), classes.spoiler)}</span>);
     }
 
     const displayText = url.split('/')[2];
@@ -86,7 +87,7 @@ function formatText(text: string): JSX.Element {
   });
 
   if (lastIndex < text.length) {
-    result.push(text.slice(lastIndex));
+    result.push(<span key={`t${lastIndex}`}>{formatMarkdown(text.slice(lastIndex), classes.spoiler)}</span>);
   }
 
   return <p>{result}</p>;

@@ -63,3 +63,23 @@
   color: #77b775;
   text-decoration: underline;
 }
+
+.spoiler {
+  background-color: gray;
+  color: transparent;
+  text-shadow: none;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0 2px;
+  transition:
+    color 0.2s,
+    text-shadow 0.2s,
+    background-color 0.2s;
+}
+
+.spoiler:hover,
+.spoiler:active {
+  color: inherit;
+  text-shadow: inherit;
+  background-color: rgb(255 255 255 / 0.1);
+}
