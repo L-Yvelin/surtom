@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import WS, { WebSocketServer } from 'ws';
+import { parse as parseCookie } from 'cookie';
 import { store } from './store.js';
 import { Server, Client } from '@surtom/interfaces';
 import FullUser from './models/User.js';
@@ -30,16 +31,12 @@ wss.on('connection', async (connection, req) => {
   console.log('New connection');
 
   try {
-    const cookies = req.headers?.cookie?.split(';').reduce((acc: { [key: string]: string }, cookie) => {
-      let [key, value] = cookie.split('=');
-      acc[key.trim()] = value.trim();
-      return acc;
-    }, {});
+    const cookies = parseCookie(req.headers?.cookie ?? '');
 
     const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress)?.toString();
 
-    const sessionHash = (cookies && cookies.modHash) || undefined;
-    const usesMobileDevice = (cookies && cookies.mobileDevice === 'true') || false;
+    const sessionHash = cookies.modHash || undefined;
+    const usesMobileDevice = cookies.mobileDevice === 'true';
 
     const player = sessionHash ? await databaseService.getPlayerBySessionHash(sessionHash) : undefined;
 
