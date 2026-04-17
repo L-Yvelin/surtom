@@ -60,6 +60,23 @@ jobs:
       - name: Secretlint
         run: npm run lint:secrets
 
+  typecheck:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/cache/restore@v5
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Build interfaces
+        run: npm run build --workspace=interfaces
+      - name: Typecheck
+        run: npm run typecheck --workspaces --if-present
+
   test:
     needs: install
     runs-on: ubuntu-latest
