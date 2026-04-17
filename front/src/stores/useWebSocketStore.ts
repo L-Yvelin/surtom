@@ -35,6 +35,20 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
   const { setTries } = useGameStore.getState();
   const scrollToBottom = useChatStore.getState().scrollToBottom;
 
+  let unloadController: AbortController | null = null;
+
+  const attachUnloadListeners = (socket: WebSocket) => {
+    unloadController?.abort();
+    unloadController = new AbortController();
+    const handler = () => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+    };
+    window.addEventListener('beforeunload', handler, { signal: unloadController.signal });
+    window.addEventListener('unload', handler, { signal: unloadController.signal });
+  };
+
   const handleMessage = (data: Server.Message) => {
     switch (data.type) {
       case Server.MessageType.LOGIN:
@@ -154,17 +168,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
       scheduleReconnect();
     };
 
-    // Add window event listeners for cleanup
-    window.addEventListener('beforeunload', () => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close();
-      }
-    });
-    window.addEventListener('unload', () => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close();
-      }
-    });
+    attachUnloadListeners(socket);
   };
 
   const disconnect = () => {
@@ -180,6 +184,8 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
       clearTimeout(reconnectTimer);
       set({ reconnectTimer: null });
     }
+    unloadController?.abort();
+    unloadController = null;
     set({ isConnecting: false, isConnected: false });
   };
 
