@@ -1,0 +1,11 @@
+.tag {
+  font-size: 0.75em;
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+  background-color: rgb(147, 51, 234);
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  text-shadow: none;
+  margin-right: 0.4em;
+}

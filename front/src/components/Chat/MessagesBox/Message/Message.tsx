@@ -10,11 +10,12 @@ import MessageContextMenu from './MessageContextMenu/MessageContextMenu';
 import useGameStore from '../../../../stores/useGameStore';
 import answerIcon from '../../../../assets/images/ui/answer.svg';
 import deleteIcon from '../../../../assets/images/ui/delete.svg';
-import { isSavedChatMessage, isScoreMessage, isStatusMessage, isTextMessage } from '../../utils';
+import { isPrivateMessage, isSavedChatMessage, isScoreMessage, isStatusMessage, isTextMessage } from '../../utils';
 import { isMobile } from 'react-device-detect';
 import StatusContent from './Content/StatusContent';
 import ScoreContent from './Content/ScoreContent';
 import UserContent from './Content/UserContent';
+import PrivateMessageContent from './Content/PrivateMessageContent';
 import { useWebSocketStore } from '../../../../stores/useWebSocketStore';
 import ReplyMessage from './ReplyMessage/ReplyMessage';
 
@@ -24,6 +25,8 @@ const MessageContent = ({ message }: { message: Server.ChatMessage.Type }): JSX.
   } else if (isSavedChatMessage(message)) {
     if (isScoreMessage(message)) {
       return <ScoreContent message={message} />;
+    } else if (isPrivateMessage(message)) {
+      return <PrivateMessageContent message={message} />;
     } else if (isTextMessage(message)) {
       return <UserContent message={message} />;
     } else {

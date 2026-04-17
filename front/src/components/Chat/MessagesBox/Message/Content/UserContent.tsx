@@ -2,9 +2,11 @@ import { JSX } from 'react';
 import { Server } from '@surtom/interfaces';
 import classes from '../Message.module.css';
 import PlayerName from '../PlayerName/PlayerName';
-import { isTextMessage, extractImageUrls, isEnhancedMessage, extractUrls } from '../../../utils';
+import { isTextMessage, isEnhancedMessage } from '../../../utils';
 import classNames from 'classnames';
 import { formatMarkdown } from './formatMarkdown';
+import { formatText } from './formatText';
+import MessageImages from './MessageImages';
 
 const enhancedMessageContent = (text: string): JSX.Element => {
   type enhancedMessageContent = {
@@ -61,38 +63,6 @@ const enhancedMessageContent = (text: string): JSX.Element => {
   );
 };
 
-function formatText(text: string): JSX.Element {
-  const urls = extractUrls(text);
-  if (urls.length === 0) return <p>{formatMarkdown(text, classes.spoiler)}</p>;
-
-  const result: (string | JSX.Element)[] = [];
-  let lastIndex = 0;
-
-  urls.forEach((url) => {
-    const index = text.indexOf(url, lastIndex);
-    if (index === -1) return;
-
-    if (index > lastIndex) {
-      result.push(<span key={`t${lastIndex}`}>{formatMarkdown(text.slice(lastIndex, index), classes.spoiler)}</span>);
-    }
-
-    const displayText = url.split('/')[2];
-    result.push(
-      <a key={index} href={url} target="_blank" rel="noopener noreferrer" className={classes.link}>
-        {displayText}
-      </a>,
-    );
-
-    lastIndex = index + url.length;
-  });
-
-  if (lastIndex < text.length) {
-    result.push(<span key={`t${lastIndex}`}>{formatMarkdown(text.slice(lastIndex), classes.spoiler)}</span>);
-  }
-
-  return <p>{result}</p>;
-}
-
 function UserContent({ message }: { message: Server.ChatMessage.Text }): JSX.Element {
   const user = message.content.user;
   return (
@@ -104,27 +74,14 @@ function UserContent({ message }: { message: Server.ChatMessage.Text }): JSX.Ele
           &gt;&nbsp;
         </span>
       )}
-      {isTextMessage(message) &&
-        (() => {
-          const imageUrls = extractImageUrls(message.content.text);
-          return (
-            <>
-              <span className={classes.text}>
-                {isEnhancedMessage(message) ? enhancedMessageContent(message.content.text) : formatText(message.content.text)}
-              </span>
-              {message.content.imageData ? (
-                <div className={classes.image}>
-                  <img src={message.content.imageData} onError={(e) => e.currentTarget.remove()} />
-                </div>
-              ) : null}
-              {imageUrls.length ? (
-                <div className={classes.image}>
-                  <img src={imageUrls[0]} onError={(e) => e.currentTarget.remove()} />
-                </div>
-              ) : null}
-            </>
-          );
-        })()}
+      {isTextMessage(message) && (
+        <>
+          <span className={classes.text}>
+            {isEnhancedMessage(message) ? enhancedMessageContent(message.content.text) : <p>{formatText(message.content.text)}</p>}
+          </span>
+          <MessageImages text={message.content.text} imageData={message.content.imageData} />
+        </>
+      )}
     </>
   );
 }
