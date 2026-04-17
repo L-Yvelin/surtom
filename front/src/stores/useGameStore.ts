@@ -52,6 +52,7 @@ const useGameStore = create<GameState>((set, get) => ({
   letters: [],
   gameFinished: () => {
     const tries = get().tries;
+    if (tries.length >= 6) return true;
     const lastTry = tries[tries.length - 1];
     return lastTry?.every((l) => l.state === LetterState.Correct) || false;
   },
