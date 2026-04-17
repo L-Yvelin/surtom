@@ -1,0 +1,26 @@
+.dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 25vh;
+  overflow-y: auto;
+  background-color: rgba(30, 30, 30, 0.95);
+  border-radius: 0.5vh 0.5vh 0 0;
+  z-index: 10;
+}
+
+.item {
+  padding: 0.5vh 1vh;
+  color: white;
+  cursor: pointer;
+  font-size: max(14px, 1.6vh);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item:hover,
+.selected {
+  background-color: rgba(255, 255, 255, 0.15);
+}

@@ -6,6 +6,8 @@ import { Server, Client } from '@surtom/interfaces';
 import { isSavedChatMessage, isScoreMessage, isTextMessage } from '../utils';
 import { useWebSocketStore } from '../../../stores/useWebSocketStore';
 import useChatInputHistory from '../../../hooks/useChatInputHistory';
+import { useInputSuggestions, applySuggestion, Suggestion } from './useInputSuggestions';
+import SuggestionDropdown from './SuggestionDropdown';
 
 interface ChatInputProps {
   onSend: () => void;
@@ -28,6 +30,9 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
   const { sendMessage: sendWebSocketMessage } = useWebSocketStore();
   const { answeringTo, setAnsweringTo, messages, focusInput, setFocusInput } = useChatStore();
   const { push: pushHistory, handleKeyDown: handleHistoryKeyDown, reset: resetHistory, inputRef: historyInputRef } = useChatInputHistory();
+  const [cursorPos, setCursorPos] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const active = useInputSuggestions(input, cursorPos);
 
   const focusInputFunction = useCallback((message?: string) => {
     if (keyboardRef.current) {
@@ -51,7 +56,18 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(event.target.value);
+    setCursorPos(event.target.selectionStart ?? event.target.value.length);
+    setSelectedIndex(0);
     resetHistory();
+  }
+
+  function selectSuggestion(suggestion: Suggestion) {
+    if (!active) return;
+    const newValue = applySuggestion(input, active, suggestion);
+    setInputValue(newValue);
+    setCursorPos(newValue.length);
+    setSelectedIndex(0);
+    keyboardRef.current?.focus();
   }
 
   function sendMessage() {
@@ -73,6 +89,28 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (active) {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setSelectedIndex((i) => (i + 1) % active.suggestions.length);
+        return;
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setSelectedIndex((i) => (i - 1 + active.suggestions.length) % active.suggestions.length);
+        return;
+      }
+      if (event.key === 'Tab' || event.key === 'Enter') {
+        event.preventDefault();
+        selectSuggestion(active.suggestions[selectedIndex]);
+        return;
+      }
+      if (event.key === 'Escape') {
+        setCursorPos(0);
+        return;
+      }
+    }
+
     if (event.key === 'Enter') {
       sendMessage();
     } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
@@ -96,6 +134,7 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
+      {active && <SuggestionDropdown active={active} onSelect={selectSuggestion} selectedIndex={selectedIndex} />}
       <div
         className={classNames(classes.answering, {
           [classes.hidden]: !answeringTo,

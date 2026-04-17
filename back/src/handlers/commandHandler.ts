@@ -411,7 +411,7 @@ function handleHelpCommand(user: FullUser, commandParts: string[]): void {
       { text: '\\|\\|texte\\|\\|', color: 'darkkhaki' },
       { text: '.\n', color: 'lemonchiffon' },
       {
-        text: "Vous pouvez empêcher la détection d'un modificateur avec \\\\ (ex: \\\\*).\n",
+        text: "Vous pouvez empêcher la détection d'un modificateur avec \\ (ex: \\\\*).\n",
         color: 'lemonchiffon',
       },
     ];
