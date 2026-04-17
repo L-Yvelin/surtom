@@ -9,9 +9,9 @@ export interface ScoreContentAttributes {
   IsCustom: number;
 }
 
-export type ScoreContentPk = "ID";
+export type ScoreContentPk = 'ID';
 export type ScoreContentId = ScoreContent[ScoreContentPk];
-export type ScoreContentOptionalAttributes = "IsCustom";
+export type ScoreContentOptionalAttributes = 'IsCustom';
 export type ScoreContentCreationAttributes = Optional<ScoreContentAttributes, ScoreContentOptionalAttributes>;
 
 export class ScoreContent extends Model<ScoreContentAttributes, ScoreContentCreationAttributes> implements ScoreContentAttributes {
@@ -27,43 +27,44 @@ export class ScoreContent extends Model<ScoreContentAttributes, ScoreContentCrea
   createID_Message!: Sequelize.BelongsToCreateAssociationMixin<Message>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ScoreContent {
-    return ScoreContent.init({
-    ID: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'Message',
-        key: 'ID'
-      }
-    },
-    Answer: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    Attempts: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    IsCustom: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: 0
-    }
-  }, {
-    sequelize,
-    tableName: 'ScoreContent',
-    timestamps: false,
-    indexes: [
+    return ScoreContent.init(
       {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "ID" },
-        ]
+        ID: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          primaryKey: true,
+          references: {
+            model: 'Message',
+            key: 'ID',
+          },
+        },
+        Answer: {
+          type: DataTypes.STRING(255),
+          allowNull: false,
+        },
+        Attempts: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+        },
+        IsCustom: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: 0,
+        },
       },
-    ]
-  });
+      {
+        sequelize,
+        tableName: 'ScoreContent',
+        timestamps: false,
+        indexes: [
+          {
+            name: 'PRIMARY',
+            unique: true,
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
+          },
+        ],
+      },
+    );
   }
 }

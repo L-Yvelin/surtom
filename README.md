@@ -5,6 +5,7 @@ A Minecraft Wordle.
 React front and Node back, connected via WebSocket.
 
 ## Monorepo Architecture
+
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                    SURTOM Monorepo (npm Workspaces)                          │

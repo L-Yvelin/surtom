@@ -9,9 +9,9 @@ export interface TextContentAttributes {
   ReplyID?: number;
 }
 
-export type TextContentPk = "ID";
+export type TextContentPk = 'ID';
 export type TextContentId = TextContent[TextContentPk];
-export type TextContentOptionalAttributes = "ImageData" | "ReplyID";
+export type TextContentOptionalAttributes = 'ImageData' | 'ReplyID';
 export type TextContentCreationAttributes = Optional<TextContentAttributes, TextContentOptionalAttributes>;
 
 export class TextContent extends Model<TextContentAttributes, TextContentCreationAttributes> implements TextContentAttributes {
@@ -32,53 +32,52 @@ export class TextContent extends Model<TextContentAttributes, TextContentCreatio
   createReply!: Sequelize.BelongsToCreateAssociationMixin<Message>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof TextContent {
-    return TextContent.init({
-    ID: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'Message',
-        key: 'ID'
-      }
-    },
-    Text: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    ImageData: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    ReplyID: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'Message',
-        key: 'ID'
-      }
-    }
-  }, {
-    sequelize,
-    tableName: 'TextContent',
-    timestamps: false,
-    indexes: [
+    return TextContent.init(
       {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "ID" },
-        ]
+        ID: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          primaryKey: true,
+          references: {
+            model: 'Message',
+            key: 'ID',
+          },
+        },
+        Text: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+        },
+        ImageData: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+        },
+        ReplyID: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          references: {
+            model: 'Message',
+            key: 'ID',
+          },
+        },
       },
       {
-        name: "ReplyID",
-        using: "BTREE",
-        fields: [
-          { name: "ReplyID" },
-        ]
+        sequelize,
+        tableName: 'TextContent',
+        timestamps: false,
+        indexes: [
+          {
+            name: 'PRIMARY',
+            unique: true,
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
+          },
+          {
+            name: 'ReplyID',
+            using: 'BTREE',
+            fields: [{ name: 'ReplyID' }],
+          },
+        ],
       },
-    ]
-  });
+    );
   }
 }

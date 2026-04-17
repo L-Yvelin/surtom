@@ -9,9 +9,9 @@ export interface MotMinecraftAttributes {
   Rotation: number;
 }
 
-export type MotMinecraftPk = "ID";
+export type MotMinecraftPk = 'ID';
 export type MotMinecraftId = MotMinecraft[MotMinecraftPk];
-export type MotMinecraftOptionalAttributes = "ID" | "Date" | "Rotation";
+export type MotMinecraftOptionalAttributes = 'ID' | 'Date' | 'Rotation';
 export type MotMinecraftCreationAttributes = Optional<MotMinecraftAttributes, MotMinecraftOptionalAttributes>;
 
 export class MotMinecraft extends Model<MotMinecraftAttributes, MotMinecraftCreationAttributes> implements MotMinecraftAttributes {
@@ -34,40 +34,41 @@ export class MotMinecraft extends Model<MotMinecraftAttributes, MotMinecraftCrea
   countWordHistories!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof MotMinecraft {
-    return MotMinecraft.init({
-    ID: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
-    },
-    MotMinecraft: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    Date: {
-      type: DataTypes.DATEONLY,
-      allowNull: true
-    },
-    Rotation: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
-    }
-  }, {
-    sequelize,
-    tableName: 'MotMinecraft',
-    timestamps: false,
-    indexes: [
+    return MotMinecraft.init(
       {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "ID" },
-        ]
+        ID: {
+          autoIncrement: true,
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          primaryKey: true,
+        },
+        MotMinecraft: {
+          type: DataTypes.STRING(255),
+          allowNull: false,
+        },
+        Date: {
+          type: DataTypes.DATEONLY,
+          allowNull: true,
+        },
+        Rotation: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
       },
-    ]
-  });
+      {
+        sequelize,
+        tableName: 'MotMinecraft',
+        timestamps: false,
+        indexes: [
+          {
+            name: 'PRIMARY',
+            unique: true,
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
+          },
+        ],
+      },
+    );
   }
 }

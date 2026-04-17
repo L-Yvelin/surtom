@@ -10,9 +10,9 @@ export interface WordHistoryAttributes {
   AssignedDate: string;
 }
 
-export type WordHistoryPk = "ID";
+export type WordHistoryPk = 'ID';
 export type WordHistoryId = WordHistory[WordHistoryPk];
-export type WordHistoryOptionalAttributes = "ID";
+export type WordHistoryOptionalAttributes = 'ID';
 export type WordHistoryCreationAttributes = Optional<WordHistoryAttributes, WordHistoryOptionalAttributes>;
 
 export class WordHistory extends Model<WordHistoryAttributes, WordHistoryCreationAttributes> implements WordHistoryAttributes {
@@ -51,46 +51,45 @@ export class WordHistory extends Model<WordHistoryAttributes, WordHistoryCreatio
   countTries!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof WordHistory {
-    return WordHistory.init({
-    ID: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
-    },
-    WordID: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'MotMinecraft',
-        key: 'ID'
-      }
-    },
-    AssignedDate: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
-    }
-  }, {
-    sequelize,
-    tableName: 'WordHistory',
-    timestamps: false,
-    indexes: [
+    return WordHistory.init(
       {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "ID" },
-        ]
+        ID: {
+          autoIncrement: true,
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          primaryKey: true,
+        },
+        WordID: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'MotMinecraft',
+            key: 'ID',
+          },
+        },
+        AssignedDate: {
+          type: DataTypes.DATEONLY,
+          allowNull: false,
+        },
       },
       {
-        name: "WordID",
-        using: "BTREE",
-        fields: [
-          { name: "WordID" },
-        ]
+        sequelize,
+        tableName: 'WordHistory',
+        timestamps: false,
+        indexes: [
+          {
+            name: 'PRIMARY',
+            unique: true,
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
+          },
+          {
+            name: 'WordID',
+            using: 'BTREE',
+            fields: [{ name: 'WordID' }],
+          },
+        ],
       },
-    ]
-  });
+    );
   }
 }

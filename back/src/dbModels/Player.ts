@@ -14,9 +14,9 @@ export interface PlayerAttributes {
   IsBanned: number;
 }
 
-export type PlayerPk = "ID";
+export type PlayerPk = 'ID';
 export type PlayerId = Player[PlayerPk];
-export type PlayerOptionalAttributes = "ID" | "SessionHash" | "IsAdmin" | "IsBanned";
+export type PlayerOptionalAttributes = 'ID' | 'SessionHash' | 'IsAdmin' | 'IsBanned';
 export type PlayerCreationAttributes = Optional<PlayerAttributes, PlayerOptionalAttributes>;
 
 export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> implements PlayerAttributes {
@@ -66,62 +66,61 @@ export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> im
   countWordHistoryID_WordHistories!: Sequelize.BelongsToManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Player {
-    return Player.init({
-    ID: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
-    },
-    Username: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      unique: "Username"
-    },
-    Password: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    SessionHash: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    RegistrationDate: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
-    },
-    IsAdmin: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: 0
-    },
-    IsBanned: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
-    }
-  }, {
-    sequelize,
-    tableName: 'Player',
-    timestamps: false,
-    indexes: [
+    return Player.init(
       {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "ID" },
-        ]
+        ID: {
+          autoIncrement: true,
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          primaryKey: true,
+        },
+        Username: {
+          type: DataTypes.STRING(255),
+          allowNull: false,
+          unique: 'Username',
+        },
+        Password: {
+          type: DataTypes.STRING(255),
+          allowNull: false,
+        },
+        SessionHash: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+        },
+        RegistrationDate: {
+          type: DataTypes.DATEONLY,
+          allowNull: false,
+        },
+        IsAdmin: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: 0,
+        },
+        IsBanned: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
       },
       {
-        name: "Username",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "Username" },
-        ]
+        sequelize,
+        tableName: 'Player',
+        timestamps: false,
+        indexes: [
+          {
+            name: 'PRIMARY',
+            unique: true,
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
+          },
+          {
+            name: 'Username',
+            unique: true,
+            using: 'BTREE',
+            fields: [{ name: 'Username' }],
+          },
+        ],
       },
-    ]
-  });
+    );
   }
 }

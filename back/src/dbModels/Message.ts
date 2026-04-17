@@ -12,9 +12,9 @@ export interface MessageAttributes {
   Deleted?: number;
 }
 
-export type MessagePk = "ID";
+export type MessagePk = 'ID';
 export type MessageId = Message[MessagePk];
-export type MessageOptionalAttributes = "ID" | "Timestamp" | "Type" | "Deleted";
+export type MessageOptionalAttributes = 'ID' | 'Timestamp' | 'Type' | 'Deleted';
 export type MessageCreationAttributes = Optional<MessageAttributes, MessageOptionalAttributes>;
 
 export class Message extends Model<MessageAttributes, MessageCreationAttributes> implements MessageAttributes {
@@ -53,57 +53,56 @@ export class Message extends Model<MessageAttributes, MessageCreationAttributes>
   createPlayer!: Sequelize.BelongsToCreateAssociationMixin<Player>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Message {
-    return Message.init({
-    ID: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
-    },
-    PlayerID: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Player',
-        key: 'ID'
-      }
-    },
-    Timestamp: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
-    },
-    Type: {
-      type: DataTypes.ENUM('TEXT','ENHANCED','SCORE'),
-      allowNull: false,
-      defaultValue: "TEXT"
-    },
-    Deleted: {
-      type: DataTypes.TINYINT,
-      allowNull: true,
-      defaultValue: 0
-    }
-  }, {
-    sequelize,
-    tableName: 'Message',
-    timestamps: false,
-    indexes: [
+    return Message.init(
       {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "ID" },
-        ]
+        ID: {
+          autoIncrement: true,
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          primaryKey: true,
+        },
+        PlayerID: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'Player',
+            key: 'ID',
+          },
+        },
+        Timestamp: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP'),
+        },
+        Type: {
+          type: DataTypes.ENUM('TEXT', 'ENHANCED', 'SCORE'),
+          allowNull: false,
+          defaultValue: 'TEXT',
+        },
+        Deleted: {
+          type: DataTypes.TINYINT,
+          allowNull: true,
+          defaultValue: 0,
+        },
       },
       {
-        name: "PlayerID",
-        using: "BTREE",
-        fields: [
-          { name: "PlayerID" },
-        ]
+        sequelize,
+        tableName: 'Message',
+        timestamps: false,
+        indexes: [
+          {
+            name: 'PRIMARY',
+            unique: true,
+            using: 'BTREE',
+            fields: [{ name: 'ID' }],
+          },
+          {
+            name: 'PlayerID',
+            using: 'BTREE',
+            fields: [{ name: 'PlayerID' }],
+          },
+        ],
       },
-    ]
-  });
+    );
   }
 }
