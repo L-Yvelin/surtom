@@ -34,7 +34,7 @@ describe('formatMarkdown', () => {
     });
 
     it('spoiler', () => {
-      expect(render('||caché||')).toMatch(/^<span class="[^"]+">caché<\/span>$/);
+      expect(render('||caché||')).toBe('<span>caché</span>');
     });
   });
 

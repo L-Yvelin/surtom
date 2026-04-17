@@ -72,5 +72,7 @@ jobs:
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Build interfaces
+        run: npm run build --workspace=interfaces
       - name: Run tests
-        run: npm test --workspaces
+        run: npm test --workspaces --if-present
