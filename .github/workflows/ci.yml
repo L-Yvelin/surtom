@@ -60,6 +60,18 @@ jobs:
       - name: Secretlint
         run: npm run lint:secrets
 
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Prepare env files
+        run: |
+          cp back/.env.example back/.env
+          cp back/.env.example back/.env.production
+          cp front/.env.example front/.env
+      - name: Docker compose build
+        run: docker compose build
+
   test:
     needs: install
     runs-on: ubuntu-latest
