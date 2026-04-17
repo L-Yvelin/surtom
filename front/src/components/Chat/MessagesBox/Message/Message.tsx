@@ -37,7 +37,7 @@ const MessageContent = ({ message }: { message: Server.ChatMessage.Type }): JSX.
 };
 
 function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element {
-  const { setAnsweringTo, focusInput, messages } = useChatStore();
+  const { setAnsweringTo, focusInput } = useChatStore();
   const { sendMessage } = useWebSocketStore();
   const username = useGameStore((state) => state.player.name);
   const myModeratorLevel = useGameStore((state) => state.player.moderatorLevel);
@@ -65,6 +65,8 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
     });
     console.log(`Deleting message with id: ${id}`);
   };
+
+  const isMention = isTextMessage(message) && username && message.content.text.includes(`@${username}`);
 
   const date = new Date(message.content.timestamp);
   const timeString = date.toLocaleTimeString([], {
@@ -102,7 +104,11 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
     >
       {isMobile ? (
         <SwipeActions direction="left" onSwipeOne={() => handleRespond(id)} onSwipeTwo={() => handleDelete(id)}>
-          <div className={classNames(classes.message)} id={id} data-replyId={isTextMessage(message) ? message.content.replyId : undefined}>
+          <div
+            className={classNames(classes.message, { [classes.mention]: isMention })}
+            id={id}
+            data-replyId={isTextMessage(message) ? message.content.replyId : undefined}
+          >
             <div className={classes.content}>
               <ReplyMessage message={message} />
               <MessageContent message={message} />
@@ -113,7 +119,11 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
           </div>
         </SwipeActions>
       ) : (
-        <div className={classNames(classes.message)} id={id} data-replyId={isTextMessage(message) ? message.content.replyId : undefined}>
+        <div
+          className={classNames(classes.message, { [classes.mention]: isMention })}
+          id={id}
+          data-replyId={isTextMessage(message) ? message.content.replyId : undefined}
+        >
           <div className={classes.content}>
             <ReplyMessage message={message} />
             <MessageContent message={message} />

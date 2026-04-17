@@ -11,6 +11,14 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.mention {
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
+.mention:hover {
+  background-color: rgba(255, 165, 0, 0.3);
+}
+
 .content {
   overflow-wrap: break-word;
   line-height: 1.9vh;
