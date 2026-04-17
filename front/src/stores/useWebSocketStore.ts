@@ -67,18 +67,19 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
         addMessage(data.content);
         scrollToBottom?.();
         break;
-      case Server.MessageType.DAILY_WORDS:
+      case Server.MessageType.DAILY_WORDS: {
         const solution = data.content.words[data.content.words.length - 1];
         setSolution(solution);
         setValidWords(data.content.words);
         setTries(
           getValidatedWords(
-            data.content.attempts.map((a) => a.split('')),
+            data.content.attempts.map((a: string) => a.split('')),
             solution,
           ),
         );
         setHasLoaded(true);
         break;
+      }
       case Server.MessageType.XP:
         setXP(data.content);
         break;

@@ -7,8 +7,6 @@ import {
   navigateHistory,
 } from '../utils/chatInputHistoryStorage';
 
-const STORAGE_KEY = 'chatInputHistory';
-
 export default function useChatInputHistory() {
   const [history, setHistory] = useState<string[]>(() => loadHistory());
   const [index, setIndex] = useState<number | null>(null); // index in filteredHistory
@@ -59,7 +57,7 @@ export default function useChatInputHistory() {
         if (filteredHistory.length === 0) return;
 
         setIndex((idx) => {
-          let newIdx = navigateHistory(filteredHistory, idx, 'up');
+          const newIdx = navigateHistory(filteredHistory, idx, 'up');
           if (typeof newIdx === 'number') {
             setInput(filteredHistory[newIdx]);
           }
@@ -70,7 +68,7 @@ export default function useChatInputHistory() {
         if (index === null) return; // Can't go down if not navigating
 
         setIndex((idx) => {
-          let newIdx = navigateHistory(filteredHistory, idx, 'down');
+          const newIdx = navigateHistory(filteredHistory, idx, 'down');
           if (newIdx === null) {
             setInput(tempInput || '');
           } else {

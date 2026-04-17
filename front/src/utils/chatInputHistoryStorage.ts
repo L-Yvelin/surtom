@@ -12,7 +12,9 @@ export function loadHistory(): string[] {
 export function saveHistory(history: string[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  } catch {}
+  } catch {
+    /* localStorage may be unavailable */
+  }
 }
 
 export function filterHistory(history: string[], input: string): string[] {

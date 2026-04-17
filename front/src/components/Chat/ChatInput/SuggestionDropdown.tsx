@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from 'react';
+import { JSX } from 'react';
 import classes from './SuggestionDropdown.module.css';
 import { ActiveSuggestion, Suggestion } from './useInputSuggestions';
 
