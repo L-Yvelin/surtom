@@ -4,6 +4,7 @@
     "dev": "tsx --watch src/server.ts",
     "start": "node dist/server",
     "test": "jest",
+    "typecheck": "tsc --noEmit",
     "build": "tsc",
     "generate-models": "./generate-models.sh"
   },
