@@ -10,7 +10,7 @@ services:
 
   backend:
     restart: unless-stopped
-    env_file: ./back/.env.production
+    env_file: ./back/.env
     build:
       context: .
       dockerfile: back/Dockerfile
@@ -21,7 +21,7 @@ services:
 
   mysql:
     restart: unless-stopped
-    env_file: ./back/.env.production
+    env_file: ./back/.env
     image: mysql:8.0
     ports: ['27022:3306']
     volumes:
