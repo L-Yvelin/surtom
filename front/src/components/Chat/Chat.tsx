@@ -1,4 +1,4 @@
-import { JSX, useRef } from 'react';
+import { JSX, useRef, useState } from 'react';
 import classes from './Chat.module.css';
 import classNames from 'classnames';
 import ChatInput from './ChatInput/ChatInput';
@@ -39,6 +39,7 @@ function Chat({ chatButtonRef }: ChatProps): JSX.Element {
   const chatRef = useRef<HTMLDivElement>(null);
   const { messages } = useChatStore();
   const { showChat: display, setVisibility } = useUIStore();
+  const [isNearBottom, setIsNearBottom] = useState(true);
   const scrollToBottom = useChatStore((state) => state.scrollToBottom);
 
   useClickOutside(chatRef, () => setVisibility('showChat', false), [chatButtonRef]);
@@ -46,7 +47,7 @@ function Chat({ chatButtonRef }: ChatProps): JSX.Element {
   return (
     <div className={classNames(classes.chat, { [classes.hidden]: !display })} ref={chatRef}>
       <div className={classes.messagesWrapper}>
-        <MessagesBox messages={messages} />
+        <MessagesBox messages={messages} onCloseToBottom={setIsNearBottom} />
         <div className={classes.scrollToBottom}>
           <Button
             text={
@@ -54,7 +55,7 @@ function Chat({ chatButtonRef }: ChatProps): JSX.Element {
                 <img src={arrowImage} className={classes.arrow} alt="Arrow to scroll to bottom" />
               </div>
             }
-            className={classes.scrollToBottomButton}
+            className={classNames(classes.scrollToBottomButton, { [classes.hidden]: isNearBottom })}
             onClick={() => scrollToBottom?.()}
             size="square"
           />

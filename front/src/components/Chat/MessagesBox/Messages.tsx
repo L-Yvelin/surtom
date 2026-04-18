@@ -6,9 +6,11 @@ import useChatStore from '../../../stores/useChatStore';
 
 interface MessagesBoxProps {
   messages: Server.ChatMessage.Type[];
+  onCloseToBottom?: (isNearBottom: boolean) => void;
 }
 
-function MessagesBox({ messages }: MessagesBoxProps): JSX.Element {
+function MessagesBox({ messages, onCloseToBottom }: MessagesBoxProps): JSX.Element {
+  const NEAR_BOTTOM_THRESHOLD = 150;
   const containerRef = useRef<HTMLDivElement>(null);
   const setScrollToBottom = useChatStore((state) => state.setScrollToBottom);
 
@@ -22,6 +24,14 @@ function MessagesBox({ messages }: MessagesBoxProps): JSX.Element {
   useEffect(() => {
     setScrollToBottom(scrollToBottom);
   }, [setScrollToBottom, scrollToBottom]);
+
+  const handleScroll = () => {
+    if (!onCloseToBottom || !containerRef.current) return;
+    const { scrollTop } = containerRef.current;
+    const isNearBottom = scrollTop > -NEAR_BOTTOM_THRESHOLD;
+
+    onCloseToBottom(isNearBottom);
+  };
 
   const renderedMessages: JSX.Element[] = [];
   let prevDate: string | null = null;
@@ -66,7 +76,7 @@ function MessagesBox({ messages }: MessagesBoxProps): JSX.Element {
   }
 
   return (
-    <div ref={containerRef} className={classes.messages}>
+    <div ref={containerRef} className={classes.messages} onScroll={handleScroll}>
       {renderedMessages}
     </div>
   );
