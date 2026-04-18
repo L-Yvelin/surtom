@@ -23,7 +23,10 @@ const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.El
 
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
-      setPressedKey(key);
+
+      const displayKey = key === 'enter' ? '↲' : key === 'backspace' ? '⌫' : key;
+
+      setPressedKey(displayKey);
     };
 
     const handleKeyUp = () => {
