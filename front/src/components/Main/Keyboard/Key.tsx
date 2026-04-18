@@ -9,16 +9,24 @@ interface KeyProps {
   keyLabel: string;
   keyColor: LetterState;
   pressed?: boolean;
+  onKeyPressed?: (e: KeyboardEvent) => void;
 }
 
-function Key({ keyLabel, keyColor, pressed }: KeyProps): JSX.Element {
+function Key({ keyLabel, keyColor, pressed, onKeyPressed }: KeyProps): JSX.Element {
+  const handleClick = () => {
+    if (onKeyPressed) {
+      const event = new KeyboardEvent('keydown', { key: getButtonKeyEvent(keyLabel) });
+      onKeyPressed(event);
+    }
+  };
+
   return (
     <button
       className={classNames(classes.key, getKeyClassName(keyLabel), classes[getKeyColorClassName(keyColor)], {
         [classes.pressed]: pressed,
       })}
       style={getKeyStyle(keyLabel)}
-      onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: getButtonKeyEvent(keyLabel) }))}
+      onClick={handleClick}
     >
       {keyLabel}
     </button>

@@ -5,6 +5,7 @@ import useGameStore from '../../../stores/useGameStore';
 import { getKeyboardClass, getKeyboardLayout, KeyboardLayouts } from './utils';
 import { LetterState } from '@surtom/interfaces';
 import Key from './Key';
+import useGameLogic from '../../../hooks/keyboardEvents/useGameLogic';
 
 interface KeyboardProps {
   layout: KeyboardLayouts;
@@ -15,6 +16,7 @@ const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.El
   const [keys, setKeys] = useState(() => getKeyboardLayout(layout));
   const [keyboardClass, setKeyboardClass] = useState(() => getKeyboardClass(layout));
   const [pressedKey, setPressedKey] = useState<string | null>(null);
+  const { handleKeyDown } = useGameLogic();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -61,7 +63,13 @@ const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.El
     <div className={classes.keyboardWrapper}>
       <div className={classNames(classes.keyboard, keyboardClass)}>
         {keys.flat().map((key, index) => (
-          <Key key={index} keyLabel={key} keyColor={keyColors[key.toUpperCase()]} pressed={pressedKey === key} />
+          <Key
+            key={index}
+            keyLabel={key}
+            keyColor={keyColors[key.toUpperCase()]}
+            pressed={pressedKey === key}
+            onKeyPressed={handleKeyDown}
+          />
         ))}
       </div>
     </div>
