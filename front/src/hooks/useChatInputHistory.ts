@@ -17,6 +17,8 @@ export default function useChatInputHistory() {
   const filteredHistory = useMemo(() => filterHistory(history, filterText), [history, filterText]);
 
   const push = useCallback((input: string) => {
+    if (input.includes('/login') || input.includes('/register')) return; // Don't save login or register commands in history
+
     setHistory((prev) => {
       const newHistory = pushHistoryService(prev, input);
       saveHistory(newHistory);
