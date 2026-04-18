@@ -41,3 +41,7 @@
     0 calc(var(--size) * calc(-1 * var(--shadow))) 0 #000,
     0 calc(var(--size) * var(--shadow)) 0 #000;
 }
+
+.minecraftTooltip {
+  width: max-content;
+}

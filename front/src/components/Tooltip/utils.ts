@@ -6,6 +6,7 @@ export interface Coordinates {
 export enum Anchor {
   TOP_LEFT,
   TOP_RIGHT,
+  TOP_MIDDLE,
   BOTTOM_LEFT,
   BOTTOM_RIGHT,
 }
@@ -31,6 +32,10 @@ export function getTooltipPosition(
       break;
     case Anchor.TOP_RIGHT:
       x += offset;
+      y -= height + offset;
+      break;
+    case Anchor.TOP_MIDDLE:
+      x -= width / 2;
       y -= height + offset;
       break;
     case Anchor.BOTTOM_LEFT:
