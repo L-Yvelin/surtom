@@ -9,17 +9,19 @@
   },
   "dependencies": {
     "@surtom/interfaces": "1.0.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie": "^0.6.0",
+    "@types/node": "^22.13.4",
+    "@types/ws": "^8.18.0",
     "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
+    "cookie": "^1.1.1",
     "dotenv": "^16.4.5",
     "mysql2": "^3.14.1",
     "readline": "^1.3.0",
     "sequelize-auto": "^0.8.8",
     "typescript": "^5.7.3",
-    "ws": "^8.17.0",
-    "@types/bcrypt": "^5.0.2",
-    "@types/node": "^22.13.4",
-    "@types/ws": "^8.18.0"
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
