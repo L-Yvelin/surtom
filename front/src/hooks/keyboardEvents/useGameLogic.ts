@@ -21,8 +21,6 @@ const useGameLogic = () => {
   }, [solution, setLetters, gameFinished]);
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    console.log(event.key);
-
     if (!solution) return;
     if (event.key === 'Backspace') {
       if (event.ctrlKey || event.metaKey) {
