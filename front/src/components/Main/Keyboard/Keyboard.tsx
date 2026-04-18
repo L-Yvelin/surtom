@@ -14,6 +14,27 @@ const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.El
   const { tries } = useGameStore();
   const [keys, setKeys] = useState(() => getKeyboardLayout(layout));
   const [keyboardClass, setKeyboardClass] = useState(() => getKeyboardClass(layout));
+  const [pressedKey, setPressedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      setPressedKey(key);
+    };
+
+    const handleKeyUp = () => {
+      setPressedKey(null);
+    };
+
+    window.addEventListener('keydown', handleKeyDown, { signal: controller.signal });
+    window.addEventListener('keyup', handleKeyUp, { signal: controller.signal });
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
   useEffect(() => {
     setKeys(getKeyboardLayout(layout));
@@ -40,7 +61,7 @@ const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.El
     <div className={classes.keyboardWrapper}>
       <div className={classNames(classes.keyboard, keyboardClass)}>
         {keys.flat().map((key, index) => (
-          <Key key={index} keyLabel={key} keyColor={keyColors[key.toUpperCase()]} />
+          <Key key={index} keyLabel={key} keyColor={keyColors[key.toUpperCase()]} pressed={pressedKey === key} />
         ))}
       </div>
     </div>

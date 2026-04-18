@@ -8,12 +8,15 @@ import { getKeyClassName, getKeyStyle, getButtonKeyEvent } from './utils';
 interface KeyProps {
   keyLabel: string;
   keyColor: LetterState;
+  pressed?: boolean;
 }
 
-function Key({ keyLabel, keyColor }: KeyProps): JSX.Element {
+function Key({ keyLabel, keyColor, pressed }: KeyProps): JSX.Element {
   return (
     <button
-      className={classNames(classes.key, getKeyClassName(keyLabel), classes[getKeyColorClassName(keyColor)])}
+      className={classNames(classes.key, getKeyClassName(keyLabel), classes[getKeyColorClassName(keyColor)], {
+        [classes.pressed]: pressed,
+      })}
       style={getKeyStyle(keyLabel)}
       onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: getButtonKeyEvent(keyLabel) }))}
     >

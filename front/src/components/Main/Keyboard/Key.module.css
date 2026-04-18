@@ -20,7 +20,8 @@
   background-color: #a1a1a1;
 }
 
-.key:active {
+.key:active,
+.key.pressed {
   border-bottom: var(--border-size) rgba(116, 116, 116, 0.8) solid;
   border-right: var(--border-size) rgba(116, 116, 116, 0.8) solid;
   border-top: var(--border-size) rgb(55 55 55 / 80%) solid;
