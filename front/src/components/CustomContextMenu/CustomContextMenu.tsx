@@ -22,9 +22,14 @@ function CustomContextMenu({ children, menuContent, offset = 10 }: CustomContext
     setPosition(getTooltipPosition({ x: event.clientX, y: event.clientY }, menuRef.current, offset, Anchor.BOTTOM_RIGHT));
   }, [visible, event, offset]);
 
-  const closeMenu = () => {
-    setVisible(false);
-  };
+  useEffect(() => {
+    if (!visible) return;
+    const closeMenu = () => setVisible(false);
+    document.addEventListener('click', closeMenu);
+    return () => {
+      document.removeEventListener('click', closeMenu);
+    };
+  }, [visible]);
 
   return (
     <span
@@ -33,7 +38,6 @@ function CustomContextMenu({ children, menuContent, offset = 10 }: CustomContext
         e.preventDefault();
         setEvent(e);
         setVisible(true);
-        document.addEventListener('click', closeMenu, { once: true });
       }}
     >
       {children}
