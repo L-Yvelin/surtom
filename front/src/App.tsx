@@ -2,7 +2,7 @@ import React, { use, useCallback, useEffect } from 'react';
 import './App.css';
 import Header from './components/Header/Header';
 import Main from './components/Main/Main';
-import useKeyPress from './hooks/keyboardEvents/useKeyPress';
+import { useGlobalKeyPress } from './hooks/keyboardEvents/useKeyPress';
 import useTheme from './hooks/useTheme';
 import AchievementsStack from './components/AchievementsStack/AchievementsStack';
 import Tab from './components/Tab/Tab';
@@ -75,7 +75,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
 
   use(twemojiPromise);
 
-  useKeyPress();
+  useGlobalKeyPress();
 
   useEffect(() => {
     onLoad?.();
