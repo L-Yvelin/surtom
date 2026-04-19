@@ -1,10 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 function useClickOutside<T extends HTMLElement>(
   ref: React.RefObject<T | null>,
   handler: () => void,
   ignoredRefs: React.RefObject<HTMLElement | null>[] = [],
 ) {
+  const handlerRef = useRef(handler);
+  const ignoredRefsRef = useRef(ignoredRefs);
+
+  handlerRef.current = handler;
+  ignoredRefsRef.current = ignoredRefs;
+
   useEffect(() => {
     const hasIgnoreAttribute = (element: Element | null): boolean => {
       if (!element) return false;
@@ -18,13 +24,13 @@ function useClickOutside<T extends HTMLElement>(
       if (
         !ref ||
         (target instanceof Node && ref.current?.contains(target)) ||
-        ignoredRefs.some((ignoredRef) => target instanceof Node && ignoredRef.current?.contains(target)) ||
+        ignoredRefsRef.current.some((ignoredRef) => target instanceof Node && ignoredRef.current?.contains(target)) ||
         (target instanceof Element && hasIgnoreAttribute(target))
       ) {
         return;
       }
 
-      handler();
+      handlerRef.current();
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -32,7 +38,7 @@ function useClickOutside<T extends HTMLElement>(
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [ref, handler, ignoredRefs]);
+  }, [ref]);
 }
 
 export default useClickOutside;
