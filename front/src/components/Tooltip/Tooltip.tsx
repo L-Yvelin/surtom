@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { useTooltip } from './useTooltip';
 import { getTooltipPosition, Anchor } from './utils';
 import { isDesktop } from 'react-device-detect';
@@ -13,11 +13,26 @@ interface Props {
 
 function Tooltip({ children, tooltipContent, offset = 10, anchor = Anchor.TOP_LEFT, activeOnMobile = false }: Props) {
   const { setVisible, setContent, setPosition, tooltipRef } = useTooltip();
+  const pendingPosRef = useRef<{ x: number; y: number } | null>(null);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    },
+    [],
+  );
 
   const updatePosition = (x: number, y: number) => {
-    if (!tooltipRef.current) return;
-    const pos = getTooltipPosition({ x, y }, tooltipRef.current, offset, anchor);
-    setPosition(pos);
+    pendingPosRef.current = { x, y };
+    if (rafRef.current !== null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const pending = pendingPosRef.current;
+      if (!pending || !tooltipRef.current) return;
+      const pos = getTooltipPosition(pending, tooltipRef.current, offset, anchor);
+      setPosition(pos);
+    });
   };
 
   const handleClick = (e: React.MouseEvent) => {
