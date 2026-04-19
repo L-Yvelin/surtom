@@ -13,23 +13,23 @@ const useKeyPress = () => {
   const shortcutsState = useShortcuts();
   const gameLogicState = useGameLogic();
 
-  useEffect(() => {
-    const isGameKey = (event: KeyboardEvent) => ['Enter', 'Backspace'].includes(event.key) || /^[a-z]$/.test(event.key);
+  const isGameKey = (event: KeyboardEvent) => ['Enter', 'Backspace'].includes(event.key) || /^[a-z]$/.test(event.key);
 
-    const handleKeyPress = (event: KeyboardEvent, state: 'up' | 'down') => {
-      if (state === 'down') {
-        if (showChat && isGameKey(event)) {
-          focusInput();
-        } else if (!isGameKey(event) || gameFinished() || event.altKey) {
-          shortcutsState.handleKeyDown(event);
-        } else if (!isAnyInterfaceOpen() && !gameFinished()) {
-          gameLogicState.handleKeyDown(event);
-        }
-      } else {
-        shortcutsState.handleKeyUp(event);
+  const handleKeyPress = (event: KeyboardEvent, state: 'up' | 'down') => {
+    if (state === 'down') {
+      if (showChat && isGameKey(event)) {
+        focusInput();
+      } else if (!isGameKey(event) || gameFinished() || event.altKey) {
+        shortcutsState.handleKeyDown(event);
+      } else if (!isAnyInterfaceOpen() && !gameFinished()) {
+        gameLogicState.handleKeyDown(event);
       }
-    };
+    } else {
+      shortcutsState.handleKeyUp(event);
+    }
+  };
 
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => handleKeyPress(e, 'down');
     const handleKeyUp = (e: KeyboardEvent) => handleKeyPress(e, 'up');
 
@@ -53,6 +53,7 @@ const useKeyPress = () => {
   return {
     ...shortcutsState,
     ...gameLogicState,
+    handleKeyPress,
   };
 };
 
