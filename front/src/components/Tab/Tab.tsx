@@ -12,8 +12,9 @@ interface TabProps {
 }
 
 function Tab({ tabButtonRef }: TabProps): JSX.Element {
-  const { playerList } = useGameStore();
-  const { setVisibility, showTab: display } = useUIStore();
+  const playerList = useGameStore((s) => s.playerList);
+  const setVisibility = useUIStore((s) => s.setVisibility);
+  const display = useUIStore((s) => s.showTab);
 
   const tabRef = useRef<HTMLDivElement>(null);
 

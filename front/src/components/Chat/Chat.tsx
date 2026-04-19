@@ -37,8 +37,9 @@ interface ChatProps {
 
 function Chat({ chatButtonRef }: ChatProps): JSX.Element {
   const chatRef = useRef<HTMLDivElement>(null);
-  const { messages } = useChatStore();
-  const { showChat: display, setVisibility } = useUIStore();
+  const messages = useChatStore((s) => s.messages);
+  const display = useUIStore((s) => s.showChat);
+  const setVisibility = useUIStore((s) => s.setVisibility);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const scrollToBottom = useChatStore((state) => state.scrollToBottom);
 

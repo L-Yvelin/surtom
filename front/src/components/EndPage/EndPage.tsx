@@ -17,8 +17,9 @@ interface EndPageProps {
 
 function EndPage({ endPageButtonRef }: EndPageProps): JSX.Element {
   const tries = useGameStore((state) => state.tries);
-  const { sendMessage } = useWebSocketStore();
-  const { showEndPage: display, setVisibility } = useUIStore();
+  const sendMessage = useWebSocketStore((s) => s.sendMessage);
+  const display = useUIStore((s) => s.showEndPage);
+  const setVisibility = useUIStore((s) => s.setVisibility);
 
   const endPageRef = useRef<HTMLDivElement | null>(null);
   const emojiScore = useMemo(() => {

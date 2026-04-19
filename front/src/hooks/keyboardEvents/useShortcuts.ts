@@ -3,10 +3,9 @@ import useUIStore from '../../stores/useUIStore';
 import useChatStore from '../../stores/useChatStore';
 
 const useShortcuts = () => {
-  const { setVisibility } = useUIStore();
-
-  const showChat = useUIStore((state) => state.showChat);
-  const { focusInput } = useChatStore();
+  const setVisibility = useUIStore((s) => s.setVisibility);
+  const showChat = useUIStore((s) => s.showChat);
+  const focusInput = useChatStore((s) => s.focusInput);
   const showChatRef = useRef(showChat);
 
   useEffect(() => {

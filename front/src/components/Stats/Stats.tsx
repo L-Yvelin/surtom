@@ -14,8 +14,9 @@ interface StatsProps {
 
 function Stats({ statsButtonRef }: StatsProps): JSX.Element {
   const statsRef = React.useRef<HTMLDivElement>(null);
-  const { scores } = useGameStore();
-  const { setVisibility, showStats: display } = useUIStore();
+  const scores = useGameStore((s) => s.scores);
+  const setVisibility = useUIStore((s) => s.setVisibility);
+  const display = useUIStore((s) => s.showStats);
   const { total, increaseFactor } = calculateStats(scores);
 
   useClickOutside(statsRef, () => setVisibility('showStats', false), [statsButtonRef]);

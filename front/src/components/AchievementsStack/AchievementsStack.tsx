@@ -10,7 +10,8 @@ interface AchievementsStackProps {
 }
 
 const AchievementsStack: React.FC<AchievementsStackProps> = ({ lifeTime, transitionDuration }) => {
-  const { achievements, removeAchievement } = useGameStore();
+  const achievements = useGameStore((s) => s.achievements);
+  const removeAchievement = useGameStore((s) => s.removeAchievement);
   const handleSlideOutEnd = (id: string) => {
     removeAchievement(id);
   };

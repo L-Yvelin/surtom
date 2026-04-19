@@ -14,7 +14,7 @@ interface ExperienceBarProps {
 
 function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
   const level = getLevel(xp);
-  const { hasLoaded } = useGameStore.getState();
+  const hasLoaded = useGameStore((s) => s.hasLoaded);
 
   const [realtimeLevel, setRealtimeLevel] = useState<number>(level);
   const integerPart = Math.floor(realtimeLevel);
