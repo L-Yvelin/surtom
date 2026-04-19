@@ -1,0 +1,5 @@
+.container {
+  transition:
+    left 0.05s ease-out,
+    top 0.05s ease-out;
+}

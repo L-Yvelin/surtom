@@ -14,6 +14,12 @@ import { useWebSocketStore } from './stores/useWebSocketStore';
 import WebSocketPingHandler from './utils/webSocketPingHandler';
 import twemoji from './assets/fonts/TwemojiMozilla-Regular.ttf';
 import { TooltipProvider } from './components/Tooltip/TooltipProvider';
+import { Client } from '@surtom/interfaces';
+import Cursors from './components/Cursors/Cursors';
+import useCursorsStore from './stores/useCursorsStore';
+import useGameStore from './stores/useGameStore';
+import useCursorPosition from './hooks/useCursorPotision';
+import NameTag from './components/NameTag/NameTag';
 
 const fontFile = new FontFace('Twemoji', `url(${twemoji})`, {
   unicodeRange:
@@ -38,9 +44,35 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
   const customWordButtonRef = React.useRef<HTMLButtonElement>(null);
   const endPageButtonRef = React.useRef<HTMLButtonElement>(null);
   const chatButtonRef = React.useRef<HTMLButtonElement>(null);
+  const rootContainerRef = React.useRef<HTMLDivElement>(null);
+  const { cursors } = useCursorsStore();
+  const { playerList, player } = useGameStore();
+  const ownCursorPosition = useCursorPosition();
+
+  const visibleCursors = cursors.filter((cursor) => playerList.some((player) => player.name === cursor.user.name));
 
   const { theme, setTheme } = useTheme();
-  const { connect } = useWebSocketStore.getState();
+  const { connect, sendMessage } = useWebSocketStore.getState();
+
+  const lastSentRef = React.useRef(0);
+  const THROTTLE_MS = 50;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const now = performance.now();
+    if (now - lastSentRef.current < THROTTLE_MS) return;
+    lastSentRef.current = now;
+
+    const rect = rootContainerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+
+    sendMessage({
+      type: Client.MessageType.CURSOR_POSITION,
+      content: { cursor: { x, y } },
+    });
+  };
 
   useEffect(() => {
     connect();
@@ -55,7 +87,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
   }, [onLoad]);
 
   return (
-    <div id="root-container">
+    <div id="root-container" onMouseMove={handleMouseMove} ref={rootContainerRef}>
       <TooltipProvider>
         <Header theme={theme} />
         <Main
@@ -67,6 +99,8 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
           endPageButtonRef={endPageButtonRef}
           chatButtonRef={chatButtonRef}
         />
+
+        <Cursors cursors={visibleCursors} />
 
         {/* Floating interfaces */}
         <div className="windows">
@@ -80,6 +114,8 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
 
         <WebSocketPingHandler />
       </TooltipProvider>
+
+      <NameTag user={player} className="ownCursorNameTag" style={{ left: `${ownCursorPosition.x}px`, top: `${ownCursorPosition.y}px` }} />
     </div>
   );
 };

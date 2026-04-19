@@ -6,6 +6,7 @@ import useChatStore from './useChatStore';
 import Cookies from 'js-cookie';
 import { isMobile } from 'react-device-detect';
 import { getValidatedWords } from '../utils/gameLogic';
+import useCursorsStore from './useCursorsStore';
 
 interface WebSocketState {
   isConnected: boolean;
@@ -34,6 +35,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
   const { setMessages, addMessage } = useChatStore.getState();
   const { setTries } = useGameStore.getState();
   const scrollToBottom = useChatStore.getState().scrollToBottom;
+  const { addOrUpdateCursor } = useCursorsStore.getState();
 
   const handleMessage = (data: Server.Message) => {
     switch (data.type) {
@@ -82,6 +84,9 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
       }
       case Server.MessageType.XP:
         setXP(data.content);
+        break;
+      case Server.MessageType.CURSOR_POSITION:
+        addOrUpdateCursor(data.content);
         break;
       default:
         console.warn('Unknown message type:', data.type);
@@ -138,7 +143,6 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
         console.warn('Received invalid server message:', data);
         return;
       }
-      console.log(data);
       handleMessage(data);
     };
 

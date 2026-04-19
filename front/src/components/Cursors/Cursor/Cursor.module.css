@@ -1,0 +1,20 @@
+.container {
+  position: absolute;
+  z-index: 1;
+}
+
+.item {
+  width: 50px;
+  height: 50px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  transform: rotate(90deg);
+  background-size: contain;
+  image-rendering: pixelated;
+}
+
+.nameTag {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+}

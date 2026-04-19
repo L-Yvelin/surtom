@@ -9,7 +9,16 @@ import databaseService from './services/databaseService.js';
 import Constants from './utils/constants.js';
 import { handleCommand, subscribe } from './handlers/commandHandler.js';
 import { validateClientMessage } from '@surtom/interfaces';
-import { generateRandomHash, getRandomFunnyName, validateText, sendToUser, sendToAll, sendError, sendSuccess } from './utils/helpers.js';
+import {
+  generateRandomHash,
+  getRandomFunnyName,
+  validateText,
+  sendToUser,
+  sendToAll,
+  sendError,
+  sendSuccess,
+  mapFullUserToUser,
+} from './utils/helpers.js';
 
 subscribe('updateUsersList', updateUsersList);
 
@@ -116,7 +125,11 @@ wss.on('connection', async (connection, req) => {
 
       const message = parsed;
 
-      if (message.type !== Client.MessageType.PING && message.type !== Client.MessageType.IS_TYPING) {
+      if (
+        message.type !== Client.MessageType.PING &&
+        message.type !== Client.MessageType.IS_TYPING &&
+        message.type !== Client.MessageType.CURSOR_POSITION
+      ) {
         const text = JSON.stringify(message.content) ?? '';
 
         const truncatedTexte =
@@ -223,7 +236,11 @@ async function handleMessage(user: FullUser, message: Client.Message): Promise<v
     return;
   }
 
-  if (!user.privateUser.moderatorLevel && message.type !== Client.MessageType.IS_TYPING) {
+  if (
+    !user.privateUser.moderatorLevel &&
+    message.type !== Client.MessageType.IS_TYPING &&
+    message.type !== Client.MessageType.CURSOR_POSITION
+  ) {
     user.messageCount++;
 
     if (user.messageCount > 5) {
@@ -258,6 +275,15 @@ async function handleMessage(user: FullUser, message: Client.Message): Promise<v
       break;
     case Client.MessageType.TRY:
       await handleTryMessage(user, message.content);
+      break;
+    case Client.MessageType.CURSOR_POSITION:
+      sendMessageAllButSelf(user, {
+        type: Server.MessageType.CURSOR_POSITION,
+        content: {
+          user: mapFullUserToUser(user),
+          cursor: { x: message.content.cursor.x, y: message.content.cursor.y },
+        },
+      });
       break;
     default:
       // @ts-expect-error
@@ -473,13 +499,7 @@ function updateUsersList(): void {
     .reduce<Array<Server.User>>((acc, user) => {
       const existingUser = acc.find((u) => u.name === user.privateUser.name);
       if (!existingUser) {
-        acc.push({
-          name: user.privateUser.name,
-          moderatorLevel: user.privateUser.moderatorLevel,
-          isMobile: user.privateUser.isMobile,
-          isLoggedIn: user.privateUser.isLoggedIn,
-          xp: user.privateUser.xp,
-        });
+        acc.push(mapFullUserToUser(user));
       }
       return acc;
     }, []);
@@ -493,6 +513,11 @@ function updateUsersList(): void {
 
 function sendMessagesAll(message: Server.Message): void {
   sendToAll(wss.clients, message);
+}
+
+function sendMessageAllButSelf(user: FullUser, message: Server.Message): void {
+  const otherClients = Array.from(wss.clients).filter((client) => client !== user.connection);
+  sendToAll(new Set(otherClients), message);
 }
 
 export { updateUsersList };

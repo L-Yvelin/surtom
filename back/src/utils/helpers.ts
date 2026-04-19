@@ -102,6 +102,16 @@ export function mapDatabaseUserToMemoryUser(user: any | null): FullUser | null {
   return Object.values(store.getState().users).find((u) => u.privateUser.name === user.Pseudo) ?? null;
 }
 
+export function mapFullUserToUser(user: FullUser): Server.User {
+  return {
+    name: user.privateUser.name,
+    moderatorLevel: user.privateUser.moderatorLevel,
+    isMobile: user.privateUser.isMobile,
+    isLoggedIn: user.privateUser.isLoggedIn,
+    xp: user.privateUser.xp,
+  };
+}
+
 export function mapUserMessageToMemoryMessage(message: DatabaseMessage): Server.ChatMessage.Content.TextMessageContent {
   return {
     id: message.ID?.toString() ?? '',

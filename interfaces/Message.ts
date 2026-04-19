@@ -6,6 +6,7 @@ export namespace Client {
     CHAT_MESSAGE = 'chatMessage',
     SCORE_TO_CHAT = 'scoreToChat',
     TRY = 'try',
+    CURSOR_POSITION = 'cursorPosition',
   }
 
   export type Message =
@@ -14,7 +15,8 @@ export namespace Client {
     | { type: MessageType.PING }
     | { type: MessageType.CHAT_MESSAGE; content: TextChatMessageContent }
     | { type: MessageType.SCORE_TO_CHAT; content: ScoreContent }
-    | { type: MessageType.TRY; content: string };
+    | { type: MessageType.TRY; content: string }
+    | { type: MessageType.CURSOR_POSITION; content: { cursor: CursorPosition } };
 
   export type ChatMessage =
     | { type: MessageType.CHAT_MESSAGE; content: TextChatMessageContent }
@@ -54,6 +56,7 @@ export namespace Server {
     DAILY_WORDS = 'dailyWords',
     ATTEMPT = 'attempt',
     XP = 'xp',
+    CURSOR_POSITION = 'cursorPosition',
   }
 
   export enum SavedMessageType {
@@ -82,7 +85,8 @@ export namespace Server {
         content: { words: string[]; attempts: string[] };
       }
     | { type: MessageType.ATTEMPT; content: string }
-    | { type: MessageType.XP; content: number };
+    | { type: MessageType.XP; content: number }
+    | { type: MessageType.CURSOR_POSITION; content: CursorPositionMessage };
 
   export namespace ChatMessage {
     export type Type = Text | Score | Status;
@@ -152,6 +156,16 @@ export namespace Server {
     user: PrivateUser;
     sessionHash?: string;
   }
+
+  export interface CursorPositionMessage {
+    user: User;
+    cursor: CursorPosition;
+  }
+}
+
+export interface CursorPosition {
+  x: number;
+  y: number;
 }
 
 export enum LetterState {
