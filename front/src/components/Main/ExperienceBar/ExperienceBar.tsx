@@ -12,6 +12,29 @@ interface ExperienceBarProps {
   xp: number;
 }
 
+function getLevel(xp: number) {
+  if (xp <= 352) {
+    return Math.sqrt(xp + 9) - 3;
+  }
+  if (xp <= 1507) {
+    return 81 / 10 + Math.sqrt((2 / 5) * (xp - 7839 / 40));
+  }
+  return 325 / 18 + Math.sqrt((2 / 9) * (xp - 54215 / 72));
+}
+
+const XPMinecraftTooltipContent = (): JSX.Element => (
+  <>
+    <p>Gain par partie:</p>
+    <br />
+    <p>
+      Victoire: 35 - (tentatives - 1)<sup>2</sup>
+    </p>
+    <br />
+    <p>Defaite: 5</p>
+    <br />
+  </>
+);
+
 function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
   const level = getLevel(xp);
   const { hasLoaded } = useGameStore.getState();
@@ -21,31 +44,6 @@ function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
   const decimalPart = String(Math.ceil(realtimeLevel * 100)).slice(-2);
 
   useLevelAnimation(level, setRealtimeLevel, hasLoaded);
-
-  function getLevel(xp: number) {
-    if (xp <= 352) {
-      return Math.sqrt(xp + 9) - 3;
-    }
-    if (xp <= 1507) {
-      return 81 / 10 + Math.sqrt((2 / 5) * (xp - 7839 / 40));
-    }
-    return 325 / 18 + Math.sqrt((2 / 9) * (xp - 54215 / 72));
-  }
-
-  const XPMinecraftTooltipContent = (): JSX.Element => {
-    return (
-      <>
-        <p>Gain par partie:</p>
-        <br />
-        <p>
-          Victoire: 35 - (tentatives - 1)<sup>2</sup>
-        </p>
-        <br />
-        <p>Defaite: 5</p>
-        <br />
-      </>
-    );
-  };
 
   return (
     <div className={classes.experienceBar}>
