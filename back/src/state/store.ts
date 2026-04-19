@@ -1,25 +1,14 @@
-import FullUser from './models/User.js';
+import FullUser from '../models/FullUser.js';
 
 interface State {
   users: { [key: string]: FullUser };
 }
 
+type Subscriber = (state: State) => void;
+
 class Store {
-  private state!: State;
-  private subscribers!: Function[];
-  private static instance: Store;
-
-  constructor() {
-    if (!Store.instance) {
-      this.state = {
-        users: {},
-      };
-      this.subscribers = [];
-      Store.instance = this;
-    }
-
-    return Store.instance;
-  }
+  private state: State = { users: {} };
+  private subscribers: Subscriber[] = [];
 
   getState(): State {
     return this.state;
@@ -30,11 +19,11 @@ class Store {
     this.notify();
   }
 
-  subscribe(callback: Function): void {
+  subscribe(callback: Subscriber): void {
     this.subscribers.push(callback);
   }
 
-  notify(): void {
+  private notify(): void {
     this.subscribers.forEach((callback) => callback(this.state));
   }
 }
