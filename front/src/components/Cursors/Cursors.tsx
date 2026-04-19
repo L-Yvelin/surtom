@@ -1,20 +1,39 @@
-import { Server } from '@surtom/interfaces';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import classes from './Cursors.module.css';
 import PlayerCursor from './PlayerCursor/PlayerCursor';
+import useCursorsStore from '../../stores/useCursorsStore';
+import useGameStore from '../../stores/useGameStore';
 
-interface CursorsProps extends React.HTMLAttributes<HTMLDivElement> {
-  cursors: Server.CursorPositionMessage[];
-}
+type CursorsProps = React.HTMLAttributes<HTMLDivElement>;
 
-const Cursors = ({ cursors, className, ...props }: CursorsProps) => {
+const Cursors = ({ className, ...props }: CursorsProps) => {
+  const cursors = useCursorsStore((s) => s.cursors);
+  const playerList = useGameStore((s) => s.playerList);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setSize({ width: el.clientWidth, height: el.clientHeight });
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const playerNames = useMemo(() => new Set(playerList.map((p) => p.name)), [playerList]);
+
+  const visibleCursors = useMemo(() => cursors.filter((c) => playerNames.has(c.user.name)), [cursors, playerNames]);
+
   return (
-    <div aria-hidden className={classNames(classes.container, className)} {...props}>
-      {cursors.map((cursor) => (
-        <PlayerCursor key={cursor.user.name} cursor={cursor} />
+    <div aria-hidden ref={containerRef} className={classNames(classes.container, className)} {...props}>
+      {visibleCursors.map((cursor) => (
+        <PlayerCursor key={cursor.user.name} cursor={cursor} containerWidth={size.width} containerHeight={size.height} />
       ))}
     </div>
   );
 };
 
-export default Cursors;
+export default memo(Cursors);

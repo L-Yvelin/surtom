@@ -1,4 +1,4 @@
-import React, { use, useEffect } from 'react';
+import React, { use, useCallback, useEffect } from 'react';
 import './App.css';
 import Header from './components/Header/Header';
 import Main from './components/Main/Main';
@@ -16,10 +16,7 @@ import twemoji from './assets/fonts/TwemojiMozilla-Regular.ttf';
 import { TooltipProvider } from './components/Tooltip/TooltipProvider';
 import { Client } from '@surtom/interfaces';
 import Cursors from './components/Cursors/Cursors';
-import useCursorsStore from './stores/useCursorsStore';
-import useGameStore from './stores/useGameStore';
-import useCursorPosition from './hooks/useCursorPotision';
-import NameTag from './components/NameTag/NameTag';
+import OwnCursorNameTag from './components/Cursors/OwnCursorNameTag/OwnCursorNameTag';
 
 const fontFile = new FontFace('Twemoji', `url(${twemoji})`, {
   unicodeRange:
@@ -45,11 +42,6 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
   const endPageButtonRef = React.useRef<HTMLButtonElement>(null);
   const chatButtonRef = React.useRef<HTMLButtonElement>(null);
   const rootContainerRef = React.useRef<HTMLDivElement>(null);
-  const { cursors } = useCursorsStore();
-  const { playerList, player } = useGameStore();
-  const ownCursorPosition = useCursorPosition();
-
-  const visibleCursors = cursors.filter((cursor) => playerList.some((player) => player.name === cursor.user.name));
 
   const { theme, setTheme } = useTheme();
   const { connect, sendMessage } = useWebSocketStore.getState();
@@ -57,22 +49,25 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
   const lastSentRef = React.useRef(0);
   const THROTTLE_MS = 50;
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const now = performance.now();
-    if (now - lastSentRef.current < THROTTLE_MS) return;
-    lastSentRef.current = now;
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const now = performance.now();
+      if (now - lastSentRef.current < THROTTLE_MS) return;
+      lastSentRef.current = now;
 
-    const rect = rootContainerRef.current?.getBoundingClientRect();
-    if (!rect) return;
+      const rect = rootContainerRef.current?.getBoundingClientRect();
+      if (!rect) return;
 
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
 
-    sendMessage({
-      type: Client.MessageType.CURSOR_POSITION,
-      content: { cursor: { x, y } },
-    });
-  };
+      sendMessage({
+        type: Client.MessageType.CURSOR_POSITION,
+        content: { cursor: { x, y } },
+      });
+    },
+    [sendMessage],
+  );
 
   useEffect(() => {
     connect();
@@ -100,7 +95,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
           chatButtonRef={chatButtonRef}
         />
 
-        <Cursors cursors={visibleCursors} />
+        <Cursors />
 
         {/* Floating interfaces */}
         <div className="windows">
@@ -115,7 +110,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
         <WebSocketPingHandler />
       </TooltipProvider>
 
-      <NameTag user={player} className="ownCursorNameTag" style={{ left: `${ownCursorPosition.x}px`, top: `${ownCursorPosition.y}px` }} />
+      <OwnCursorNameTag />
     </div>
   );
 };

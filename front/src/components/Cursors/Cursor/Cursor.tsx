@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Server } from '@surtom/interfaces';
 import classes from './Cursor.module.css';
 import classNames from 'classnames';
@@ -9,13 +10,15 @@ interface CursorProps extends React.HTMLAttributes<HTMLDivElement> {
   nameTagClassName?: string;
 }
 
+const stickStyle: React.CSSProperties = { backgroundImage: `url(${Stick})` };
+
 const Cursor = ({ user, className, nameTagClassName, ...props }: CursorProps) => {
   return (
     <div className={classNames(classes.container, className)} {...props}>
       <NameTag user={user} className={classNames(classes.nameTag, nameTagClassName)} />
-      <div className={classes.item} style={{ backgroundImage: `url(${Stick})` }} />
+      <div className={classes.item} style={stickStyle} />
     </div>
   );
 };
 
-export default Cursor;
+export default memo(Cursor);

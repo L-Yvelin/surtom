@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { Server } from '@surtom/interfaces';
 import classes from './NameTag.module.css';
 import classNames from 'classnames';
@@ -5,20 +6,20 @@ import { getPlayerColor } from '../Chat/utils';
 
 interface NameTagProps extends React.HTMLAttributes<HTMLDivElement> {
   user: Server.User;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const NameTag = ({ user, className, style, ...props }: NameTagProps) => {
-  console.log(user);
+const NameTag = ({ user, className, style, ref, ...props }: NameTagProps) => {
+  const mergedStyle = useMemo<React.CSSProperties>(
+    () => ({ color: getPlayerColor(user.moderatorLevel, user.name), ...style }),
+    [user.moderatorLevel, user.name, style],
+  );
 
   return (
-    <div
-      className={classNames(classes.container, className)}
-      style={{ color: getPlayerColor(user.moderatorLevel, user.name), ...style }}
-      {...props}
-    >
+    <div ref={ref} className={classNames(classes.container, className)} style={mergedStyle} {...props}>
       {user.name}
     </div>
   );
 };
 
-export default NameTag;
+export default memo(NameTag);

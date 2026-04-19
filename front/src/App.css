@@ -9,10 +9,3 @@
 .windows {
   z-index: 3;
 }
-
-.ownCursorNameTag {
-  position: absolute;
-  transform: translate(20%, -120%);
-  z-index: 4 !important;
-  pointer-events: none;
-}
