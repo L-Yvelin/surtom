@@ -29,7 +29,7 @@ function Main({
   chatButtonRef,
 }: MainProps): JSX.Element {
   const layout = useKeyboardLayout();
-  const { player } = useGameStore();
+  const player = useGameStore((s) => s.player);
 
   return (
     <main

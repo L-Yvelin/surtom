@@ -8,7 +8,7 @@ import useGameStore from './stores/useGameStore';
 const RootComponent = () => {
   const [haveAssetsLoaded, setHaveAssetsLoaded] = useState(true);
   const [showLoading, setShowLoading] = useState(true);
-  const { hasLoaded: hasReceivedDailyWords } = useGameStore();
+  const hasReceivedDailyWords = useGameStore((s) => s.hasLoaded);
 
   useEffect(() => {
     if (haveAssetsLoaded && hasReceivedDailyWords) {

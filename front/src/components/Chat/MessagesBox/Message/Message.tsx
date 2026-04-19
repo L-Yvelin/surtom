@@ -40,8 +40,9 @@ const MessageContent = ({ message }: { message: Server.ChatMessage.Type }): JSX.
 };
 
 function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element {
-  const { setAnsweringTo, focusInput } = useChatStore();
-  const { sendMessage } = useWebSocketStore();
+  const setAnsweringTo = useChatStore((s) => s.setAnsweringTo);
+  const focusInput = useChatStore((s) => s.focusInput);
+  const sendMessage = useWebSocketStore((s) => s.sendMessage);
   const username = useGameStore((state) => state.player.name);
   const myModeratorLevel = useGameStore((state) => state.player.moderatorLevel);
 

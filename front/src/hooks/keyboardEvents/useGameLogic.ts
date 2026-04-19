@@ -9,11 +9,18 @@ import { useWebSocketStore } from '../../stores/useWebSocketStore';
 import { Client } from '@surtom/interfaces';
 
 const useGameLogic = () => {
-  const { letters, setLetters, tries, addTry, solution, addAchievement, validWords, gameFinished } = useGameStore();
+  const letters = useGameStore((s) => s.letters);
+  const setLetters = useGameStore((s) => s.setLetters);
+  const tries = useGameStore((s) => s.tries);
+  const addTry = useGameStore((s) => s.addTry);
+  const solution = useGameStore((s) => s.solution);
+  const addAchievement = useGameStore((s) => s.addAchievement);
+  const validWords = useGameStore((s) => s.validWords);
+  const gameFinished = useGameStore((s) => s.gameFinished);
 
-  const { setVisibility } = useUIStore();
+  const setVisibility = useUIStore((s) => s.setVisibility);
   const skipFirstLetter = useRef(true);
-  const { sendMessage } = useWebSocketStore();
+  const sendMessage = useWebSocketStore((s) => s.sendMessage);
 
   useEffect(() => {
     if (!solution || gameFinished()) return;

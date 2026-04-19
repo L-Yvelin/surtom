@@ -37,8 +37,9 @@ function Tools({
   chatButtonRef,
   customWordButtonRef,
 }: ToolsProps): JSX.Element {
-  const { playerList, gameFinished } = useGameStore();
-  const { toggle } = useUIStore();
+  const playerList = useGameStore((s) => s.playerList);
+  const gameFinished = useGameStore((s) => s.gameFinished);
+  const toggle = useUIStore((s) => s.toggle);
 
   const nbUsers = playerList.length;
 

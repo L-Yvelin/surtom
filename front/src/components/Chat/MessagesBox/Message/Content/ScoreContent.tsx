@@ -11,7 +11,7 @@ function ScoreContent({ message }: { message: Server.ChatMessage.Score }): JSX.E
   const tries = message.content.attempts;
   const answer = message.content.answer;
   const words = getValidatedWords(tries, answer);
-  const { gameFinished } = useGameStore();
+  const gameFinished = useGameStore((s) => s.gameFinished);
 
   return (
     <span>

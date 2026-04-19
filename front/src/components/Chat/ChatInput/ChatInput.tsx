@@ -27,8 +27,12 @@ export function SimpleMessage({ message }: { message: Server.ChatMessage.SavedTy
 function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
   const keyboardRef = useRef<HTMLInputElement>(null);
   const [input, setInputValue] = useState<string>('');
-  const { sendMessage: sendWebSocketMessage } = useWebSocketStore();
-  const { answeringTo, setAnsweringTo, messages, focusInput, setFocusInput } = useChatStore();
+  const sendWebSocketMessage = useWebSocketStore((s) => s.sendMessage);
+  const answeringTo = useChatStore((s) => s.answeringTo);
+  const setAnsweringTo = useChatStore((s) => s.setAnsweringTo);
+  const messages = useChatStore((s) => s.messages);
+  const focusInput = useChatStore((s) => s.focusInput);
+  const setFocusInput = useChatStore((s) => s.setFocusInput);
   const { push: pushHistory, handleKeyDown: handleHistoryKeyDown, reset: resetHistory, inputRef: historyInputRef } = useChatInputHistory();
   const [cursorPos, setCursorPos] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(0);

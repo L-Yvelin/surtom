@@ -14,8 +14,9 @@ interface CustomWordProps {
 }
 
 function CustomWord({ customWordButtonRef }: CustomWordProps): JSX.Element {
-  const { addAchievement } = useGameStore();
-  const { setVisibility, showCustomWord: display } = useUIStore();
+  const addAchievement = useGameStore((s) => s.addAchievement);
+  const setVisibility = useUIStore((s) => s.setVisibility);
+  const display = useUIStore((s) => s.showCustomWord);
 
   const [customWord, setCustomWord] = useState<string>('');
   const customWordRef = useRef(null);

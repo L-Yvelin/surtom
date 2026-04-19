@@ -3,7 +3,8 @@ import { useWebSocketStore } from '../stores/useWebSocketStore';
 import { Client } from '@surtom/interfaces';
 
 const WebSocketPingHandler = () => {
-  const { isConnected, sendMessage } = useWebSocketStore();
+  const isConnected = useWebSocketStore((s) => s.isConnected);
+  const sendMessage = useWebSocketStore((s) => s.sendMessage);
 
   useEffect(() => {
     if (!isConnected) return;

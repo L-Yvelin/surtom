@@ -12,7 +12,7 @@ interface KeyboardProps {
 }
 
 const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.Element {
-  const { tries } = useGameStore();
+  const tries = useGameStore((s) => s.tries);
   const [keys, setKeys] = useState(() => getKeyboardLayout(layout));
   const [keyboardClass, setKeyboardClass] = useState(() => getKeyboardClass(layout));
   const [pressedKey, setPressedKey] = useState<string | null>(null);

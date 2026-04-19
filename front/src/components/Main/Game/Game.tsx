@@ -4,7 +4,9 @@ import Grid from './Grid/Grid';
 import useGameStore from '../../../stores/useGameStore';
 
 function Game(): JSX.Element {
-  const { solution, tries, letters } = useGameStore();
+  const solution = useGameStore((s) => s.solution);
+  const tries = useGameStore((s) => s.tries);
+  const letters = useGameStore((s) => s.letters);
   const shownSolution = solution ?? '      ';
 
   function getChestLabel(length: number): string {

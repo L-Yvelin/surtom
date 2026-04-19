@@ -9,7 +9,7 @@ interface ReplyMessageProps {
 }
 
 function ReplyMessage({ message }: ReplyMessageProps) {
-  const { messages } = useChatStore();
+  const messages = useChatStore((s) => s.messages);
 
   const messageFromId = (id: string): Server.ChatMessage.SavedType | undefined => {
     return messages.find((m) => isSavedChatMessage(m) && m.content.id === id);
