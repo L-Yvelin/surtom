@@ -22,6 +22,16 @@ function getLevel(xp: number) {
   return 325 / 18 + Math.sqrt((2 / 9) * (xp - 54215 / 72));
 }
 
+function getXpForLevel(level: number): number {
+  if (level <= 16) {
+    return level * level + 6 * level;
+  }
+  if (level <= 31) {
+    return (5 / 2) * level * level - (81 / 2) * level + 720;
+  }
+  return (9 / 2) * level * level - (325 / 2) * level + 2220;
+}
+
 const XPMinecraftTooltipContent = (): JSX.Element => (
   <>
     <p>Gain par partie:</p>
@@ -43,6 +53,11 @@ function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
   const integerPart = Math.floor(realtimeLevel);
   const decimalPart = String(Math.ceil(realtimeLevel * 100)).slice(-2);
 
+  const currentLevelXp = getXpForLevel(integerPart);
+  const nextLevelXp = getXpForLevel(integerPart + 1);
+  const xpProgress = xp - currentLevelXp;
+  const xpRequiredForNextLevel = nextLevelXp - currentLevelXp;
+
   useLevelAnimation(level, setRealtimeLevel, hasLoaded);
 
   return (
@@ -50,7 +65,11 @@ function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
       <Tooltip
         anchor={Anchor.TOP_MIDDLE}
         tooltipContent={
-          <MinecraftTooltip className={classes.minecraftTooltip} title={"CALCUL D'EXPÉRIENCE"} children={<XPMinecraftTooltipContent />} />
+          <MinecraftTooltip
+            className={classes.minecraftTooltip}
+            title={`Progression: ${xpProgress} / ${xpRequiredForNextLevel}`}
+            children={<XPMinecraftTooltipContent />}
+          />
         }
       >
         <div className={classes.content}>
