@@ -4,6 +4,9 @@ import buttonSound from '../../../assets/sounds/menu_stereo.mp3';
 import classNames from 'classnames';
 import Marquee from '../Marquee/Marquee';
 
+const buttonAudio = new Audio(buttonSound);
+buttonAudio.preload = 'auto';
+
 interface ButtonProps {
   text: ReactNode;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -15,7 +18,8 @@ function Button({ text, onClick, className = '', size = 'normal' }: ButtonProps)
   function handleOnClick(e: React.MouseEvent<HTMLButtonElement>) {
     onClick?.(e);
     try {
-      new Audio(buttonSound).play();
+      buttonAudio.currentTime = 0;
+      void buttonAudio.play();
     } catch {
       return;
     }
