@@ -5,7 +5,7 @@ import useGameStore from './useGameStore';
 import useChatStore from './useChatStore';
 import Cookies from 'js-cookie';
 import { isMobile } from 'react-device-detect';
-import { getValidatedWords } from '../utils/gameLogic';
+import { getValidatedWords, isGameFinished } from '../utils/gameLogic';
 import useCursorsStore from './useCursorsStore';
 
 interface WebSocketState {
@@ -36,6 +36,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
   const { setTries } = useGameStore.getState();
   const scrollToBottom = useChatStore.getState().scrollToBottom;
   const { addOrUpdateCursor } = useCursorsStore.getState();
+  const { setShowProgression, setWasFinishedOnLoad } = useGameStore.getState();
 
   const handleMessage = (data: Server.Message) => {
     switch (data.type) {
@@ -73,12 +74,15 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
         const solution = data.content.words[data.content.words.length - 1];
         setSolution(solution);
         setValidWords(data.content.words);
-        setTries(
-          getValidatedWords(
-            data.content.attempts.map((a: string) => a.split('')),
-            solution,
-          ),
+        const validatedTries = getValidatedWords(
+          data.content.attempts.map((a: string) => a.split('')),
+          solution,
         );
+        setTries(validatedTries);
+        if (isGameFinished(validatedTries)) {
+          setShowProgression(false);
+          setWasFinishedOnLoad(true);
+        }
         setHasLoaded(true);
         break;
       }

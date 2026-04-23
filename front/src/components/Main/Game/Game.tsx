@@ -18,6 +18,7 @@ function Game(): JSX.Element {
   const tries = useGameStore((s) => s.tries);
   const letters = useGameStore((s) => s.letters);
   const gameFinished = useGameStore((s) => s.gameFinished());
+  const wasFinishedOnLoad = useGameStore((s) => s.wasFinishedOnLoad);
   const showProgression = useGameStore((s) => s.showProgression);
   const setShowProgression = useGameStore((s) => s.setShowProgression);
   const shownSolution = solution ?? '      ';
@@ -33,13 +34,12 @@ function Game(): JSX.Element {
   }
 
   useEffect(() => {
-    if (!gameFinished) return;
+    if (!gameFinished || wasFinishedOnLoad) return;
     const timeout = setTimeout(() => {
       setShowProgression(false);
     }, 3000);
-
     return () => clearTimeout(timeout);
-  }, [gameFinished, setShowProgression]);
+  }, [gameFinished, wasFinishedOnLoad, setShowProgression]);
 
   return (
     <div className={classes.coffre}>

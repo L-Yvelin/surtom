@@ -1,8 +1,7 @@
-import { Word, LetterState } from '@surtom/interfaces';
-import useGameStore from '../stores/useGameStore';
+import { Word, Tries, LetterState } from '@surtom/interfaces';
 
-export const gameFinished = (): boolean => {
-  const { tries } = useGameStore.getState();
+export const isGameFinished = (tries: Tries): boolean => {
+  if (tries.length >= 6) return true;
   return tries[tries.length - 1]?.every((letter) => letter.state === LetterState.Correct) || false;
 };
 

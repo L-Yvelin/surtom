@@ -1,7 +1,8 @@
 import { AchievementProps } from '../components/AchievementsStack/Achievement/Achievement';
-import { Tries, LetterState, Server, Word } from '@surtom/interfaces';
+import { Tries, Server, Word } from '@surtom/interfaces';
 import { ScoreStats } from '../components/Stats/utils';
 import { create } from 'zustand';
+import { isGameFinished } from '../utils/gameLogic';
 
 interface GameState {
   solution: string | undefined;
@@ -30,6 +31,8 @@ interface GameState {
   removeAchievement: (achievementId: string) => void;
   hasLoaded: boolean;
   setHasLoaded: (hasLoaded: boolean) => void;
+  wasFinishedOnLoad: boolean;
+  setWasFinishedOnLoad: (wasFinishedOnLoad: boolean) => void;
 }
 
 export const defaultPlayer: Server.User = {
@@ -52,12 +55,7 @@ const useGameStore = create<GameState>((set, get) => ({
   setTries: (tries) => set({ tries }),
   addTry: (word) => set((state) => ({ tries: [...(state.tries || []), word] })),
   letters: [],
-  gameFinished: () => {
-    const tries = get().tries;
-    if (tries.length >= 6) return true;
-    const lastTry = tries[tries.length - 1];
-    return lastTry?.every((l) => l.state === LetterState.Correct) || false;
-  },
+  gameFinished: () => isGameFinished(get().tries),
   showProgression: true,
   setShowProgression: (showProgression) => set({ showProgression }),
   setLetters: (letters) => set({ letters }),
@@ -97,6 +95,8 @@ const useGameStore = create<GameState>((set, get) => ({
     })),
   hasLoaded: false,
   setHasLoaded: (hasLoaded) => set({ hasLoaded }),
+  wasFinishedOnLoad: false,
+  setWasFinishedOnLoad: (wasFinishedOnLoad) => set({ wasFinishedOnLoad }),
 }));
 
 export default useGameStore;
