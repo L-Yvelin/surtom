@@ -1,4 +1,4 @@
-const funnyNames = [
+export const funnyNames = [
   'Surtomien',
   'Cracotto',
   'Marmeluche',
@@ -41,10 +41,3 @@ const funnyNames = [
   'BimBamBoum',
   'Chamallow',
 ];
-
-const MAX_MESSAGES_LOADED = 300;
-
-export default {
-  MAX_MESSAGES_LOADED,
-  funnyNames,
-};
