@@ -11,7 +11,7 @@ function ScoreContent({ message }: { message: Server.ChatMessage.Score }): JSX.E
   const tries = message.content.attempts;
   const answer = message.content.answer;
   const words = getValidatedWords(tries, answer);
-  const gameFinished = useGameStore((s) => s.gameFinished);
+  const gameFinished = useGameStore((s) => s.gameFinished());
 
   return (
     <span>
@@ -24,7 +24,7 @@ function ScoreContent({ message }: { message: Server.ChatMessage.Score }): JSX.E
             <Grid
               solution={answer}
               tries={words}
-              confidential={new Date(message.content.timestamp).getDate() === new Date().getDate() && !gameFinished()}
+              confidential={new Date(message.content.timestamp).getDate() === new Date().getDate() && !gameFinished}
               cellSize={'2dvh'}
             />
           }
