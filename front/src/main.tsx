@@ -2,6 +2,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import Loading from './components/Loading/Loading';
 import useGameStore from './stores/useGameStore';
 
@@ -18,10 +19,12 @@ const RootComponent = () => {
 
   return (
     <React.StrictMode>
-      {showLoading && <Loading display={!haveAssetsLoaded || !hasReceivedDailyWords} />}
-      <Suspense fallback={<></>}>
-        <App onLoad={() => setHaveAssetsLoaded(true)} />
-      </Suspense>
+      <ErrorBoundary>
+        {showLoading && <Loading display={!haveAssetsLoaded || !hasReceivedDailyWords} />}
+        <Suspense fallback={<></>}>
+          <App onLoad={() => setHaveAssetsLoaded(true)} />
+        </Suspense>
+      </ErrorBoundary>
     </React.StrictMode>
   );
 };
