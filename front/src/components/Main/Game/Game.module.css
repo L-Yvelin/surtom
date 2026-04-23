@@ -43,3 +43,14 @@
     0 calc(0.75 * var(--box-size)) 0 0 #000,
     calc(0.25 * var(--box-size)) calc(0.75 * var(--box-size)) 0 0 #000;
 }
+
+.eyeToggle {
+  all: unset;
+  cursor: pointer;
+  width: 1.5vh;
+  height: 1.5vh;
+}
+
+.eyeToggle img {
+  height: 100%;
+}

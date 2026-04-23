@@ -13,6 +13,8 @@ interface GameState {
   addTry: (word: Word) => void;
   letters: Word;
   gameFinished: () => boolean;
+  showProgression: boolean;
+  setShowProgression: (showProgression: boolean) => void;
   setLetters: (letters: Word) => void;
   player: Server.User;
   setPlayer: (updatedPlayer: Partial<Server.User>) => void;
@@ -56,6 +58,8 @@ const useGameStore = create<GameState>((set, get) => ({
     const lastTry = tries[tries.length - 1];
     return lastTry?.every((l) => l.state === LetterState.Correct) || false;
   },
+  showProgression: true,
+  setShowProgression: (showProgression) => set({ showProgression }),
   setLetters: (letters) => set({ letters }),
   player: defaultPlayer,
   setPlayer: (updatedPlayer) =>

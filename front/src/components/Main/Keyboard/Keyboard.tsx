@@ -16,6 +16,7 @@ const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.El
   const [keys, setKeys] = useState(() => getKeyboardLayout(layout));
   const [keyboardClass, setKeyboardClass] = useState(() => getKeyboardClass(layout));
   const [pressedKey, setPressedKey] = useState<string | null>(null);
+  const showProgression = useGameStore((s) => s.showProgression);
   const { handleKeyPress } = useKeyPress();
 
   useEffect(() => {
@@ -69,7 +70,7 @@ const Keyboard = React.memo(function Keyboard({ layout }: KeyboardProps): JSX.El
           <Key
             key={index}
             keyLabel={key}
-            keyColor={keyColors[key.toUpperCase()]}
+            keyColor={showProgression ? keyColors[key.toUpperCase()] : undefined}
             pressed={pressedKey === key}
             onKeyPressed={(e) => handleKeyPress(e, 'down')}
           />
