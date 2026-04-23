@@ -1,4 +1,4 @@
-import { JSX, ReactNode, useRef, useState, useEffect } from 'react';
+import { JSX, ReactNode, useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { getTooltipPosition, Coordinates, Anchor } from '../Tooltip/utils';
 import classes from './CustomContextMenu.module.css';
@@ -16,7 +16,7 @@ function CustomContextMenu({ children, menuContent, offset = 10 }: CustomContext
   const [event, setEvent] = useState<React.MouseEvent | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!visible || !event || !menuRef.current) return;
 
     setPosition(getTooltipPosition({ x: event.clientX, y: event.clientY }, menuRef.current, offset, Anchor.BOTTOM_RIGHT));

@@ -1,4 +1,4 @@
-import React, { use, useCallback, useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 import './App.css';
 import Header from './components/Header/Header';
 import Main from './components/Main/Main';
@@ -14,9 +14,9 @@ import { useWebSocketStore } from './stores/useWebSocketStore';
 import WebSocketPingHandler from './utils/webSocketPingHandler';
 import twemoji from './assets/fonts/TwemojiMozilla-Regular.ttf';
 import { TooltipProvider } from './components/Tooltip/TooltipProvider';
-import { Client } from '@surtom/interfaces';
 import Cursors from './components/Cursors/Cursors';
 import OwnCursorNameTag from './components/Cursors/OwnCursorNameTag/OwnCursorNameTag';
+import { isDesktop } from 'react-device-detect';
 
 const fontFile = new FontFace('Twemoji', `url(${twemoji})`, {
   unicodeRange:
@@ -41,33 +41,9 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
   const customWordButtonRef = React.useRef<HTMLButtonElement>(null);
   const endPageButtonRef = React.useRef<HTMLButtonElement>(null);
   const chatButtonRef = React.useRef<HTMLButtonElement>(null);
-  const rootContainerRef = React.useRef<HTMLDivElement>(null);
 
   const { theme, setTheme } = useTheme();
-  const { connect, sendMessage } = useWebSocketStore.getState();
-
-  const lastSentRef = React.useRef(0);
-  const THROTTLE_MS = 50;
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const now = performance.now();
-      if (now - lastSentRef.current < THROTTLE_MS) return;
-      lastSentRef.current = now;
-
-      const rect = rootContainerRef.current?.getBoundingClientRect();
-      if (!rect) return;
-
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-
-      sendMessage({
-        type: Client.MessageType.CURSOR_POSITION,
-        content: { cursor: { x, y } },
-      });
-    },
-    [sendMessage],
-  );
+  const { connect } = useWebSocketStore.getState();
 
   useEffect(() => {
     connect();
@@ -82,7 +58,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
   }, [onLoad]);
 
   return (
-    <div id="root-container" onMouseMove={handleMouseMove} ref={rootContainerRef}>
+    <div id="root-container">
       <TooltipProvider>
         <Header theme={theme} />
         <Main
@@ -110,7 +86,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
         <WebSocketPingHandler />
       </TooltipProvider>
 
-      <OwnCursorNameTag />
+      {isDesktop && <OwnCursorNameTag />}
     </div>
   );
 };
