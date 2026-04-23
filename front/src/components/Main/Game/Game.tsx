@@ -2,13 +2,13 @@ import { JSX, useEffect } from 'react';
 import classes from './Game.module.css';
 import Grid from './Grid/Grid';
 import useGameStore from '../../../stores/useGameStore';
-import eyeOpen from '../../../assets/images/ui/eye_open.svg';
-import eyeClosed from '../../../assets/images/ui/eye_closed.svg';
+import EyeOpen from '../../../assets/images/ui/eye_open.svg?react';
+import EyeClosed from '../../../assets/images/ui/eye_closed.svg?react';
 
 const EyeToggle = ({ open, onClick }: { open: boolean; onClick: () => void }) => {
   return (
     <button className={classes.eyeToggle} onClick={onClick}>
-      <img src={open ? eyeOpen : eyeClosed} alt="Toggle progression visibility" />
+      {open ? <EyeOpen /> : <EyeClosed />}
     </button>
   );
 };
