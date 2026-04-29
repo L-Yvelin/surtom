@@ -12,22 +12,26 @@ interface ExperienceBarProps {
   xp: number;
 }
 
+// https://minecraft.wiki/w/Experience#Leveling_up
 function getLevel(xp: number) {
+  // levels 0-16 
   if (xp <= 352) {
     return Math.sqrt(xp + 9) - 3;
   }
+  // levels 17–31
   if (xp <= 1507) {
     return 81 / 10 + Math.sqrt((2 / 5) * (xp - 7839 / 40));
   }
+  // levels 32+
   return 325 / 18 + Math.sqrt((2 / 9) * (xp - 54215 / 72));
 }
 
-function getXpForLevel(level: number): number {
+function getRequiredXp(level: number): number {
   if (level <= 16) {
     return level * level + 6 * level;
   }
   if (level <= 31) {
-    return (5 / 2) * level * level - (81 / 2) * level + 720;
+    return (5 / 2) * level * level - (81 / 2) * level + 360;
   }
   return (9 / 2) * level * level - (325 / 2) * level + 2220;
 }
@@ -50,13 +54,13 @@ function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
   const hasLoaded = useGameStore((s) => s.hasLoaded);
 
   const [realtimeLevel, setRealtimeLevel] = useState<number>(level);
-  const integerPart = Math.floor(realtimeLevel);
-  const decimalPart = String(Math.ceil(realtimeLevel * 100)).slice(-2);
+  const levelIntegerPart = Math.floor(realtimeLevel);
+  const levelDecimalPart = String(Math.ceil(realtimeLevel * 100)).slice(-2);
 
-  const currentLevelXp = getXpForLevel(integerPart);
-  const nextLevelXp = getXpForLevel(integerPart + 1);
-  const xpProgress = xp - currentLevelXp;
-  const xpRequiredForNextLevel = nextLevelXp - currentLevelXp;
+  const currentLevelRequiredXp = getRequiredXp(levelIntegerPart);
+  const nextLevelRequiredXp = getRequiredXp(levelIntegerPart + 1);
+  const xpProgressToNextLevel = xp - currentLevelRequiredXp;
+  const xpRequiredForNextLevel = nextLevelRequiredXp - currentLevelRequiredXp;
 
   useLevelAnimation(level, setRealtimeLevel, hasLoaded);
 
@@ -67,7 +71,7 @@ function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
         tooltipContent={
           <MinecraftTooltip
             className={classes.minecraftTooltip}
-            title={`Progression: ${xpProgress} / ${xpRequiredForNextLevel}`}
+            title={`Progression: ${xpProgressToNextLevel} / ${xpRequiredForNextLevel}`}
             children={<XPMinecraftTooltipContent />}
           />
         }
@@ -80,11 +84,11 @@ function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
             className={classes.progress}
             style={
               {
-                '--percentage': `${decimalPart}%`,
+                '--percentage': `${levelDecimalPart}%`,
               } as React.CSSProperties
             }
           />
-          <p className={classes.level}>{integerPart}</p>
+          <p className={classes.level}>{levelIntegerPart}</p>
         </div>
       </Tooltip>
     </div>
