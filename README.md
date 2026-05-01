@@ -66,6 +66,8 @@ VITE_WEBSOCKET_PORT=27020
 VITE_WEBSOCKET_PATH=
 ```
 
+For remote deployment, ensure your server (e.g., Nginx) routes /ws traffic to the backend on port 27020.
+
 ### 2. Start MySQL
 
 ```
