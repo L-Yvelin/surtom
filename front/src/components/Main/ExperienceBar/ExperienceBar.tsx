@@ -14,7 +14,7 @@ interface ExperienceBarProps {
 
 // https://minecraft.wiki/w/Experience#Leveling_up
 function getLevel(xp: number) {
-  // levels 0-16 
+  // levels 0-16
   if (xp <= 352) {
     return Math.sqrt(xp + 9) - 3;
   }
