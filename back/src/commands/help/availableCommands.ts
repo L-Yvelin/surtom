@@ -6,6 +6,7 @@ export function getAvailableCommands(isModerator = false): CommandDescriptions {
     '/login pseudo mot_de_passe': 'Se connecter à son compte',
     '/msg cible message': 'Envoyer un message privé à une cible',
     '/help': "Afficher l'aide générale sur les commandes",
+    '/github': 'Afficher le lien vers le dépôt GitHub',
   };
 
   if (isModerator) {

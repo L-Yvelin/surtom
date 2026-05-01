@@ -4,18 +4,11 @@ import classes from '../Message.module.css';
 import PlayerName from '../PlayerName/PlayerName';
 import { isTextMessage, isEnhancedMessage } from '../../../utils';
 import classNames from 'classnames';
-import { formatMarkdown } from './formatMarkdown';
 import { formatText } from './formatText';
 import MessageImages from './MessageImages';
 
 const enhancedMessageContent = (text: string): JSX.Element => {
-  type enhancedMessageContent = {
-    text: string;
-    color?: string;
-    clickable?: string;
-  };
-
-  let parsedContent: enhancedMessageContent | enhancedMessageContent[];
+  let parsedContent: Server.ChatMessage.Content.EnhancedTextMessageContent | Server.ChatMessage.Content.EnhancedTextMessageContent[];
 
   try {
     parsedContent = JSON.parse(text);
@@ -28,7 +21,7 @@ const enhancedMessageContent = (text: string): JSX.Element => {
     const parts = text.split('\n');
     return parts.map((part, i) => (
       <span key={i}>
-        {formatMarkdown(part, classes.spoiler)}
+        {formatText(part)}
         {i < parts.length - 1 && <br />}
       </span>
     ));
