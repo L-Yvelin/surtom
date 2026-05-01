@@ -1,6 +1,6 @@
 import { JSX } from 'react';
 import classes from './TabItem.module.css';
-import { getPlayerColor, rank } from '../../Chat/utils';
+import { getPlayerColor, tabRank } from '../../Chat/utils';
 import TabTools from './TabTools/TabTools';
 import phoneIcon from '../../../assets/images/tools/phone.png';
 import computerIcon from '../../../assets/images/tools/computer.png';
@@ -19,9 +19,7 @@ function TabItem({ user }: TabItemProps): JSX.Element {
       <div className={classes.name} style={{ color: getPlayerColor(user.moderatorLevel, user.name) }}>
         {user.name}
       </div>
-      {Object.keys(rank).includes(`${user.moderatorLevel}`) && (
-        <span className={classes.rank}>[{rank[user.moderatorLevel as keyof typeof rank] ?? '?'}]</span>
-      )}
+      {tabRank[user.moderatorLevel] != null && <span className={classes.rank}>[{tabRank[user.moderatorLevel] ?? '?'}]</span>}
       <div className={classes.tools}>
         <TabTools />
       </div>

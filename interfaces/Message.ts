@@ -141,10 +141,17 @@ export namespace Server {
 
   export interface User {
     name: string;
-    moderatorLevel: number;
+    moderatorLevel: ModeratorLevel;
     xp: number;
     isMobile: boolean;
     isLoggedIn: boolean;
+  }
+
+  export enum ModeratorLevel {
+    Player = 0,
+    Operator = 1,
+    System = 2,
+    Owner = 3,
   }
 
   export interface PrivateUser extends User {

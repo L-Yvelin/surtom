@@ -29,7 +29,7 @@ export function handleHelpCommand(user: FullUser, parts: string[]): void {
         text: JSON.stringify(formatted),
         timestamp: new Date().toISOString(),
         id: '-1',
-        user: { name: 'System', moderatorLevel: 2 },
+        user: { name: 'System', moderatorLevel: Server.ModeratorLevel.System },
         deleted: 0,
       },
     },
