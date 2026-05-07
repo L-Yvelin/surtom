@@ -100,7 +100,7 @@ export namespace Server {
         }
       | {
           type: MessageType.ENHANCED;
-          content: Content.TextMessageContent;
+          content: Content.EnhancedTextMessageContent;
         };
 
     export type Score = {
@@ -130,6 +130,11 @@ export namespace Server {
         text: string;
         imageData?: string;
         replyId?: string;
+      }
+
+      export interface EnhancedTextMessageContent extends TextMessageContent {
+        color?: string;
+        onClickAction?: string;
       }
 
       export interface ScoreMessageContent extends BaseMessageContent {

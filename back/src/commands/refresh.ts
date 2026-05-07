@@ -39,7 +39,7 @@ export async function handleRefreshCommand(user: FullUser, parts: string[]): Pro
     targetedUsers.forEach((target) => {
       if (target.connection) {
         sendToUser(target.connection, message);
-        sendSuccess(target.connection, 'Tchat rafraîchi');
+        sendSuccess(target.connection, 'Chat rafraîchi !');
       }
     });
 
