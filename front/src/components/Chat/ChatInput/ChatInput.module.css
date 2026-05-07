@@ -25,6 +25,7 @@
   padding: 0.7vh;
   flex-grow: 1;
   font-size: max(16px, 1.8vh);
+  z-index: 1;
 }
 
 .answering {
