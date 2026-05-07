@@ -7,7 +7,7 @@ export async function handleGithubCommand(user: FullUser, parts: string[]): Prom
     sendError(user.connection, 'Utilisation : /github');
   } else {
     const message = {
-      text: 'Surtom est un projet open source ! Tu peux trouver le code ici : https://github.com/L-Yvelin/surtom',
+      text: 'Surtom est un projet open source ! Vous pouvez trouver le code ici : https://github.com/L-Yvelin/surtom',
       // https://brand.github.com/foundations/colors/
       color: '#0FBF3E',
     };
