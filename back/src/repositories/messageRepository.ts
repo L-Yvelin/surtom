@@ -95,7 +95,7 @@ export function getHelpMessage(): Server.ChatMessage.SavedType {
     type: Server.MessageType.ENHANCED,
     content: {
       id: '0',
-      user: { name: 'System', moderatorLevel: Server.ModeratorLevel.Operator },
+      user: { name: 'System', moderatorLevel: Server.ModeratorLevel.System },
       text: '[{"text":"Faites ","color":"LemonChiffon"},{"text":"/help","color":"DarkKhaki"},{"text":" pour plus d\'information","color":"LemonChiffon"}]',
       timestamp: new Date().toISOString(),
       deleted: 0,
