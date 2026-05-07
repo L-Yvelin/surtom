@@ -47,9 +47,9 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
   const myModeratorLevel = useGameStore((state) => state.player.moderatorLevel);
 
   let id = '';
-  let user: { name: string; moderatorLevel: number } = {
+  let user: { name: string; moderatorLevel: Server.ModeratorLevel } = {
     name: '',
-    moderatorLevel: 0,
+    moderatorLevel: Server.ModeratorLevel.Player,
   };
   if (isTextMessage(message) || isScoreMessage(message)) {
     id = message.content.id;

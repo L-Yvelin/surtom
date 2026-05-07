@@ -37,7 +37,7 @@ export function mapUserMessageToMemoryMessage(message: DatabaseMessage): Server.
     id: message.ID?.toString() ?? '',
     user: {
       name: message.Pseudo ?? '',
-      moderatorLevel: message.Moderator ?? 0,
+      moderatorLevel: message.Moderator ?? Server.ModeratorLevel.Player,
     },
     text: message.Texte ?? '',
     timestamp: message.Date ?? '',
@@ -52,7 +52,7 @@ export function mapScoreMessageToMemoryMessage(message: DatabaseMessage): Server
     id: message.ID?.toString() ?? '',
     user: {
       name: message.Pseudo ?? '',
-      moderatorLevel: message.Moderator ?? 0,
+      moderatorLevel: message.Moderator ?? Server.ModeratorLevel.Player,
     },
     answer: message.Answer ?? '',
     attempts: message.Mots ? JSON.parse(message.Mots) : [],

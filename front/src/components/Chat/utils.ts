@@ -44,20 +44,19 @@ export const funnyNames = [
   'Chamallow',
 ];
 
-export const rank = {
-  1: 'Admin',
-  2: 'Super-Admin',
-  3: '👑',
+export const tabRank: Partial<Record<Server.ModeratorLevel, string>> = {
+  [Server.ModeratorLevel.Operator]: 'Op',
+  [Server.ModeratorLevel.Owner]: '👑',
 };
 
-export function getPlayerColor(moderatorLevel: number, pseudo: string): string {
+export function getPlayerColor(moderatorLevel: Server.ModeratorLevel, pseudo: string): string {
   if (moderatorLevel) {
     switch (moderatorLevel) {
-      case 1:
+      case Server.ModeratorLevel.Operator:
         return 'rgb(155 185 244)';
-      case 2:
+      case Server.ModeratorLevel.System:
         return 'rgb(150 40 150)';
-      case 3:
+      case Server.ModeratorLevel.Owner:
         return 'rgb(240, 75, 75)';
       default:
         return 'rgb(255, 255, 134)';

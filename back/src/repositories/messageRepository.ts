@@ -47,7 +47,7 @@ function mapMessage(row: MessageJoinRow): Server.ChatMessage.SavedType {
     id: row.ID.toString(),
     user: {
       name: row.Username,
-      moderatorLevel: row.IsAdmin ?? 0,
+      moderatorLevel: row.IsAdmin ?? Server.ModeratorLevel.Player,
     },
     timestamp: new Date(row.Timestamp).toISOString(),
     deleted: row.Deleted ?? 0,
@@ -95,7 +95,7 @@ export function getHelpMessage(): Server.ChatMessage.SavedType {
     type: Server.MessageType.ENHANCED,
     content: {
       id: '0',
-      user: { name: 'System', moderatorLevel: 2 },
+      user: { name: 'System', moderatorLevel: Server.ModeratorLevel.System },
       text: JSON.stringify([
         { text: 'Faites ', color: 'LemonChiffon' },
         { text: '/help', color: 'DarkKhaki' },

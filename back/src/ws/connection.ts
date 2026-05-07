@@ -34,7 +34,7 @@ async function buildPrivateUser(sessionHash: string | undefined, usesMobileDevic
 
   return {
     name: getRandomFunnyName(),
-    moderatorLevel: 0,
+    moderatorLevel: Server.ModeratorLevel.Player,
     isLoggedIn: false,
     isMobile: usesMobileDevice,
     words: [],
