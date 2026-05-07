@@ -1,11 +1,9 @@
 import classNames from 'classnames';
 import classes from './Tab.module.css';
 import TabItem from './TabItem/TabItem';
-import { useRef } from 'react';
-import useClickOutside from '../../hooks/useClickOutside';
 import { JSX } from 'react';
 import useGameStore from '../../stores/useGameStore';
-import useUIStore from '../../stores/useUIStore';
+import useToast from '../../hooks/useToast';
 
 interface TabProps {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
@@ -13,15 +11,10 @@ interface TabProps {
 
 function Tab({ tabButtonRef }: TabProps): JSX.Element {
   const playerList = useGameStore((s) => s.playerList);
-  const setVisibility = useUIStore((s) => s.setVisibility);
-  const display = useUIStore((s) => s.showTab);
-
-  const tabRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(tabRef, () => setVisibility('showTab', false), [tabButtonRef]);
+  const { toastRef, visible } = useToast('tab', tabButtonRef);
 
   return (
-    <div className={classNames(classes.tab, { [classes.hidden]: !display })} ref={tabRef}>
+    <div className={classNames(classes.tab, { [classes.hidden]: !visible })} ref={toastRef}>
       {playerList.map((user) => (
         <div key={user.name}>
           <TabItem user={user} />

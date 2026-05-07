@@ -1,43 +1,38 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-type UIKeys = 'showTab' | 'showStats' | 'showCustomWord' | 'showEndPage' | 'showChat' | 'showCustomRightClick';
-
 interface UIState {
-  showTab: boolean;
-  showStats: boolean;
-  showCustomWord: boolean;
-  showEndPage: boolean;
-  showChat: boolean;
-  showCustomRightClick: boolean;
+  visibility: Record<string, boolean>;
+  setVisibility: (key: string, value: boolean) => void;
+  toggle: (key: string) => void;
+  closeAll: (except?: string[]) => void;
+  isAnyInterfaceOpen: (except?: string[]) => boolean;
 }
 
-interface UIHandlers {
-  toggle: (key: UIKeys) => void;
-  setVisibility: (key: UIKeys, value: boolean) => void;
-}
-
-const useUIStore = create<UIState & UIHandlers & { isAnyInterfaceOpen: () => boolean }>()(
+const useUIStore = create<UIState>()(
   immer((set, get) => ({
-    showTab: false,
-    showStats: false,
-    showCustomWord: false,
-    showEndPage: false,
-    showChat: false,
-    showCustomRightClick: false,
-    toggle: (key) =>
-      set((state) => {
-        state[key] = !state[key];
-      }),
+    visibility: {},
     setVisibility: (key, value) =>
       set((state) => {
-        state[key] = value;
+        state.visibility[key] = value;
       }),
-    isAnyInterfaceOpen: () => {
-      const state = get();
-      return state.showTab || state.showStats || state.showCustomWord || state.showEndPage || state.showChat;
+    toggle: (key) =>
+      set((state) => {
+        state.visibility[key] = !state.visibility[key];
+      }),
+    closeAll: (except = []) =>
+      set((state) => {
+        for (const key of Object.keys(state.visibility)) {
+          if (!except.includes(key)) state.visibility[key] = false;
+        }
+      }),
+    isAnyInterfaceOpen: (except = []) => {
+      const visibility = get().visibility;
+      return Object.entries(visibility).some(([key, value]) => value && !except.includes(key));
     },
   })),
 );
+
+export const useVisibility = (key: string) => useUIStore((s) => !!s.visibility[key]);
 
 export default useUIStore;

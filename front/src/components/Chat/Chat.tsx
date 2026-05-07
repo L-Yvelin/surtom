@@ -1,11 +1,10 @@
-import { JSX, useRef, useState } from 'react';
+import { JSX, useState } from 'react';
 import classes from './Chat.module.css';
 import classNames from 'classnames';
 import ChatInput from './ChatInput/ChatInput';
 import MessagesBox from './MessagesBox/Messages';
 import { Server } from '@surtom/interfaces';
-import useUIStore from '../../stores/useUIStore';
-import useClickOutside from '../../hooks/useClickOutside';
+import useToast from '../../hooks/useToast';
 import useChatStore from '../../stores/useChatStore';
 import arrowImage from '../../assets/images/ui/arrow.png';
 import Button from '../Widgets/Button/Button';
@@ -36,17 +35,13 @@ interface ChatProps {
 }
 
 function Chat({ chatButtonRef }: ChatProps): JSX.Element {
-  const chatRef = useRef<HTMLDivElement>(null);
   const messages = useChatStore((s) => s.messages);
-  const display = useUIStore((s) => s.showChat);
-  const setVisibility = useUIStore((s) => s.setVisibility);
+  const { toastRef, visible } = useToast('chat', chatButtonRef);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const scrollToBottom = useChatStore((state) => state.scrollToBottom);
 
-  useClickOutside(chatRef, () => setVisibility('showChat', false), [chatButtonRef]);
-
   return (
-    <div className={classNames(classes.chat, { [classes.hidden]: !display })} ref={chatRef}>
+    <div className={classNames(classes.chat, { [classes.hidden]: !visible })} ref={toastRef}>
       <div className={classes.messagesWrapper}>
         <MessagesBox messages={messages} onCloseToBottom={setIsNearBottom} />
         <div className={classes.scrollToBottom}>
@@ -62,7 +57,7 @@ function Chat({ chatButtonRef }: ChatProps): JSX.Element {
           />
         </div>
       </div>
-      <ChatInput onSend={() => {}} onImagePaste={() => {}} display={display} />
+      <ChatInput onSend={() => {}} onImagePaste={() => {}} display={visible} />
     </div>
   );
 }

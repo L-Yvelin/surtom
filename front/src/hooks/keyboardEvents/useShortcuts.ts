@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
-import useUIStore from '../../stores/useUIStore';
+import useUIStore, { useVisibility } from '../../stores/useUIStore';
 import useChatStore from '../../stores/useChatStore';
 
 const useShortcuts = () => {
   const setVisibility = useUIStore((s) => s.setVisibility);
-  const showChat = useUIStore((s) => s.showChat);
+  const closeAll = useUIStore((s) => s.closeAll);
+  const showChat = useVisibility('chat');
   const focusInput = useChatStore((s) => s.focusInput);
   const showChatRef = useRef(showChat);
 
@@ -16,25 +17,21 @@ const useShortcuts = () => {
     switch (event.key) {
       case 'Tab':
         event.preventDefault();
-        setVisibility('showTab', true);
+        setVisibility('tab', true);
         break;
       case 'Escape':
-        setVisibility('showTab', false);
-        setVisibility('showStats', false);
-        setVisibility('showCustomWord', false);
-        setVisibility('showEndPage', false);
-        setVisibility('showChat', false);
+        closeAll();
         break;
       case '/':
         if (!showChatRef.current) {
-          setVisibility('showChat', true);
+          setVisibility('chat', true);
           event.preventDefault();
           focusInput('/');
         }
         break;
       case 't':
         if (!showChatRef.current) {
-          setVisibility('showChat', true);
+          setVisibility('chat', true);
           event.preventDefault();
         }
         break;
@@ -44,7 +41,7 @@ const useShortcuts = () => {
   const handleKeyUp = (event: KeyboardEvent) => {
     if (event.key === 'Tab') {
       event.preventDefault();
-      setVisibility('showTab', false);
+      setVisibility('tab', false);
     }
   };
 

@@ -76,13 +76,13 @@ const useGameLogic = () => {
 
   const handleWin = () => {
     setLetters([]);
-    setVisibility('showEndPage', true);
+    setVisibility('endPage', true);
     addAchievement(new Achievement('VICTOIRE !', '👏👏👏', AchievementIcon.BOOK));
   };
 
   const handleLoss = () => {
     setLetters([]);
-    setVisibility('showEndPage', true);
+    setVisibility('endPage', true);
     addAchievement(new Achievement('Perdu', 'Vous avez perdu, mais vous pouvez réessayer demain !', AchievementIcon.BOOK));
   };
 

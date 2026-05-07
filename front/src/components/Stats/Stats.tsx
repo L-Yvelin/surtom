@@ -1,33 +1,29 @@
 import React, { JSX } from 'react';
 import classes from './Stats.module.css';
-import classNames from 'classnames';
-import useClickOutside from '../../hooks/useClickOutside';
 import ScoreDistribution from './ScoreDistribution/ScoreDistribution';
 import { calculateStats } from './utils';
 import Button from '../Widgets/Button/Button';
+import MinecraftToast from '../MinecraftToast/MinecraftToast';
 import useGameStore from '../../stores/useGameStore';
-import useUIStore from '../../stores/useUIStore';
+import useUIStore, { useVisibility } from '../../stores/useUIStore';
 
 interface StatsProps {
   statsButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 function Stats({ statsButtonRef }: StatsProps): JSX.Element {
-  const statsRef = React.useRef<HTMLDivElement>(null);
   const scores = useGameStore((s) => s.scores);
   const setVisibility = useUIStore((s) => s.setVisibility);
-  const display = useUIStore((s) => s.showStats);
+  const display = useVisibility('stats');
   const { total, increaseFactor } = calculateStats(scores);
 
-  useClickOutside(statsRef, () => setVisibility('showStats', false), [statsButtonRef]);
-
   return (
-    <div className={classNames(classes.stats, { [classes.hidden]: !display })} ref={statsRef}>
+    <MinecraftToast id="stats" toastButtonRef={statsButtonRef} className={classes.stats}>
       <div className={classes.title}>{total} parties</div>
       <div className={classes.subtitle}>Répartition des scores</div>
       <ScoreDistribution display={display} scores={scores} total={total} increaseFactor={increaseFactor} />
-      <Button text={'Fermer'} onClick={() => setVisibility('showStats', false)} />
-    </div>
+      <Button text={'Fermer'} onClick={() => setVisibility('stats', false)} />
+    </MinecraftToast>
   );
 }
 
