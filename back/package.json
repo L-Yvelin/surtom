@@ -4,7 +4,7 @@
     "dev": "tsx --watch src/server.ts",
     "start": "node dist/server",
     "test": "jest",
-    "build": "tsc",
+    "build": "tsc -b",
     "generate-models": "./generate-models.sh"
   },
   "dependencies": {

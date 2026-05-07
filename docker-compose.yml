@@ -10,7 +10,7 @@ services:
 
   backend:
     restart: unless-stopped
-    env_file: ./back/.env.production
+    env_file: ./back/.env
     build:
       context: .
       dockerfile: back/Dockerfile
@@ -18,10 +18,13 @@ services:
     command: node dist/server.js
     working_dir: /app/back
     depends_on: [mysql]
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
 
   mysql:
     restart: unless-stopped
-    env_file: ./back/.env.production
+    env_file: ./back/.env
     image: mysql:8.0
     ports: ['27022:3306']
     volumes:
