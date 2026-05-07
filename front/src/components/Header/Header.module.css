@@ -16,7 +16,6 @@
 }
 
 .logoLink {
-  cursor: default;
   max-height: 100%;
   /* padding: 3.5vmin 0; */
   padding: 2vmin 0;
@@ -26,7 +25,6 @@
 }
 
 .logo {
-  cursor: default;
   image-rendering: auto;
   filter: drop-shadow(0 0.5vh 0.4vh rgb(0, 0, 0, 0.8));
   max-height: 100%;

@@ -54,14 +54,14 @@ function Tools({
           <button
             className={classNames(classes.tool, classes.voirTab)}
             data-user-count={nbUsers}
-            onClick={() => toggle('showTab')}
+            onClick={() => toggle('tab')}
             ref={tabButtonRef}
           >
             <img src={tabImage} alt="User list icon" className={classes.toolImage} />
           </button>
         </Tooltip>
         <Tooltip tooltipContent={<MinecraftTooltip title="Statistiques" children="Combien de temps avez-vous perdu sur ce site ?" />}>
-          <button className={classes.tool} ref={statsButtonRef} onClick={() => toggle('showStats')}>
+          <button className={classes.tool} ref={statsButtonRef} onClick={() => toggle('stats')}>
             <img src={tabScore} alt="Stats page icon" className={classes.toolImage} />
           </button>
         </Tooltip>
@@ -71,7 +71,7 @@ function Tools({
           <button
             className={classNames(!gameFinished() ? classes.disabled : undefined, classes.tool)}
             ref={endPageButtonRef}
-            onClick={() => gameFinished() && toggle('showEndPage')}
+            onClick={() => gameFinished() && toggle('endPage')}
           >
             <img src={tabLectern} alt="End page icon" className={classes.toolImage} />
           </button>
@@ -79,13 +79,13 @@ function Tools({
         <Tooltip
           tooltipContent={<MinecraftTooltip title="Tchat en direct" children="Discutez avec la communauté et partagez votre score" />}
         >
-          <button className={classes.tool} ref={chatButtonRef} onClick={() => toggle('showChat')}>
+          <button className={classes.tool} ref={chatButtonRef} onClick={() => toggle('chat')}>
             <div id="chat-notification-circle"></div>
             <img src={tabChat} alt="Chat page icon" className={classes.toolImage} />
           </button>
         </Tooltip>
         <Tooltip tooltipContent={<MinecraftTooltip title="Mot personnalisé" children="Faites jouer vos amis avec votre propre mot" />}>
-          <button className={classes.tool} onClick={() => toggle('showCustomWord')} ref={customWordButtonRef}>
+          <button className={classes.tool} onClick={() => toggle('customWord')} ref={customWordButtonRef}>
             <img src={tabBook} alt="Custom word icon" className={classes.toolImage} />
           </button>
         </Tooltip>

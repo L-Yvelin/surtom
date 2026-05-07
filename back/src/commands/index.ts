@@ -11,6 +11,7 @@ import { handleAddTypeCommand } from './addtype.js';
 import { handleRefreshCommand } from './refresh.js';
 import { handleTellrawCommand } from './tellraw.js';
 import { handleHelpCommand } from './help/handler.js';
+import { handleGithubCommand } from './github.js';
 
 export { getAvailableCommands } from './help/availableCommands.js';
 
@@ -26,6 +27,7 @@ const commands: Record<string, CommandHandler> = {
   refresh: handleRefreshCommand,
   tellraw: handleTellrawCommand,
   help: handleHelpCommand,
+  github: handleGithubCommand,
 };
 
 export async function handleCommand(user: FullUser, command: string): Promise<void> {

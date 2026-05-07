@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import useShortcuts from './useShortcuts';
 import useGameLogic from './useGameLogic';
 import useGameStore from '../../stores/useGameStore';
-import useUIStore from '../../stores/useUIStore';
+import useUIStore, { useVisibility } from '../../stores/useUIStore';
 import useChatStore from '../../stores/useChatStore';
 
 const isGameKey = (event: KeyboardEvent) => ['Enter', 'Backspace'].includes(event.key) || /^[a-z]$/.test(event.key);
@@ -10,7 +10,7 @@ const isGameKey = (event: KeyboardEvent) => ['Enter', 'Backspace'].includes(even
 const useKeyPress = () => {
   const gameFinished = useGameStore((s) => s.gameFinished);
   const isAnyInterfaceOpen = useUIStore((s) => s.isAnyInterfaceOpen);
-  const showChat = useUIStore((s) => s.showChat);
+  const showChat = useVisibility('chat');
   const focusInput = useChatStore((s) => s.focusInput);
 
   const shortcutsState = useShortcuts();

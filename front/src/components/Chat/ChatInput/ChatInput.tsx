@@ -127,18 +127,6 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
       <button className={classes.button} onClick={sendMessage}>
         &gt;
       </button>
-      <input
-        className={classes.input}
-        type="text"
-        ref={(el) => {
-          keyboardRef.current = el;
-          historyInputRef.current = el;
-        }}
-        value={input}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-      />
-      {active && <SuggestionDropdown active={active} onSelect={selectSuggestion} selectedIndex={selectedIndex} />}
       <div
         className={classNames(classes.answering, {
           [classes.hidden]: !answeringTo,
@@ -160,6 +148,18 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
             }
           })()}
       </div>
+      <input
+        className={classes.input}
+        type="text"
+        ref={(el) => {
+          keyboardRef.current = el;
+          historyInputRef.current = el;
+        }}
+        value={input}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+      />
+      {active && <SuggestionDropdown active={active} onSelect={selectSuggestion} selectedIndex={selectedIndex} />}
     </div>
   );
 }

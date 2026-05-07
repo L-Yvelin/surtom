@@ -96,7 +96,11 @@ export function getHelpMessage(): Server.ChatMessage.SavedType {
     content: {
       id: '0',
       user: { name: 'System', moderatorLevel: Server.ModeratorLevel.System },
-      text: '[{"text":"Faites ","color":"LemonChiffon"},{"text":"/help","color":"DarkKhaki"},{"text":" pour plus d\'information","color":"LemonChiffon"}]',
+      text: JSON.stringify([
+        { text: 'Faites ', color: 'LemonChiffon' },
+        { text: '/help', color: 'DarkKhaki' },
+        { text: " pour plus d'information", color: 'LemonChiffon' },
+      ]),
       timestamp: new Date().toISOString(),
       deleted: 0,
     },
