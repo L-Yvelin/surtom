@@ -37,7 +37,7 @@
   width: var(--button-width);
   min-width: var(--button-width);
   height: unset;
-  flex: 0;
+  flex-grow: 0;
 }
 
 .grid .button {

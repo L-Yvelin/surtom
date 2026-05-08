@@ -40,7 +40,7 @@
   width: min(85vw, 500px);
   min-width: min(85vw, 500px);
   height: unset;
-  flex: 0;
+  flex-grow: 0;
 }
 
 .title {
