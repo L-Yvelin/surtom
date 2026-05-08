@@ -12,3 +12,4 @@ logs/
 Thumbs.db
 coverage/
 mysql.json
+.backups/
