@@ -1,10 +1,10 @@
 :root {
   --z-game-backdrop: 0;
   --z-game-content: 10;
-  --z-cursors: 20;
   --z-popups: 30;
   --z-route-overlay: 40;
   --z-header: 50;
+  --z-cursors: 55;
   --z-achievements: 60;
   --z-settings: 65;
   --z-tooltips: 70;
