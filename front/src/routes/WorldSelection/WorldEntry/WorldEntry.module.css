@@ -1,0 +1,85 @@
+.entry {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  gap: 1vh;
+  padding: 0.6vh;
+  background: rgba(0, 0, 0, 0.25);
+  border: 0.2vh solid transparent;
+  box-sizing: border-box;
+  font-family: inherit;
+  color: white;
+  text-shadow: 0.2vh 0.2vh 0 rgba(0, 0, 0, 0.5);
+}
+
+.entry:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.selected,
+.entry.selected:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: white;
+}
+
+.thumbnail {
+  width: 6vh;
+  height: 6vh;
+  flex-shrink: 0;
+  background-size: cover;
+  image-rendering: pixelated;
+  border: 0.2vh solid rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+}
+
+.thumbnail_fr {
+  background: linear-gradient(to right, #002654 0 33.3%, #ffffff 33.3% 66.6%, #ed2939 66.6% 100%);
+}
+
+.thumbnail_en {
+  background:
+    conic-gradient(from -135deg at calc(50% - 0.175 / sqrt(2) * 100%) 50%, white 90deg, #0000 0),
+    conic-gradient(from 45deg at calc(50% + 0.175 / sqrt(2) * 100%) 50%, white 90deg, #0000 0),
+    conic-gradient(from 135deg at 50% calc(50% + 0.175 / sqrt(2) * 100%), white 90deg, #0000 0),
+    conic-gradient(from -45deg at 50% calc(50% - 0.175 / sqrt(2) * 100%), white 90deg, red 0);
+}
+
+.thumbnail_custom {
+  position: relative;
+  background: black;
+}
+
+.thumbnail_custom::after {
+  content: '?';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.2vh;
+  color: white;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2vh;
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 2.2vh;
+}
+
+.subtitle {
+  font-size: 1.6vh;
+  color: #c0c0c0;
+}
+
+.description {
+  font-size: 1.4vh;
+  color: #888;
+}

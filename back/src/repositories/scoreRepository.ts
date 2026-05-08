@@ -2,7 +2,7 @@ import { RowDataPacket } from 'mysql2/promise';
 import pool from './pool.js';
 import { ScoreContentAttributes } from '../dbModels/init-models.js';
 
-export async function getScoreDistribution(username: string): Promise<{ [key: number]: number }> {
+export async function getScoreDistribution(username: string, worldId: string = 'fr'): Promise<{ [key: number]: number }> {
   const [results] = await pool.query<(Pick<ScoreContentAttributes, 'Attempts'> & RowDataPacket)[]>(
     `
     SELECT sc.Attempts
@@ -11,6 +11,7 @@ export async function getScoreDistribution(username: string): Promise<{ [key: nu
     JOIN Player p ON m.PlayerID = p.ID
     WHERE m.Type = 'SCORE'
       AND p.Username = ?
+      AND m.WorldID = ?
       AND m.ID IN (
         SELECT m2.ID
         FROM Message m2
@@ -18,15 +19,15 @@ export async function getScoreDistribution(username: string): Promise<{ [key: nu
           SELECT DATE(m3.Timestamp) as day, MIN(m3.Timestamp) as min_time
           FROM Message m3
           JOIN Player p3 ON m3.PlayerID = p3.ID
-          WHERE m3.Type = 'SCORE' AND p3.Username = ?
+          WHERE m3.Type = 'SCORE' AND p3.Username = ? AND m3.WorldID = ?
           GROUP BY DATE(m3.Timestamp)
         ) as firsts
         ON DATE(m2.Timestamp) = firsts.day AND m2.Timestamp = firsts.min_time
         JOIN Player p2 ON m2.PlayerID = p2.ID
-        WHERE m2.Type = 'SCORE' AND p2.Username = ?
+        WHERE m2.Type = 'SCORE' AND p2.Username = ? AND m2.WorldID = ?
       )
     `,
-    [username, username, username],
+    [username, worldId, username, worldId, username, worldId],
   );
 
   return results.reduce(
@@ -39,19 +40,18 @@ export async function getScoreDistribution(username: string): Promise<{ [key: nu
   );
 }
 
-export async function getDailyScore(username: string): Promise<string[][]> {
-  const [results] = await pool.query<(Pick<ScoreContentAttributes, 'Attempts'> & RowDataPacket)[]>(
+export async function getDailyScore(username: string, wordHistoryId: number): Promise<string[][]> {
+  const [rows] = await pool.query<(Pick<ScoreContentAttributes, 'Attempts'> & RowDataPacket)[]>(
     `
     SELECT sc.Attempts
     FROM ScoreContent sc
     JOIN Message m ON sc.ID = m.ID
     JOIN Player p ON m.PlayerID = p.ID
     WHERE m.Type = 'SCORE'
-    AND p.Username = ?
-    AND DATE(m.Timestamp) = CURDATE();
-  `,
-    [username],
+      AND p.Username = ?
+      AND sc.WordHistoryID = ?;
+    `,
+    [username, wordHistoryId],
   );
-
-  return results.length > 0 ? JSON.parse(results[0].Attempts) : [];
+  return rows.length > 0 ? JSON.parse(rows[0].Attempts) : [];
 }

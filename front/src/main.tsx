@@ -1,27 +1,29 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import './index.css';
+import './i18n';
 import App from './App';
-import Loading from './components/Loading/Loading';
-import useGameStore from './stores/useGameStore';
+import Loading from './ui/BootSplash/BootSplash';
 
 const RootComponent = () => {
-  const [haveAssetsLoaded, setHaveAssetsLoaded] = useState(true);
+  const [haveAssetsLoaded, setHaveAssetsLoaded] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
-  const hasReceivedDailyWords = useGameStore((s) => s.hasLoaded);
 
   useEffect(() => {
-    if (haveAssetsLoaded && hasReceivedDailyWords) {
+    if (haveAssetsLoaded) {
       setTimeout(() => setShowLoading(false), 1000);
     }
-  }, [haveAssetsLoaded, hasReceivedDailyWords]);
+  }, [haveAssetsLoaded]);
 
   return (
     <React.StrictMode>
-      {showLoading && <Loading display={!haveAssetsLoaded || !hasReceivedDailyWords} />}
-      <Suspense fallback={<></>}>
-        <App onLoad={() => setHaveAssetsLoaded(true)} />
-      </Suspense>
+      <BrowserRouter>
+        {showLoading && <Loading display={!haveAssetsLoaded} />}
+        <Suspense fallback={<></>}>
+          <App onLoad={() => setHaveAssetsLoaded(true)} />
+        </Suspense>
+      </BrowserRouter>
     </React.StrictMode>
   );
 };

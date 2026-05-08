@@ -1,0 +1,24 @@
+.splash {
+  display: inline-block;
+  transform: rotate(-18deg);
+  pointer-events: none;
+}
+
+.text {
+  display: inline-block;
+  font-family: 'minecraft-chat', 'Chinese';
+  color: #ffff55;
+  font-size: 2.5vh;
+  text-shadow: 0.25vh 0.25vh 0 #3f3f00;
+  white-space: nowrap;
+  animation: pulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}

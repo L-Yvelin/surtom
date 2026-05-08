@@ -1,8 +1,8 @@
-import { AchievementProps } from '../components/AchievementsStack/Achievement/Achievement';
+import { AchievementProps } from '../features/AchievementsStack/Achievement/Achievement';
 import { Tries, Server, Word } from '@surtom/interfaces';
-import { ScoreStats } from '../components/Stats/utils';
+import { ScoreStats } from '../features/Stats/utils/scoreCalculation';
 import { create } from 'zustand';
-import { isGameFinished } from '../utils/gameLogic';
+import { isGameFinished } from '../features/Game/utils/gameLogic';
 
 interface GameState {
   solution: string | undefined;
@@ -33,6 +33,8 @@ interface GameState {
   setHasLoaded: (hasLoaded: boolean) => void;
   wasFinishedOnLoad: boolean;
   setWasFinishedOnLoad: (wasFinishedOnLoad: boolean) => void;
+  resetSession: () => void;
+  resetWorld: () => void;
 }
 
 export const defaultPlayer: Server.User = {
@@ -43,23 +45,40 @@ export const defaultPlayer: Server.User = {
   xp: 0,
 };
 
+const initialSession = {
+  achievements: [] as AchievementProps[],
+  letters: [] as Word,
+};
+
+const initialWorld = {
+  solution: undefined as string | undefined,
+  validWords: [] as string[],
+  tries: [] as Tries,
+  showProgression: true,
+  playerList: [] as Server.User[],
+  scores: {} as ScoreStats,
+  hasLoaded: false,
+  wasFinishedOnLoad: false,
+};
+
+const initialApp = {
+  player: defaultPlayer,
+};
+
 const useGameStore = create<GameState>((set, get) => ({
-  solution: undefined,
+  ...initialApp,
+  ...initialWorld,
+  ...initialSession,
   setSolution: (solution) =>
     set(() => ({
       solution,
     })),
-  validWords: [],
   setValidWords: (validWords) => set({ validWords }),
-  tries: [],
   setTries: (tries) => set({ tries }),
   addTry: (word) => set((state) => ({ tries: [...(state.tries || []), word] })),
-  letters: [],
   gameFinished: () => isGameFinished(get().tries),
-  showProgression: true,
   setShowProgression: (showProgression) => set({ showProgression }),
   setLetters: (letters) => set({ letters }),
-  player: defaultPlayer,
   setPlayer: (updatedPlayer) =>
     set((state) => ({
       player: {
@@ -75,16 +94,13 @@ const useGameStore = create<GameState>((set, get) => ({
         xp,
       },
     })),
-  playerList: [],
   setPlayerList: (players) => set({ playerList: players }),
   addPlayer: (player) => set((state) => ({ playerList: [...(state.playerList || []), player] })),
   removePlayer: (playerName) =>
     set((state) => ({
       playerList: state.playerList?.filter((p) => p.name !== playerName) || [],
     })),
-  scores: {},
   setScores: (scores) => set({ scores }),
-  achievements: [],
   addAchievement: (achievement) =>
     set((state) => ({
       achievements: [...(state.achievements || []), achievement].slice(-5),
@@ -93,10 +109,10 @@ const useGameStore = create<GameState>((set, get) => ({
     set((state) => ({
       achievements: state.achievements?.filter((a) => a.id !== achievementId) || [],
     })),
-  hasLoaded: false,
   setHasLoaded: (hasLoaded) => set({ hasLoaded }),
-  wasFinishedOnLoad: false,
   setWasFinishedOnLoad: (wasFinishedOnLoad) => set({ wasFinishedOnLoad }),
+  resetSession: () => set(initialSession),
+  resetWorld: () => set(initialWorld),
 }));
 
 export default useGameStore;

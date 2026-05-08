@@ -1,9 +1,11 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { Message, MessageId } from './Message';
+import type { WordHistory, WordHistoryId } from './WordHistory';
 
 export interface ScoreContentAttributes {
   ID: number;
+  WordHistoryID?: number;
   Answer: string;
   Attempts: string;
   IsCustom: number;
@@ -11,11 +13,12 @@ export interface ScoreContentAttributes {
 
 export type ScoreContentPk = 'ID';
 export type ScoreContentId = ScoreContent[ScoreContentPk];
-export type ScoreContentOptionalAttributes = 'IsCustom';
+export type ScoreContentOptionalAttributes = 'WordHistoryID' | 'IsCustom';
 export type ScoreContentCreationAttributes = Optional<ScoreContentAttributes, ScoreContentOptionalAttributes>;
 
 export class ScoreContent extends Model<ScoreContentAttributes, ScoreContentCreationAttributes> implements ScoreContentAttributes {
   ID!: number;
+  WordHistoryID?: number;
   Answer!: string;
   Attempts!: string;
   IsCustom!: number;
@@ -25,6 +28,11 @@ export class ScoreContent extends Model<ScoreContentAttributes, ScoreContentCrea
   getID_Message!: Sequelize.BelongsToGetAssociationMixin<Message>;
   setID_Message!: Sequelize.BelongsToSetAssociationMixin<Message, MessageId>;
   createID_Message!: Sequelize.BelongsToCreateAssociationMixin<Message>;
+  // ScoreContent belongsTo WordHistory via WordHistoryID
+  WordHistory!: WordHistory;
+  getWordHistory!: Sequelize.BelongsToGetAssociationMixin<WordHistory>;
+  setWordHistory!: Sequelize.BelongsToSetAssociationMixin<WordHistory, WordHistoryId>;
+  createWordHistory!: Sequelize.BelongsToCreateAssociationMixin<WordHistory>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ScoreContent {
     return ScoreContent.init(
@@ -35,6 +43,14 @@ export class ScoreContent extends Model<ScoreContentAttributes, ScoreContentCrea
           primaryKey: true,
           references: {
             model: 'Message',
+            key: 'ID',
+          },
+        },
+        WordHistoryID: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          references: {
+            model: 'WordHistory',
             key: 'ID',
           },
         },
@@ -62,6 +78,11 @@ export class ScoreContent extends Model<ScoreContentAttributes, ScoreContentCrea
             unique: true,
             using: 'BTREE',
             fields: [{ name: 'ID' }],
+          },
+          {
+            name: 'ScoreContent_idx_WordHistoryID',
+            using: 'BTREE',
+            fields: [{ name: 'WordHistoryID' }],
           },
         ],
       },

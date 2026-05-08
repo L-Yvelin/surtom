@@ -1,15 +1,12 @@
 import { Client } from '@surtom/interfaces';
 import FullUser from '../models/FullUser.js';
-import { saveMessage } from '../repositories/messageRepository.js';
-import { getDailyScore } from '../repositories/scoreRepository.js';
-import { getTodaysWord } from '../repositories/wordRepository.js';
+import { worldRegistry } from '../state/worldRegistry.js';
 import { sendError } from '../ws/send.js';
-import { broadcastAll } from '../ws/broadcast.js';
+import { broadcastToWorld } from '../ws/broadcast.js';
 import { validateText } from '../utils/validate.js';
 import { logMessage } from '../utils/log.js';
 import { MAX_IMAGE_BYTES } from '../config/constants.js';
 
-type TextChatMessage = Extract<Client.ChatMessage, { type: Client.MessageType.CHAT_MESSAGE }>;
 type ScoreChatMessage = Extract<Client.Message, { type: Client.MessageType.SCORE_TO_CHAT }>;
 
 export async function handleChatMessage(user: FullUser, chatMessage: Client.ChatMessage): Promise<void> {
@@ -29,24 +26,30 @@ export async function handleChatMessage(user: FullUser, chatMessage: Client.Chat
   }
 }
 
-async function broadcastChatMessage(user: FullUser, chatMessage: TextChatMessage): Promise<void> {
-  try {
-    const savedMessage = await saveMessage(user.privateUser, chatMessage);
+async function broadcastChatMessage(user: FullUser, chatMessage: Client.ChatMessage): Promise<void> {
+  if (!user.worldId) return;
+  const world = worldRegistry.getOrDefault(user.worldId);
 
+  try {
+    const savedMessage = await world.saveMessage(user.privateUser, chatMessage);
     if (!savedMessage) {
       console.error(`${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Failed to save message`);
       return;
     }
-
-    broadcastAll(savedMessage);
-    logMessage(chatMessage.content.text, user);
+    broadcastToWorld(world.id, savedMessage);
+    if (chatMessage.type === Client.MessageType.CHAT_MESSAGE) {
+      logMessage(chatMessage.content.text, user);
+    }
   } catch (err) {
     console.error('Error saving message:', err);
   }
 }
 
 async function handleScoreToChat(user: FullUser, message: ScoreChatMessage): Promise<void> {
-  if ((await getDailyScore(user.privateUser.name)).length > 0) {
+  if (!user.worldId) return;
+  const world = worldRegistry.getOrDefault(user.worldId);
+
+  if (await world.hasSharedScore(user.privateUser.name)) {
     sendError(user.connection, 'Vous avez déjà partagé votre score...');
     return;
   }
@@ -56,8 +59,21 @@ async function handleScoreToChat(user: FullUser, message: ScoreChatMessage): Pro
     return;
   }
 
-  const scoreSolution =
-    message.content.custom && typeof message.content.custom === 'string' ? message.content.custom : (await getTodaysWord())?.toUpperCase();
+  let scoreSolution: string | undefined;
+  if (message.content.custom && typeof message.content.custom === 'string') {
+    scoreSolution = message.content.custom;
+  } else {
+    try {
+      const game = await world.getGameState();
+      scoreSolution = game.solution;
+    } catch (err) {
+      console.error(
+        `${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Could not determine reference word for score validation.`,
+        err,
+      );
+      return;
+    }
+  }
 
   if (!scoreSolution) {
     console.error(
@@ -69,9 +85,9 @@ async function handleScoreToChat(user: FullUser, message: ScoreChatMessage): Pro
   const attemptsAreValid = message.content.attempts.every(
     (attempt) =>
       Array.isArray(attempt) &&
-      attempt.length === scoreSolution.length &&
+      attempt.length === scoreSolution!.length &&
       attempt.every((letter) => typeof letter === 'string') &&
-      attempt[0][0] === scoreSolution[0],
+      attempt[0][0] === scoreSolution![0],
   );
 
   if (!attemptsAreValid) {
@@ -82,14 +98,13 @@ async function handleScoreToChat(user: FullUser, message: ScoreChatMessage): Pro
   }
 
   try {
-    const savedMessage = await saveMessage(user.privateUser, message);
-
+    const savedMessage = await world.saveMessage(user.privateUser, message, scoreSolution);
     if (!savedMessage) {
       console.error(`${new Date().toISOString()} (${user.id}) ${user.privateUser.name} Failed to save score message`);
       return;
     }
-
-    broadcastAll(savedMessage);
+    await world.markScoreShared(user.privateUser.name);
+    broadcastToWorld(world.id, savedMessage);
     logMessage('Score sent', user);
   } catch (err) {
     console.error('Error saving score message:', err);

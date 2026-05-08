@@ -7,6 +7,7 @@ jest.mock('../handlers/deleteHandler.js', () => ({ __esModule: true, handleDelet
 jest.mock('../handlers/tryHandler.js', () => ({ __esModule: true, handleTryMessage: jest.fn() }));
 jest.mock('../handlers/cursorHandler.js', () => ({ __esModule: true, handleCursorPosition: jest.fn() }));
 jest.mock('../handlers/typingHandler.js', () => ({ __esModule: true, handleIsTyping: jest.fn() }));
+jest.mock('../handlers/joinWorldHandler.js', () => ({ __esModule: true, handleJoinWorld: jest.fn() }));
 jest.mock('./customType.js', () => ({ __esModule: true, dispatchCustomMessage: jest.fn() }));
 
 import { handleCommand } from '../commands/index.js';
@@ -15,6 +16,7 @@ import { handleDeleteMessage } from '../handlers/deleteHandler.js';
 import { handleTryMessage } from '../handlers/tryHandler.js';
 import { handleCursorPosition } from '../handlers/cursorHandler.js';
 import { handleIsTyping } from '../handlers/typingHandler.js';
+import { handleJoinWorld } from '../handlers/joinWorldHandler.js';
 import { dispatchCustomMessage } from './customType.js';
 import { handleMessage, shouldLogMessage } from './dispatcher.js';
 import { RATE_LIMIT_FREE_MESSAGES, COOLDOWN_INITIAL_SECONDS } from '../config/constants.js';
@@ -104,6 +106,11 @@ describe('handleMessage routing', () => {
       content: { cursor: { x: 1, y: 2 } },
     } as Client.Message);
     expect(handleCursorPosition).toHaveBeenCalledWith(expect.any(Object), { x: 1, y: 2 });
+  });
+
+  it('routes JOIN_WORLD to the join world handler', async () => {
+    await handleMessage(buildUser(), { type: Client.MessageType.JOIN_WORLD, content: { worldId: 'ephem' } });
+    expect(handleJoinWorld).toHaveBeenCalledWith(expect.any(Object), { worldId: 'ephem' });
   });
 
   it('falls back to dispatchCustomMessage for unknown types', async () => {

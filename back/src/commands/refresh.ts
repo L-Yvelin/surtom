@@ -23,25 +23,30 @@ export async function handleRefreshCommand(user: FullUser, parts: string[]): Pro
   }
 
   try {
-    const dbMessages = await getMessages(!!user.privateUser.moderatorLevel, MAX_MESSAGES_LOADED, !user.privateUser.isLoggedIn);
+    await Promise.all(
+      targetedUsers.map(async (target) => {
+        if (!target.connection || !target.worldId) return;
+        const dbMessages = await getMessages(
+          target.worldId,
+          !!user.privateUser.moderatorLevel,
+          MAX_MESSAGES_LOADED,
+          !user.privateUser.isLoggedIn,
+        );
 
-    if (!dbMessages) return;
+        if (!dbMessages) return;
 
-    const filtered = dbMessages.filter(
-      (msg) => msg.type === Server.MessageType.TEXT || msg.type === Server.MessageType.ENHANCED || msg.type === Server.MessageType.SCORE,
-    ) as Server.ChatMessage.SavedType[];
+        const filtered = dbMessages.filter(
+          (msg) =>
+            msg.type === Server.MessageType.TEXT || msg.type === Server.MessageType.ENHANCED || msg.type === Server.MessageType.SCORE,
+        ) as Server.ChatMessage.SavedType[];
 
-    const message: Server.Message = {
-      type: Server.MessageType.GET_MESSAGES,
-      content: filtered,
-    };
-
-    targetedUsers.forEach((target) => {
-      if (target.connection) {
-        sendToUser(target.connection, message);
+        sendToUser(target.connection, {
+          type: Server.MessageType.GET_MESSAGES,
+          content: filtered,
+        });
         sendSuccess(target.connection, 'Chat rafraîchi !');
-      }
-    });
+      }),
+    );
 
     console.log(`${new Date().toISOString()} (${user.id}) User refreshed messages: ${user.privateUser.name}`);
   } catch (err) {

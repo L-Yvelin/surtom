@@ -2,6 +2,7 @@
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!50503 SET NAMES utf8mb4 */;
+SET NAMES utf8mb4;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -21,35 +22,56 @@ CREATE TABLE IF NOT EXISTS `Player` (
   UNIQUE KEY `Username` (`Username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE IF NOT EXISTS `MotFrancais` (
-  `ID` int NOT NULL AUTO_INCREMENT,
-  `MotFrancais` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`ID`)
+CREATE TABLE IF NOT EXISTS `World` (
+  `ID` varchar(32) NOT NULL,
+  `DisplayName` varchar(255) NOT NULL,
+  `Language` varchar(8) NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `World_idx_Language` (`Language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE IF NOT EXISTS `MotMinecraft` (
+INSERT IGNORE INTO `World` (`ID`, `DisplayName`, `Language`) VALUES ('fr', 'Français', 'fr');
+INSERT IGNORE INTO `World` (`ID`, `DisplayName`, `Language`) VALUES ('en', 'English', 'en');
+
+CREATE TABLE IF NOT EXISTS `Dictionary` (
   `ID` int NOT NULL AUTO_INCREMENT,
-  `MotMinecraft` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `Date` date DEFAULT NULL,
+  `Language` varchar(8) NOT NULL,
+  `Word` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `Dictionary_uk_Language_Word` (`Language`,`Word`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `MinecraftWord` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `Language` varchar(8) NOT NULL,
+  `Word` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `MinecraftWord_uk_Language_Word` (`Language`,`Word`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `MinecraftSolution` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `Language` varchar(8) NOT NULL,
+  `Word` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `Rotation` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-CREATE TABLE IF NOT EXISTS `MotMinecraftValide` (
-  `ID` int NOT NULL AUTO_INCREMENT,
-  `MotMinecraftValide` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`ID`)
+  `AssignedDate` date DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `MinecraftSolution_uk_Language_Word` (`Language`,`Word`),
+  KEY `MinecraftSolution_idx_Language_Rotation` (`Language`,`Rotation`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `Message` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `PlayerID` int NOT NULL,
+  `WorldID` varchar(32) NOT NULL,
   `Timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Type` enum('TEXT','ENHANCED','SCORE') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'TEXT',
   `Deleted` tinyint DEFAULT '0',
   PRIMARY KEY (`ID`),
   KEY `PlayerID` (`PlayerID`),
-  CONSTRAINT `Message_fk_Player` FOREIGN KEY (`PlayerID`) REFERENCES `Player` (`ID`) ON DELETE CASCADE
+  KEY `Message_idx_WorldID_Timestamp` (`WorldID`,`Timestamp`),
+  CONSTRAINT `Message_fk_Player` FOREIGN KEY (`PlayerID`) REFERENCES `Player` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `Message_fk_World` FOREIGN KEY (`WorldID`) REFERENCES `World` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `TextContent` (
@@ -65,21 +87,27 @@ CREATE TABLE IF NOT EXISTS `TextContent` (
 
 CREATE TABLE IF NOT EXISTS `ScoreContent` (
   `ID` int NOT NULL,
+  `WordHistoryID` int NOT NULL,
   `Answer` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `Attempts` longtext COLLATE utf8mb4_general_ci NOT NULL,
   `IsCustom` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`),
+  KEY `ScoreContent_idx_WordHistoryID` (`WordHistoryID`),
   CONSTRAINT `ScoreContent_fk_Message` FOREIGN KEY (`ID`) REFERENCES `Message` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `ScoreContent_fk_WordHistory` FOREIGN KEY (`WordHistoryID`) REFERENCES `WordHistory` (`ID`),
   CONSTRAINT `ScoreContent_chk_1` CHECK (json_valid(`Attempts`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `WordHistory` (
   `ID` int NOT NULL AUTO_INCREMENT,
+  `WorldID` varchar(32) NOT NULL,
   `WordID` int NOT NULL,
   `AssignedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`),
   KEY `WordID` (`WordID`),
-  CONSTRAINT `WordHistory_ibfk_1` FOREIGN KEY (`WordID`) REFERENCES `MotMinecraft` (`ID`)
+  KEY `WordHistory_idx_WorldID_AssignedDate` (`WorldID`,`AssignedDate`),
+  CONSTRAINT `WordHistory_fk_MinecraftSolution` FOREIGN KEY (`WordID`) REFERENCES `MinecraftSolution` (`ID`),
+  CONSTRAINT `WordHistory_fk_World` FOREIGN KEY (`WorldID`) REFERENCES `World` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `Try` (

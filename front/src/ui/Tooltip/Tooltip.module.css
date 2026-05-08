@@ -1,0 +1,14 @@
+.wrapper {
+  display: inline-block;
+}
+
+.tooltip {
+  z-index: var(--z-tooltips);
+  transition: opacity 1s ease;
+  position: absolute;
+  visibility: hidden;
+}
+
+.visible {
+  visibility: visible;
+}

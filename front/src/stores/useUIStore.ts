@@ -6,12 +6,16 @@ interface UIState {
   setVisibility: (key: string, value: boolean) => void;
   toggle: (key: string) => void;
   closeAll: (except?: string[]) => void;
-  isAnyInterfaceOpen: (except?: string[]) => boolean;
+  resetSession: () => void;
 }
 
+const initialSession = {
+  visibility: {} as Record<string, boolean>,
+};
+
 const useUIStore = create<UIState>()(
-  immer((set, get) => ({
-    visibility: {},
+  immer((set) => ({
+    ...initialSession,
     setVisibility: (key, value) =>
       set((state) => {
         state.visibility[key] = value;
@@ -26,10 +30,10 @@ const useUIStore = create<UIState>()(
           if (!except.includes(key)) state.visibility[key] = false;
         }
       }),
-    isAnyInterfaceOpen: (except = []) => {
-      const visibility = get().visibility;
-      return Object.entries(visibility).some(([key, value]) => value && !except.includes(key));
-    },
+    resetSession: () =>
+      set((state) => {
+        state.visibility = {};
+      }),
   })),
 );
 

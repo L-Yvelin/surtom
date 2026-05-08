@@ -1,12 +1,12 @@
 import { Server } from '@surtom/interfaces';
 import store from '../state/store.js';
 import { mapFullUserToUser } from '../utils/mappers.js';
-import { broadcastAll } from '../ws/broadcast.js';
+import { broadcastToWorld } from '../ws/broadcast.js';
 
-export function updateUsersList(): void {
+function buildWorldUserList(worldId: string): Server.User[] {
   const { users } = store.getState();
-  const userList = Object.values(users)
-    .filter((user) => user.privateUser.name)
+  return Object.values(users)
+    .filter((user) => user.worldId === worldId && user.privateUser.name)
     .reduce<Server.User[]>((acc, user) => {
       const existingUser = acc.find((u) => u.name === user.privateUser.name);
       if (!existingUser) {
@@ -14,9 +14,20 @@ export function updateUsersList(): void {
       }
       return acc;
     }, []);
+}
 
-  broadcastAll({
+export function updateUsersListForWorld(worldId: string): void {
+  broadcastToWorld(worldId, {
     type: Server.MessageType.USER_LIST,
-    content: userList,
+    content: buildWorldUserList(worldId),
   });
+}
+
+export function updateUsersList(): void {
+  const { users } = store.getState();
+  const worldIds = new Set<string>();
+  for (const user of Object.values(users)) {
+    if (user.worldId) worldIds.add(user.worldId);
+  }
+  for (const worldId of worldIds) updateUsersListForWorld(worldId);
 }

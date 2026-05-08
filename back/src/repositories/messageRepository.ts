@@ -107,8 +107,15 @@ export function getHelpMessage(): Server.ChatMessage.SavedType {
   };
 }
 
-export async function getMessages(includeDeleted = false, max = 200, showHelp = false): Promise<Server.ChatMessage.SavedType[]> {
-  const whereClause = includeDeleted ? '' : 'WHERE m.Deleted IS NULL OR m.Deleted = 0';
+export async function getMessages(
+  worldId = 'fr',
+  includeDeleted = false,
+  max = 200,
+  showHelp = false,
+): Promise<Server.ChatMessage.SavedType[]> {
+  const conditions: string[] = ['m.WorldID = ?'];
+  if (!includeDeleted) conditions.push('(m.Deleted IS NULL OR m.Deleted = 0)');
+  const whereClause = `WHERE ${conditions.join(' AND ')}`;
   const query = `
     SELECT ${MESSAGE_JOIN_SELECT}
     ${MESSAGE_JOIN_FROM}
@@ -116,7 +123,7 @@ export async function getMessages(includeDeleted = false, max = 200, showHelp = 
     ORDER BY m.Timestamp DESC
     LIMIT ?;
   `;
-  const [results] = await pool.query<(MessageJoinRow & RowDataPacket)[]>(query, [max]);
+  const [results] = await pool.query<(MessageJoinRow & RowDataPacket)[]>(query, [worldId, max]);
   const messages = results.length ? results.map((row) => mapMessage(row)) : [];
   if (showHelp) {
     messages.unshift(getHelpMessage());
@@ -139,25 +146,30 @@ export async function getLastMessageTimestamp(): Promise<string | null> {
   return results.length ? (results[0].Timestamp as unknown as string) : null;
 }
 
-export async function saveMessage(user: Server.PrivateUser, message: Client.ChatMessage): Promise<Server.Message> {
+export async function saveMessage(user: Server.PrivateUser, message: Client.ChatMessage, worldId = 'fr'): Promise<Server.Message> {
   const player = await getPlayerByName(user.name);
   if (!player) throw new Error('Player not found');
 
   const timestamp = new Date();
-  const [messageResult] = await pool.query<ResultSetHeader>('INSERT INTO Message (PlayerID, Timestamp, Type) VALUES (?, ?, ?)', [
-    player.id,
-    timestamp,
-    mapClientMessageType(message.type),
-  ]);
+  const [messageResult] = await pool.query<ResultSetHeader>(
+    'INSERT INTO Message (PlayerID, WorldID, Timestamp, Type) VALUES (?, ?, ?, ?)',
+    [player.id, worldId, timestamp, mapClientMessageType(message.type)],
+  );
 
   const messageId = messageResult.insertId;
 
   switch (message.type) {
     case Client.MessageType.SCORE_TO_CHAT: {
       const { custom, attempts } = message.content;
-      const answer = message.content.custom ? message.content.custom : await getTodaysWord();
-      await pool.query('INSERT INTO ScoreContent (ID, Answer, Attempts, IsCustom) VALUES (?, ?, ?, ?)', [
+      const answer = message.content.custom ? message.content.custom : await getTodaysWord(worldId);
+      const [wordHistoryRows] = await pool.query<(RowDataPacket & { ID: number })[]>(
+        'SELECT ID FROM WordHistory WHERE WorldID = ? AND DATE(AssignedDate) = CURDATE() ORDER BY AssignedDate DESC LIMIT 1',
+        [worldId],
+      );
+      const wordHistoryId = wordHistoryRows.length ? wordHistoryRows[0].ID : null;
+      await pool.query('INSERT INTO ScoreContent (ID, WordHistoryID, Answer, Attempts, IsCustom) VALUES (?, ?, ?, ?, ?)', [
         messageId,
+        wordHistoryId,
         answer,
         JSON.stringify(attempts),
         !!custom,

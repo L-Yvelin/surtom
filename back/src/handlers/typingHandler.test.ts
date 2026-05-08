@@ -3,16 +3,16 @@ import FullUser from '../models/FullUser.js';
 
 jest.mock('../ws/broadcast.js', () => ({
   __esModule: true,
-  broadcastAll: jest.fn(),
+  broadcastToWorld: jest.fn(),
 }));
 
-import { broadcastAll } from '../ws/broadcast.js';
+import { broadcastToWorld } from '../ws/broadcast.js';
 import { handleIsTyping } from './typingHandler.js';
 
 const fakeWs = {} as never;
 
 describe('handleIsTyping', () => {
-  it("broadcasts the user's name to everyone", () => {
+  it("broadcasts the user's name to everyone in their world", () => {
     const user = new FullUser(
       'id-1',
       {
@@ -26,11 +26,12 @@ describe('handleIsTyping', () => {
       },
       fakeWs,
       'ip',
+      'ephem',
     );
 
     handleIsTyping(user);
 
-    expect(broadcastAll).toHaveBeenCalledWith({
+    expect(broadcastToWorld).toHaveBeenCalledWith('ephem', {
       type: Server.MessageType.IS_TYPING,
       content: 'alice',
     });

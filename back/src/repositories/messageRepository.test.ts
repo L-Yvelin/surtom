@@ -61,8 +61,15 @@ describe('getMessages', () => {
 
   it('prepends the help message when showHelp=true (becomes last after reverse)', async () => {
     query.mockResolvedValueOnce([[buildJoinRow()]]);
-    const msgs = await getMessages(false, 200, true);
+    const msgs = await getMessages('fr', false, 200, true);
     expect(msgs[msgs.length - 1].content.user.name).toBe('System');
+  });
+
+  it('passes worldId into the query', async () => {
+    query.mockResolvedValueOnce([[buildJoinRow()]]);
+    await getMessages('en');
+    expect(query.mock.calls[0][1]).toEqual(['en', 200]);
+    expect(query.mock.calls[0][0]).toMatch(/m\.WorldID = \?/);
   });
 
   it('maps SCORE rows to a SCORE message', async () => {
@@ -132,28 +139,51 @@ describe('saveMessage (CHAT_MESSAGE)', () => {
 });
 
 describe('saveMessage (SCORE_TO_CHAT)', () => {
-  it('uses the daily word when no custom solution is provided', async () => {
+  it('uses the daily word when no custom solution is provided and stamps WordHistoryID', async () => {
     (getPlayerByName as jest.Mock).mockResolvedValue({ id: 1 });
     (getTodaysWord as jest.Mock).mockResolvedValue('GRASS');
-    query.mockResolvedValueOnce([{ insertId: 5 }]).mockResolvedValueOnce([{}]);
+    query
+      .mockResolvedValueOnce([{ insertId: 5 }])
+      .mockResolvedValueOnce([[{ ID: 11 }]])
+      .mockResolvedValueOnce([{}]);
     const out = await saveMessage({ name: 'a', moderatorLevel: 0, isLoggedIn: true, isMobile: false, words: [], isBanned: false, xp: 0 }, {
       type: Client.MessageType.SCORE_TO_CHAT,
       content: { attempts: [['G', 'R', 'A', 'S', 'S']] },
     } as unknown as Client.ChatMessage);
-    expect(query.mock.calls[1][1][1]).toBe('GRASS');
+    expect(query.mock.calls[1][0]).toMatch(/SELECT ID FROM WordHistory/);
+    expect(query.mock.calls[2][0]).toMatch(/INSERT INTO ScoreContent/);
+    expect(query.mock.calls[2][1][1]).toBe(11);
+    expect(query.mock.calls[2][1][2]).toBe('GRASS');
     expect(getTodaysWord).toHaveBeenCalledTimes(1);
     expect((out.content as Server.ChatMessage.SavedType).type).toBe(Server.MessageType.SCORE);
   });
 
   it('uses the custom solution when provided', async () => {
     (getPlayerByName as jest.Mock).mockResolvedValue({ id: 1 });
-    query.mockResolvedValueOnce([{ insertId: 5 }]).mockResolvedValueOnce([{}]);
+    query
+      .mockResolvedValueOnce([{ insertId: 5 }])
+      .mockResolvedValueOnce([[{ ID: 11 }]])
+      .mockResolvedValueOnce([{}]);
     await saveMessage({ name: 'a', moderatorLevel: 0, isLoggedIn: true, isMobile: false, words: [], isBanned: false, xp: 0 }, {
       type: Client.MessageType.SCORE_TO_CHAT,
       content: { custom: 'BRICK', attempts: [['B', 'R', 'I', 'C', 'K']] },
     } as unknown as Client.ChatMessage);
-    expect(query.mock.calls[1][1][1]).toBe('BRICK');
+    expect(query.mock.calls[2][1][2]).toBe('BRICK');
     expect(getTodaysWord).not.toHaveBeenCalled();
+  });
+
+  it('leaves WordHistoryID null when no daily history row exists for the world', async () => {
+    (getPlayerByName as jest.Mock).mockResolvedValue({ id: 1 });
+    (getTodaysWord as jest.Mock).mockResolvedValue('GRASS');
+    query
+      .mockResolvedValueOnce([{ insertId: 5 }])
+      .mockResolvedValueOnce([[]])
+      .mockResolvedValueOnce([{}]);
+    await saveMessage({ name: 'a', moderatorLevel: 0, isLoggedIn: true, isMobile: false, words: [], isBanned: false, xp: 0 }, {
+      type: Client.MessageType.SCORE_TO_CHAT,
+      content: { attempts: [['G', 'R', 'A', 'S', 'S']] },
+    } as unknown as Client.ChatMessage);
+    expect(query.mock.calls[2][1][1]).toBeNull();
   });
 });
 

@@ -1,0 +1,151 @@
+{
+  "common": {
+    "appName": "SURTOM",
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "close": "Close",
+    "credits": "CREDITS"
+  },
+  "header": {
+    "logoAlt": "SURTOM WORD OF THE DAY",
+    "openSettings": "Open settings"
+  },
+  "mainMenu": {
+    "daily": "Daily",
+    "competitive": "Competitive",
+    "competitiveSoon": "Coming soon",
+    "options": "Options",
+    "quit": "Quit"
+  },
+  "splash": {
+    "lines": ["NAN NAN!", "🗣️SUTOM! 🤖SURTOM?", "Tah la mondialisation", "Coded in France", "100% gluten-free", "Inspired, not plagiarized"]
+  },
+  "worldSelection": {
+    "title": "World selection",
+    "search": "Search",
+    "loading": "Loading worlds...",
+    "empty": "No matching worlds",
+    "play": "Play",
+    "edit": "Edit",
+    "delete": "Delete",
+    "recreate": "Recreate",
+    "newWorld": "New world",
+    "cancel": "Cancel",
+    "modeDaily": "Daily mode",
+    "modeTemp": "Temporary world",
+    "memberCount_one": "{{count}} player",
+    "memberCount_other": "{{count}} players"
+  },
+  "stats": {
+    "gamesCount_one": "{{count}} game",
+    "gamesCount_other": "{{count}} games",
+    "scoreDistribution": "Score distribution"
+  },
+  "endPage": {
+    "shareInChat": "Share score in chat",
+    "copyIconAlt": "Copy icon",
+    "shareTextPrefix": "My score on"
+  },
+  "customWord": {
+    "title": "Custom word",
+    "start": "Start game",
+    "achievementTitle": "Achievement unlocked!",
+    "achievementText": "Pushing the limits"
+  },
+  "worldLoading": {
+    "label": "Loading word"
+  },
+  "tools": {
+    "playersTitle": "Connected players",
+    "playersHint": "Send private messages by clicking the bubble",
+    "playersAlt": "Player list icon",
+    "statsTitle": "Statistics",
+    "statsHint": "How much time have you wasted on this site?",
+    "statsAlt": "Stats icon",
+    "scoreTitle": "View score",
+    "scoreHintLocked": "Please finish the game first",
+    "scoreAlt": "End screen icon",
+    "chatTitle": "Live chat",
+    "chatHint": "Chat with the community and share your score",
+    "chatAlt": "Chat icon",
+    "customWordTitle": "Custom word",
+    "customWordHint": "Have your friends play with your own word",
+    "customWordAlt": "Custom word icon",
+    "themeTitle": "Theme switcher",
+    "themeHint": "Customize your interface",
+    "themeAlt": "Theme switcher icon"
+  },
+  "experience": {
+    "progress": "Progress: {{current}} / {{total}}",
+    "gainPerGame": "Gain per game:",
+    "gainWin": "Win: 35 - (attempts - 1)²",
+    "gainLoss": "Loss: 5",
+    "barAlt": "Experience bar"
+  },
+  "chest": {
+    "christmas": "Christmas chest",
+    "ender": "Ender chest",
+    "large": "Large chest"
+  },
+  "chat": {
+    "scoreInline_one": "finished the game in {{count}} try!",
+    "scoreInline_other": "finished the game in {{count}} tries!",
+    "scoreView": "(view)",
+    "replyError": "Could not load reply",
+    "replyTargetError": "Could not load message",
+    "scoreSimple_one": "{{name}}'s {{count}} try.",
+    "scoreSimple_other": "{{name}}'s {{count}} tries.",
+    "actionReply": "Reply",
+    "actionDelete": "Delete",
+    "messageError": "Unable to generate message",
+    "privateTag": "PM",
+    "scrollToBottomAlt": "Scroll to bottom arrow",
+    "rank": {
+      "1": "Admin",
+      "2": "Super-Admin",
+      "3": "👑"
+    }
+  },
+  "tab": {
+    "deviceAlt": "User's device",
+    "connectivityAlt": "Connectivity"
+  },
+  "boot": {
+    "logoAlt": "Surtom Studios logo"
+  },
+  "achievement": {
+    "iconAlt": "Achievement icon"
+  },
+  "achievements": {
+    "winTitle": "VICTORY!",
+    "winSubtitle": "👏👏👏",
+    "lossTitle": "Defeat",
+    "lossSubtitle": "You lost, but you can try again tomorrow!",
+    "invalidWordTitle": "Achievement unlocked",
+    "invalidWordSubtitle": "Can't spell properly"
+  },
+  "settings": {
+    "title": "Options",
+    "done": "Done",
+    "language": "Language",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "languageOption": {
+      "fr": "Français",
+      "en": "English"
+    },
+    "keyboard": "Keyboard",
+    "keyboardAzerty": "Azerty",
+    "keyboardQwerty": "Qwerty",
+    "sound": "Sound",
+    "soundOn": "On",
+    "soundOff": "Off"
+  },
+  "gameMenu": {
+    "title": "Game menu",
+    "backToGame": "Back to Game",
+    "options": "Options",
+    "quit": "Save and Quit to Title"
+  }
+}

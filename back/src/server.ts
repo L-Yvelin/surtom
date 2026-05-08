@@ -5,22 +5,33 @@ import { handleNewConnection } from './ws/connection.js';
 import { setWebSocketServer } from './ws/broadcast.js';
 import { subscribe } from './state/eventBus.js';
 import { updateUsersList } from './handlers/userListHandler.js';
+import { worldRegistry } from './state/worldRegistry.js';
 
 console.log('SERVER STARTING...');
 
-const wss = new WebSocketServer({ port: env.port });
-setWebSocketServer(wss);
+async function start(): Promise<void> {
+  await worldRegistry.init();
+  console.log(`Loaded ${worldRegistry.list().length} persistent world(s) from DB`);
 
-subscribe('updateUsersList', () => updateUsersList());
+  const wss = new WebSocketServer({ port: env.port });
+  setWebSocketServer(wss);
 
-wss.on('error', (err) => {
-  console.error('Websocket error:', err);
-});
+  subscribe('updateUsersList', () => updateUsersList());
 
-wss.on('listening', () => {
-  console.log(`Websocket server listening on port ${env.port}`);
-});
+  wss.on('error', (err) => {
+    console.error('Websocket error:', err);
+  });
 
-wss.on('connection', (connection, req) => {
-  void handleNewConnection(connection, req);
+  wss.on('listening', () => {
+    console.log(`Websocket server listening on port ${env.port}`);
+  });
+
+  wss.on('connection', (connection, req) => {
+    void handleNewConnection(connection, req);
+  });
+}
+
+start().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });

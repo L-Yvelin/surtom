@@ -9,14 +9,14 @@ export interface PlayerAttributes {
   Username: string;
   Password: string;
   SessionHash?: string;
-  RegistrationDate: string;
+  RegistrationDate: Date;
   IsAdmin: number;
   IsBanned: number;
 }
 
 export type PlayerPk = 'ID';
 export type PlayerId = Player[PlayerPk];
-export type PlayerOptionalAttributes = 'ID' | 'SessionHash' | 'IsAdmin' | 'IsBanned';
+export type PlayerOptionalAttributes = 'ID' | 'SessionHash' | 'RegistrationDate' | 'IsAdmin' | 'IsBanned';
 export type PlayerCreationAttributes = Optional<PlayerAttributes, PlayerOptionalAttributes>;
 
 export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> implements PlayerAttributes {
@@ -24,7 +24,7 @@ export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> im
   Username!: string;
   Password!: string;
   SessionHash?: string;
-  RegistrationDate!: string;
+  RegistrationDate!: Date;
   IsAdmin!: number;
   IsBanned!: number;
 
@@ -88,8 +88,9 @@ export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> im
           allowNull: true,
         },
         RegistrationDate: {
-          type: DataTypes.DATEONLY,
+          type: DataTypes.DATE,
           allowNull: false,
+          defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP'),
         },
         IsAdmin: {
           type: DataTypes.BOOLEAN,

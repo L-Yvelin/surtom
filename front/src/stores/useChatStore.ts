@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Server } from '@surtom/interfaces';
 import { defaultPlayer } from './useGameStore';
-import { isSavedChatMessage } from '../components/Chat/utils';
+import { isSavedChatMessage } from '../features/Chat/utils/messageFormatting';
 
 interface ChatStore {
   messages: Server.ChatMessage.Type[];
@@ -14,6 +14,8 @@ interface ChatStore {
   setScrollToBottom: (fn: () => void) => void;
   focusInput: (message?: string) => void;
   setFocusInput: (fn: () => void) => void;
+  resetSession: () => void;
+  resetWorld: () => void;
 }
 
 const defaultMessage: Server.ChatMessage.SavedType = {
@@ -27,20 +29,30 @@ const defaultMessage: Server.ChatMessage.SavedType = {
   },
 };
 
+const initialSession = {
+  answeringTo: null as string | null,
+};
+
+const initialWorld = {
+  messages: [defaultMessage] as Server.ChatMessage.Type[],
+  ...initialSession,
+};
+
 const useChatStore = create<ChatStore>((set) => ({
-  messages: [defaultMessage],
+  ...initialWorld,
   setMessages: (messages) => set({ messages }),
-  answeringTo: null,
   setAnsweringTo: (id) => set({ answeringTo: id }),
   removeMessage: (messageId) =>
     set((state) => ({
-      messages: state.messages?.filter((m) => isSavedChatMessage(m) && m.content.id !== messageId) || [],
+      messages: state.messages?.filter((m) => !isSavedChatMessage(m) || m.content.id !== messageId) || [],
     })),
   addMessage: (message) => set((state) => ({ messages: [...(state.messages || []), message] })),
   scrollToBottom: () => {},
   setScrollToBottom: (fn) => set({ scrollToBottom: fn }),
   focusInput: () => {},
   setFocusInput: (fn) => set({ focusInput: fn }),
+  resetSession: () => set(initialSession),
+  resetWorld: () => set(initialWorld),
 }));
 
 export default useChatStore;

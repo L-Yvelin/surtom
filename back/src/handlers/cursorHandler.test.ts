@@ -3,10 +3,10 @@ import FullUser from '../models/FullUser.js';
 
 jest.mock('../ws/broadcast.js', () => ({
   __esModule: true,
-  broadcastAllButSelf: jest.fn(),
+  broadcastToWorldButSelf: jest.fn(),
 }));
 
-import { broadcastAllButSelf } from '../ws/broadcast.js';
+import { broadcastToWorldButSelf } from '../ws/broadcast.js';
 import { handleCursorPosition } from './cursorHandler.js';
 
 const fakeWs = {} as never;
@@ -30,7 +30,7 @@ describe('handleCursorPosition', () => {
 
     handleCursorPosition(user, { x: 12, y: 34 });
 
-    expect(broadcastAllButSelf).toHaveBeenCalledWith(user, {
+    expect(broadcastToWorldButSelf).toHaveBeenCalledWith(user, {
       type: Server.MessageType.CURSOR_POSITION,
       content: {
         user: { name: 'alice', moderatorLevel: 0, isMobile: false, isLoggedIn: true, xp: 0 },

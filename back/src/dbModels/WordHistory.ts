@@ -1,30 +1,34 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { MotMinecraft, MotMinecraftId } from './MotMinecraft';
+import type { MinecraftSolution, MinecraftSolutionId } from './MinecraftSolution';
 import type { Player, PlayerId } from './Player';
+import type { ScoreContent, ScoreContentId } from './ScoreContent';
 import type { Try, TryId } from './Try';
+import type { World, WorldId } from './World';
 
 export interface WordHistoryAttributes {
   ID: number;
+  WorldID?: string;
   WordID: number;
-  AssignedDate: string;
+  AssignedDate: Date;
 }
 
 export type WordHistoryPk = 'ID';
 export type WordHistoryId = WordHistory[WordHistoryPk];
-export type WordHistoryOptionalAttributes = 'ID';
+export type WordHistoryOptionalAttributes = 'ID' | 'WorldID' | 'AssignedDate';
 export type WordHistoryCreationAttributes = Optional<WordHistoryAttributes, WordHistoryOptionalAttributes>;
 
 export class WordHistory extends Model<WordHistoryAttributes, WordHistoryCreationAttributes> implements WordHistoryAttributes {
   ID!: number;
+  WorldID?: string;
   WordID!: number;
-  AssignedDate!: string;
+  AssignedDate!: Date;
 
-  // WordHistory belongsTo MotMinecraft via WordID
-  Word!: MotMinecraft;
-  getWord!: Sequelize.BelongsToGetAssociationMixin<MotMinecraft>;
-  setWord!: Sequelize.BelongsToSetAssociationMixin<MotMinecraft, MotMinecraftId>;
-  createWord!: Sequelize.BelongsToCreateAssociationMixin<MotMinecraft>;
+  // WordHistory belongsTo MinecraftSolution via WordID
+  Word!: MinecraftSolution;
+  getWord!: Sequelize.BelongsToGetAssociationMixin<MinecraftSolution>;
+  setWord!: Sequelize.BelongsToSetAssociationMixin<MinecraftSolution, MinecraftSolutionId>;
+  createWord!: Sequelize.BelongsToCreateAssociationMixin<MinecraftSolution>;
   // WordHistory belongsToMany Player via WordHistoryID and PlayerID
   PlayerID_Players!: Player[];
   getPlayerID_Players!: Sequelize.BelongsToManyGetAssociationsMixin<Player>;
@@ -37,6 +41,18 @@ export class WordHistory extends Model<WordHistoryAttributes, WordHistoryCreatio
   hasPlayerID_Player!: Sequelize.BelongsToManyHasAssociationMixin<Player, PlayerId>;
   hasPlayerID_Players!: Sequelize.BelongsToManyHasAssociationsMixin<Player, PlayerId>;
   countPlayerID_Players!: Sequelize.BelongsToManyCountAssociationsMixin;
+  // WordHistory hasMany ScoreContent via WordHistoryID
+  ScoreContents!: ScoreContent[];
+  getScoreContents!: Sequelize.HasManyGetAssociationsMixin<ScoreContent>;
+  setScoreContents!: Sequelize.HasManySetAssociationsMixin<ScoreContent, ScoreContentId>;
+  addScoreContent!: Sequelize.HasManyAddAssociationMixin<ScoreContent, ScoreContentId>;
+  addScoreContents!: Sequelize.HasManyAddAssociationsMixin<ScoreContent, ScoreContentId>;
+  createScoreContent!: Sequelize.HasManyCreateAssociationMixin<ScoreContent>;
+  removeScoreContent!: Sequelize.HasManyRemoveAssociationMixin<ScoreContent, ScoreContentId>;
+  removeScoreContents!: Sequelize.HasManyRemoveAssociationsMixin<ScoreContent, ScoreContentId>;
+  hasScoreContent!: Sequelize.HasManyHasAssociationMixin<ScoreContent, ScoreContentId>;
+  hasScoreContents!: Sequelize.HasManyHasAssociationsMixin<ScoreContent, ScoreContentId>;
+  countScoreContents!: Sequelize.HasManyCountAssociationsMixin;
   // WordHistory hasMany Try via WordHistoryID
   Tries!: Try[];
   getTries!: Sequelize.HasManyGetAssociationsMixin<Try>;
@@ -49,6 +65,11 @@ export class WordHistory extends Model<WordHistoryAttributes, WordHistoryCreatio
   hasTry!: Sequelize.HasManyHasAssociationMixin<Try, TryId>;
   hasTries!: Sequelize.HasManyHasAssociationsMixin<Try, TryId>;
   countTries!: Sequelize.HasManyCountAssociationsMixin;
+  // WordHistory belongsTo World via WorldID
+  World!: World;
+  getWorld!: Sequelize.BelongsToGetAssociationMixin<World>;
+  setWorld!: Sequelize.BelongsToSetAssociationMixin<World, WorldId>;
+  createWorld!: Sequelize.BelongsToCreateAssociationMixin<World>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof WordHistory {
     return WordHistory.init(
@@ -59,17 +80,26 @@ export class WordHistory extends Model<WordHistoryAttributes, WordHistoryCreatio
           allowNull: false,
           primaryKey: true,
         },
+        WorldID: {
+          type: DataTypes.STRING(32),
+          allowNull: true,
+          references: {
+            model: 'World',
+            key: 'ID',
+          },
+        },
         WordID: {
           type: DataTypes.INTEGER,
           allowNull: false,
           references: {
-            model: 'MotMinecraft',
+            model: 'MinecraftSolution',
             key: 'ID',
           },
         },
         AssignedDate: {
-          type: DataTypes.DATEONLY,
+          type: DataTypes.DATE,
           allowNull: false,
+          defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP'),
         },
       },
       {
@@ -87,6 +117,11 @@ export class WordHistory extends Model<WordHistoryAttributes, WordHistoryCreatio
             name: 'WordID',
             using: 'BTREE',
             fields: [{ name: 'WordID' }],
+          },
+          {
+            name: 'WordHistory_idx_WorldID_AssignedDate',
+            using: 'BTREE',
+            fields: [{ name: 'WorldID' }, { name: 'AssignedDate' }],
           },
         ],
       },

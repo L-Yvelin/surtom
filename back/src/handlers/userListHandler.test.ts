@@ -4,15 +4,15 @@ import store from '../state/store.js';
 
 jest.mock('../ws/broadcast.js', () => ({
   __esModule: true,
-  broadcastAll: jest.fn(),
+  broadcastToWorld: jest.fn(),
 }));
 
-import { broadcastAll } from '../ws/broadcast.js';
-import { updateUsersList } from './userListHandler.js';
+import { broadcastToWorld } from '../ws/broadcast.js';
+import { updateUsersList, updateUsersListForWorld } from './userListHandler.js';
 
 const fakeWs = {} as never;
 
-const buildUser = (id: string, name: string) =>
+const buildUser = (id: string, name: string, worldId: string = 'fr') =>
   new FullUser(
     id,
     {
@@ -26,39 +26,68 @@ const buildUser = (id: string, name: string) =>
     },
     fakeWs,
     'ip',
+    worldId,
   );
 
-describe('updateUsersList', () => {
+describe('updateUsersListForWorld', () => {
   beforeEach(() => {
-    (broadcastAll as jest.Mock).mockClear();
+    (broadcastToWorld as jest.Mock).mockClear();
     store.setState({ users: {} });
   });
 
-  it('broadcasts a USER_LIST containing each unique user', () => {
-    store.setState({ users: { 'id-1': buildUser('id-1', 'alice'), 'id-2': buildUser('id-2', 'bob') } });
-    updateUsersList();
+  it('broadcasts a USER_LIST containing only members of the given world', () => {
+    store.setState({
+      users: {
+        'id-1': buildUser('id-1', 'alice', 'fr'),
+        'id-2': buildUser('id-2', 'bob', 'ephem'),
+        'id-3': buildUser('id-3', 'carol', 'fr'),
+      },
+    });
 
-    expect(broadcastAll).toHaveBeenCalledTimes(1);
-    const message = (broadcastAll as jest.Mock).mock.calls[0][0];
+    updateUsersListForWorld('fr');
+
+    expect(broadcastToWorld).toHaveBeenCalledTimes(1);
+    const [worldId, message] = (broadcastToWorld as jest.Mock).mock.calls[0];
+    expect(worldId).toBe('fr');
     expect(message.type).toBe(Server.MessageType.USER_LIST);
     const names = message.content.map((u: Server.User) => u.name).sort();
-    expect(names).toEqual(['alice', 'bob']);
+    expect(names).toEqual(['alice', 'carol']);
   });
 
   it('skips users with an empty name', () => {
-    store.setState({ users: { 'id-1': buildUser('id-1', '') } });
-    updateUsersList();
-    expect((broadcastAll as jest.Mock).mock.calls[0][0].content).toEqual([]);
+    store.setState({ users: { 'id-1': buildUser('id-1', '', 'fr') } });
+    updateUsersListForWorld('fr');
+    expect((broadcastToWorld as jest.Mock).mock.calls[0][1].content).toEqual([]);
   });
 
-  it('deduplicates by name when the same user is connected twice', () => {
+  it('deduplicates by name when the same user is connected twice in the same world', () => {
     store.setState({
       users: {
-        'id-1': buildUser('id-1', 'alice'),
-        'id-2': buildUser('id-2', 'alice'),
+        'id-1': buildUser('id-1', 'alice', 'fr'),
+        'id-2': buildUser('id-2', 'alice', 'fr'),
+      },
+    });
+    updateUsersListForWorld('fr');
+    expect((broadcastToWorld as jest.Mock).mock.calls[0][1].content).toHaveLength(1);
+  });
+});
+
+describe('updateUsersList', () => {
+  beforeEach(() => {
+    (broadcastToWorld as jest.Mock).mockClear();
+    store.setState({ users: {} });
+  });
+
+  it('broadcasts a USER_LIST per inhabited world', () => {
+    store.setState({
+      users: {
+        'id-1': buildUser('id-1', 'alice', 'fr'),
+        'id-2': buildUser('id-2', 'bob', 'ephem'),
       },
     });
     updateUsersList();
-    expect((broadcastAll as jest.Mock).mock.calls[0][0].content).toHaveLength(1);
+    const calls = (broadcastToWorld as jest.Mock).mock.calls;
+    const worldIds = calls.map(([id]) => id).sort();
+    expect(worldIds).toEqual(['ephem', 'fr']);
   });
 });

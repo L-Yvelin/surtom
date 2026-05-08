@@ -3,10 +3,12 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { Player, PlayerId } from './Player';
 import type { ScoreContent, ScoreContentCreationAttributes, ScoreContentId } from './ScoreContent';
 import type { TextContent, TextContentCreationAttributes, TextContentId } from './TextContent';
+import type { World, WorldId } from './World';
 
 export interface MessageAttributes {
   ID: number;
   PlayerID: number;
+  WorldID?: string;
   Timestamp: Date;
   Type: 'TEXT' | 'ENHANCED' | 'SCORE';
   Deleted?: number;
@@ -14,12 +16,13 @@ export interface MessageAttributes {
 
 export type MessagePk = 'ID';
 export type MessageId = Message[MessagePk];
-export type MessageOptionalAttributes = 'ID' | 'Timestamp' | 'Type' | 'Deleted';
+export type MessageOptionalAttributes = 'ID' | 'WorldID' | 'Timestamp' | 'Type' | 'Deleted';
 export type MessageCreationAttributes = Optional<MessageAttributes, MessageOptionalAttributes>;
 
 export class Message extends Model<MessageAttributes, MessageCreationAttributes> implements MessageAttributes {
   ID!: number;
   PlayerID!: number;
+  WorldID?: string;
   Timestamp!: Date;
   Type!: 'TEXT' | 'ENHANCED' | 'SCORE';
   Deleted?: number;
@@ -51,6 +54,11 @@ export class Message extends Model<MessageAttributes, MessageCreationAttributes>
   getPlayer!: Sequelize.BelongsToGetAssociationMixin<Player>;
   setPlayer!: Sequelize.BelongsToSetAssociationMixin<Player, PlayerId>;
   createPlayer!: Sequelize.BelongsToCreateAssociationMixin<Player>;
+  // Message belongsTo World via WorldID
+  World!: World;
+  getWorld!: Sequelize.BelongsToGetAssociationMixin<World>;
+  setWorld!: Sequelize.BelongsToSetAssociationMixin<World, WorldId>;
+  createWorld!: Sequelize.BelongsToCreateAssociationMixin<World>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Message {
     return Message.init(
@@ -66,6 +74,14 @@ export class Message extends Model<MessageAttributes, MessageCreationAttributes>
           allowNull: false,
           references: {
             model: 'Player',
+            key: 'ID',
+          },
+        },
+        WorldID: {
+          type: DataTypes.STRING(32),
+          allowNull: true,
+          references: {
+            model: 'World',
             key: 'ID',
           },
         },
@@ -100,6 +116,11 @@ export class Message extends Model<MessageAttributes, MessageCreationAttributes>
             name: 'PlayerID',
             using: 'BTREE',
             fields: [{ name: 'PlayerID' }],
+          },
+          {
+            name: 'Message_idx_WorldID_Timestamp',
+            using: 'BTREE',
+            fields: [{ name: 'WorldID' }, { name: 'Timestamp' }],
           },
         ],
       },

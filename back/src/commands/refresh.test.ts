@@ -37,6 +37,7 @@ const buildUser = (moderatorLevel = 0) =>
     },
     fakeWs,
     'ip',
+    'fr',
   );
 
 const buildSavedTextMessage = (id: string): Server.ChatMessage.SavedType => ({

@@ -12,8 +12,9 @@ class FullUser {
   cooldownMultiplier: number;
   listeningTypes: string[];
   ip: string;
+  worldId: string | null;
 
-  constructor(id: string, privateUser: Server.PrivateUser, connection: WS, ip: string = 'unknown') {
+  constructor(id: string, privateUser: Server.PrivateUser, connection: WS, ip: string = 'unknown', worldId: string | null = null) {
     this.id = id;
     this.privateUser = privateUser;
     this.connection = connection;
@@ -23,6 +24,7 @@ class FullUser {
     this.cooldownMultiplier = COOLDOWN_MULTIPLIER;
     this.listeningTypes = [];
     this.ip = ip;
+    this.worldId = worldId;
   }
 }
 

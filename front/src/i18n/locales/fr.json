@@ -1,0 +1,151 @@
+{
+  "common": {
+    "appName": "SURTOM",
+    "loading": "Chargement...",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "credits": "CREDITS"
+  },
+  "header": {
+    "logoAlt": "SURTOM MOT DU JOUR",
+    "openSettings": "Ouvrir les paramètres"
+  },
+  "mainMenu": {
+    "daily": "Quotidien",
+    "competitive": "Compétitif",
+    "competitiveSoon": "Bientôt disponible",
+    "options": "Options",
+    "quit": "Quitter"
+  },
+  "splash": {
+    "lines": ["NAN NAN!", "🗣️SUTOM! 🤖SURTOM?", "Tah la mondialisation", "Coded in France", "100% gluten-free", "Inspired, not plagiarized"]
+  },
+  "worldSelection": {
+    "title": "Sélection du monde",
+    "search": "Rechercher",
+    "loading": "Chargement des mondes...",
+    "empty": "Aucun monde correspondant",
+    "play": "Jouer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "recreate": "Recréer",
+    "newWorld": "Nouveau monde",
+    "cancel": "Annuler",
+    "modeDaily": "Mode Quotidien",
+    "modeTemp": "Monde temporaire",
+    "memberCount_one": "{{count}} joueur",
+    "memberCount_other": "{{count}} joueurs"
+  },
+  "stats": {
+    "gamesCount_one": "{{count}} partie",
+    "gamesCount_other": "{{count}} parties",
+    "scoreDistribution": "Répartition des scores"
+  },
+  "endPage": {
+    "shareInChat": "Partager le score dans le tchat",
+    "copyIconAlt": "Icône copier",
+    "shareTextPrefix": "Mon score sur"
+  },
+  "customWord": {
+    "title": "Mot personnalisé",
+    "start": "Lancer la partie",
+    "achievementTitle": "Succès obtenu !",
+    "achievementText": "Jouer avec les limites"
+  },
+  "worldLoading": {
+    "label": "Chargement du mot"
+  },
+  "tools": {
+    "playersTitle": "Joueurs connectés",
+    "playersHint": "Envoyez des messages privés en cliquant sur la bulle",
+    "playersAlt": "Icône liste des joueurs",
+    "statsTitle": "Statistiques",
+    "statsHint": "Combien de temps avez-vous perdu sur ce site ?",
+    "statsAlt": "Icône statistiques",
+    "scoreTitle": "Voir le score",
+    "scoreHintLocked": "Veuillez d'abord finir la partie",
+    "scoreAlt": "Icône fin de partie",
+    "chatTitle": "Tchat en direct",
+    "chatHint": "Discutez avec la communauté et partagez votre score",
+    "chatAlt": "Icône tchat",
+    "customWordTitle": "Mot personnalisé",
+    "customWordHint": "Faites jouer vos amis avec votre propre mot",
+    "customWordAlt": "Icône mot personnalisé",
+    "themeTitle": "Changeur de thème",
+    "themeHint": "Personnalisez votre interface",
+    "themeAlt": "Icône changement de thème"
+  },
+  "experience": {
+    "progress": "Progression: {{current}} / {{total}}",
+    "gainPerGame": "Gain par partie:",
+    "gainWin": "Victoire: 35 - (tentatives - 1)²",
+    "gainLoss": "Défaite: 5",
+    "barAlt": "Barre d'expérience"
+  },
+  "chest": {
+    "christmas": "Coffre de Noël",
+    "ender": "Coffre de l'Ender",
+    "large": "Grand coffre"
+  },
+  "chat": {
+    "scoreInline_one": "finit la partie en {{count}} essai !",
+    "scoreInline_other": "finit la partie en {{count}} essais !",
+    "scoreView": "(voir)",
+    "replyError": "Impossible de charger la réponse",
+    "replyTargetError": "Impossible de charger le message",
+    "scoreSimple_one": "Le {{count}} essai de {{name}}.",
+    "scoreSimple_other": "Les {{count}} essais de {{name}}.",
+    "actionReply": "Répondre",
+    "actionDelete": "Supprimer",
+    "messageError": "Impossible de générer le message",
+    "privateTag": "MP",
+    "scrollToBottomAlt": "Flèche pour descendre",
+    "rank": {
+      "1": "Admin",
+      "2": "Super-Admin",
+      "3": "👑"
+    }
+  },
+  "tab": {
+    "deviceAlt": "Appareil de l'utilisateur",
+    "connectivityAlt": "Connectivité"
+  },
+  "boot": {
+    "logoAlt": "Logo Surtom Studios"
+  },
+  "achievement": {
+    "iconAlt": "Icône de succès"
+  },
+  "achievements": {
+    "winTitle": "VICTOIRE !",
+    "winSubtitle": "👏👏👏",
+    "lossTitle": "Perdu",
+    "lossSubtitle": "Vous avez perdu, mais vous pouvez réessayer demain !",
+    "invalidWordTitle": "Succès obtenu",
+    "invalidWordSubtitle": "Ne pas savoir écrire"
+  },
+  "settings": {
+    "title": "Options",
+    "done": "Terminé",
+    "language": "Langue",
+    "theme": "Thème",
+    "themeLight": "Clair",
+    "themeDark": "Sombre",
+    "languageOption": {
+      "fr": "Français",
+      "en": "English"
+    },
+    "keyboard": "Clavier",
+    "keyboardAzerty": "Azerty",
+    "keyboardQwerty": "Qwerty",
+    "sound": "Son",
+    "soundOn": "On",
+    "soundOff": "Off"
+  },
+  "gameMenu": {
+    "title": "Menu de jeu",
+    "backToGame": "Retour au jeu",
+    "options": "Options",
+    "quit": "Sauvegarder et Quitter"
+  }
+}

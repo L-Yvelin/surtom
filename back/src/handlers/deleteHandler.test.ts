@@ -1,4 +1,4 @@
-import { Server } from '@surtom/interfaces';
+import { Client, Server } from '@surtom/interfaces';
 import FullUser from '../models/FullUser.js';
 
 jest.mock('../repositories/messageRepository.js', () => ({
@@ -11,17 +11,20 @@ jest.mock('../ws/send.js', () => ({
 }));
 jest.mock('../ws/broadcast.js', () => ({
   __esModule: true,
-  broadcastAll: jest.fn(),
+  broadcastToWorld: jest.fn(),
 }));
 
 import { toggleMessage } from '../repositories/messageRepository.js';
 import { sendToUser } from '../ws/send.js';
-import { broadcastAll } from '../ws/broadcast.js';
+import { broadcastToWorld } from '../ws/broadcast.js';
+import { worldRegistry } from '../state/worldRegistry.js';
 import { handleDeleteMessage } from './deleteHandler.js';
+
+const EPHEM_ID = 'ephem-test';
 
 const fakeWs = {} as never;
 
-const buildUser = (moderatorLevel = 1) =>
+const buildUser = (moderatorLevel = 1, worldId: string = 'fr') =>
   new FullUser(
     'id-1',
     {
@@ -35,10 +38,19 @@ const buildUser = (moderatorLevel = 1) =>
     },
     fakeWs,
     'ip',
+    worldId,
   );
 
 beforeEach(() => {
   jest.clearAllMocks();
+  worldRegistry.resetForTests();
+  worldRegistry.addEphemeral({
+    id: EPHEM_ID,
+    displayName: 'Ephemeral test',
+    language: 'fr',
+    solution: 'DIAMANT',
+    validWords: ['DIAMANT'],
+  });
 });
 
 describe('handleDeleteMessage', () => {
@@ -54,12 +66,12 @@ describe('handleDeleteMessage', () => {
     expect(toggleMessage).not.toHaveBeenCalled();
   });
 
-  it('broadcasts a DELETE_MESSAGE and acks success when toggle succeeds', async () => {
+  it('broadcasts a DELETE_MESSAGE scoped to the user world and acks success', async () => {
     (toggleMessage as jest.Mock).mockResolvedValue(true);
-    const user = buildUser(1);
+    const user = buildUser(1, 'fr');
     await handleDeleteMessage(user, 42);
     expect(toggleMessage).toHaveBeenCalledWith(42, user.privateUser);
-    expect(broadcastAll).toHaveBeenCalledWith({
+    expect(broadcastToWorld).toHaveBeenCalledWith('fr', {
       type: Server.MessageType.DELETE_MESSAGE,
       content: 42,
     });
@@ -69,11 +81,27 @@ describe('handleDeleteMessage', () => {
     );
   });
 
+  it('toggles in-memory chat deletion for ephemeral worlds without hitting the DB', async () => {
+    const w = worldRegistry.get(EPHEM_ID)!;
+    await w.saveMessage(
+      { name: 'a', moderatorLevel: 0, isLoggedIn: false, isMobile: false, words: [], isBanned: false, xp: 0 },
+      { type: Client.MessageType.CHAT_MESSAGE, content: { text: 'hi' } },
+    );
+
+    const user = buildUser(2, EPHEM_ID);
+    await handleDeleteMessage(user, 1);
+
+    expect(toggleMessage).not.toHaveBeenCalled();
+    const chat = await w.getChat({ includeDeleted: false, max: 200, showHelp: false });
+    expect(chat[0].content.deleted).toBe(2);
+    expect(broadcastToWorld).toHaveBeenCalledWith(EPHEM_ID, expect.objectContaining({ type: Server.MessageType.DELETE_MESSAGE }));
+  });
+
   it('logs failure to the moderator when toggle returns false', async () => {
     (toggleMessage as jest.Mock).mockResolvedValue(false);
     const user = buildUser(1);
     await handleDeleteMessage(user, 42);
-    expect(broadcastAll).not.toHaveBeenCalled();
+    expect(broadcastToWorld).not.toHaveBeenCalled();
     expect(sendToUser).toHaveBeenCalledWith(
       fakeWs,
       expect.objectContaining({ type: Server.MessageType.LOG, content: expect.stringContaining('Failed') }),

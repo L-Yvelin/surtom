@@ -1,0 +1,60 @@
+.screen {
+  position: fixed;
+  top: 17dvmin;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/src/assets/images/blocks/dirt_256.png');
+  background-repeat: no-repeat, repeat;
+  background-size:
+    100% 100%,
+    17dvmin 17dvmin;
+  image-rendering: pixelated;
+  z-index: var(--z-route-overlay);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+  transition:
+    opacity 0.35s ease-out,
+    visibility 0.35s ease-out;
+}
+
+:global(#root-container.dark) .screen {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/src/assets/images/blocks/netherrack_256.png');
+}
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.label {
+  color: white;
+  font-size: 2.4vh;
+}
+
+.bar {
+  width: min(60vw, 40vh);
+  height: 1.6vh;
+  background: #2a2a2a;
+  border: 2px solid #555;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: #5e923a;
+  animation: fill 700ms linear forwards;
+}
+
+@keyframes fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}

@@ -1,28 +1,30 @@
-import { useState, useEffect, useRef } from 'react';
-import { Theme } from '../components/Main/Tools/Tools';
+import { create } from 'zustand';
+import { Theme } from '../theme/theme';
+
+const STORAGE_KEY = 'theme';
+const THROTTLE_MS = 1050;
+
+interface ThemeState {
+  theme: Theme;
+  lastSetTime: number;
+  setTheme: (newTheme: Theme) => void;
+}
+
+const useThemeStore = create<ThemeState>((set, get) => ({
+  theme: (localStorage.getItem(STORAGE_KEY) as Theme) || Theme.DARK,
+  lastSetTime: 0,
+  setTheme: (newTheme) => {
+    const now = Date.now();
+    if (now - get().lastSetTime < THROTTLE_MS) return;
+    localStorage.setItem(STORAGE_KEY, newTheme);
+    set({ theme: newTheme, lastSetTime: now });
+  },
+}));
 
 const useTheme = () => {
-  const [theme, setTheme] = useState<Theme>((localStorage.getItem('theme') as Theme) || Theme.DARK);
-
-  const lastSetTimeRef = useRef<number>(Date.now());
-
-  const updateTheme = (newTheme: Theme) => {
-    const now = Date.now();
-    if (now - lastSetTimeRef.current >= 1050) {
-      lastSetTimeRef.current = now;
-      setTheme(newTheme);
-      localStorage.setItem('theme', newTheme);
-    }
-  };
-
-  useEffect(() => {
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme) {
-      setTheme(storedTheme as Theme);
-    }
-  }, []);
-
-  return { theme, setTheme: updateTheme };
+  const theme = useThemeStore((s) => s.theme);
+  const setTheme = useThemeStore((s) => s.setTheme);
+  return { theme, setTheme };
 };
 
 export default useTheme;

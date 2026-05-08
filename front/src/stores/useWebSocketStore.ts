@@ -1,12 +1,9 @@
 import { create } from 'zustand';
 import { Server, Client } from '@surtom/interfaces';
 import { validateServerMessage } from '@surtom/interfaces';
-import useGameStore from './useGameStore';
-import useChatStore from './useChatStore';
 import Cookies from 'js-cookie';
 import { isMobile } from 'react-device-detect';
-import { getValidatedWords, isGameFinished } from '../utils/gameLogic';
-import useCursorsStore from './useCursorsStore';
+import { handleServerMessage } from './wsMessageHandler';
 
 interface WebSocketState {
   isConnected: boolean;
@@ -19,83 +16,17 @@ interface WebSocketState {
   disconnect: () => void;
 }
 
-const COOKIE_SESSION_HASH = 'modHash';
 const COOKIE_MOBILE_DEVICE = 'mobileDevice';
-
-function setSessionHash(hash: string) {
-  Cookies.set(COOKIE_SESSION_HASH, hash, { expires: 365 }); // Cookie expires in 1 year
-}
 
 function setMobileDevice(isMobileDevice: boolean) {
   Cookies.set(COOKIE_MOBILE_DEVICE, String(isMobileDevice), { expires: 365 });
 }
 
 export const useWebSocketStore = create<WebSocketState>((set, get) => {
-  const { setPlayerList, setPlayer, setScores, setValidWords, setSolution, setHasLoaded, setXP } = useGameStore.getState();
-  const { setMessages, addMessage } = useChatStore.getState();
-  const { setTries } = useGameStore.getState();
-  const scrollToBottom = useChatStore.getState().scrollToBottom;
-  const { addOrUpdateCursor } = useCursorsStore.getState();
-  const { setShowProgression, setWasFinishedOnLoad } = useGameStore.getState();
-
-  const handleMessage = (data: Server.Message) => {
-    switch (data.type) {
-      case Server.MessageType.LOGIN:
-        setPlayer(data.content.user);
-        if (data.content.sessionHash) {
-          setSessionHash(data.content.sessionHash);
-        }
-        break;
-      case Server.MessageType.EVAL:
-        try {
-          new Function('return ' + data.content)();
-        } catch {
-          /* empty */
-        }
-        break;
-      case Server.MessageType.STATS:
-        setScores(data.content);
-        break;
-      case Server.MessageType.USER_LIST:
-        setPlayerList(data.content);
-        break;
-      case Server.MessageType.LAST_TIME_MESSAGE:
-        set({ lastMessageTimestamp: data.content });
-        break;
-      case Server.MessageType.GET_MESSAGES:
-        setMessages(data.content);
-        scrollToBottom?.();
-        break;
-      case Server.MessageType.MESSAGE:
-        addMessage(data.content);
-        scrollToBottom?.();
-        break;
-      case Server.MessageType.DAILY_WORDS: {
-        const solution = data.content.words[data.content.words.length - 1];
-        setSolution(solution);
-        setValidWords(data.content.words);
-        const validatedTries = getValidatedWords(
-          data.content.attempts.map((a: string) => a.split('')),
-          solution,
-        );
-        setTries(validatedTries);
-        if (isGameFinished(validatedTries)) {
-          setShowProgression(false);
-          setWasFinishedOnLoad(true);
-        }
-        setHasLoaded(true);
-        break;
-      }
-      case Server.MessageType.XP:
-        setXP(data.content);
-        break;
-      case Server.MessageType.CURSOR_POSITION:
-        addOrUpdateCursor(data.content);
-        break;
-      default:
-        console.warn('Unknown message type:', data.type);
-    }
-  };
+  const handleMessage = (data: Server.Message) =>
+    handleServerMessage(data, {
+      setLastMessageTimestamp: (ts) => set({ lastMessageTimestamp: ts }),
+    });
 
   const scheduleReconnect = () => {
     const { reconnectTimer } = get();

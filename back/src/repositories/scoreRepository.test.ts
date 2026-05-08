@@ -13,7 +13,7 @@ beforeEach(() => {
 });
 
 describe('getScoreDistribution', () => {
-  it('counts attempts grouped by attempt count', async () => {
+  it('counts attempts grouped by attempt count, scoped to the world', async () => {
     query.mockResolvedValueOnce([
       [
         { Attempts: JSON.stringify([['G'], ['G']]) },
@@ -22,6 +22,13 @@ describe('getScoreDistribution', () => {
       ],
     ]);
     expect(await getScoreDistribution('alice')).toEqual({ 2: 2, 3: 1 });
+    expect(query.mock.calls[0][1]).toEqual(['alice', 'fr', 'alice', 'fr', 'alice', 'fr']);
+  });
+
+  it('threads the worldId into the query', async () => {
+    query.mockResolvedValueOnce([[]]);
+    await getScoreDistribution('alice', 'en');
+    expect(query.mock.calls[0][1]).toEqual(['alice', 'en', 'alice', 'en', 'alice', 'en']);
   });
 
   it('returns an empty object when no scores exist', async () => {
@@ -31,13 +38,15 @@ describe('getScoreDistribution', () => {
 });
 
 describe('getDailyScore', () => {
-  it('returns the parsed attempts when present', async () => {
+  it('uses the WordHistoryID-based check', async () => {
     query.mockResolvedValueOnce([[{ Attempts: JSON.stringify([['G', 'R', 'A', 'S', 'S']]) }]]);
-    expect(await getDailyScore('alice')).toEqual([['G', 'R', 'A', 'S', 'S']]);
+    expect(await getDailyScore('alice', 42)).toEqual([['G', 'R', 'A', 'S', 'S']]);
+    expect(query.mock.calls[0][0]).toMatch(/WordHistoryID = \?/);
+    expect(query.mock.calls[0][1]).toEqual(['alice', 42]);
   });
 
-  it('returns an empty list when nothing was found', async () => {
+  it('returns an empty list when no row is found for the given WordHistoryID', async () => {
     query.mockResolvedValueOnce([[]]);
-    expect(await getDailyScore('alice')).toEqual([]);
+    expect(await getDailyScore('alice', 42)).toEqual([]);
   });
 });

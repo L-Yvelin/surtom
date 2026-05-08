@@ -3,6 +3,7 @@ import WS from 'ws';
 import { Client, Server, validateClientMessage } from '@surtom/interfaces';
 import FullUser from '../models/FullUser.js';
 import store from '../state/store.js';
+import { worldRegistry, World } from '../state/worldRegistry.js';
 import { parseCookies } from './cookies.js';
 import { sendToUser } from './send.js';
 import { handleMessage, shouldLogMessage } from './dispatcher.js';
@@ -10,11 +11,7 @@ import { generateRandomHash } from '../utils/crypto.js';
 import { getRandomFunnyName } from '../utils/randomName.js';
 import { getPlayerBySessionHash } from '../repositories/playerRepository.js';
 import { getPlayerXp } from '../repositories/xpRepository.js';
-import { getScoreDistribution } from '../repositories/scoreRepository.js';
-import { getMessages } from '../repositories/messageRepository.js';
-import { getOrCreateTodaysWord, getValidWords } from '../repositories/wordRepository.js';
-import { getTodaysTriesForPlayer } from '../repositories/tryRepository.js';
-import { updateUsersList } from '../handlers/userListHandler.js';
+import { updateUsersListForWorld } from '../handlers/userListHandler.js';
 import { MAX_MESSAGES_LOADED, PING_INTERVAL_MS } from '../config/constants.js';
 
 async function buildPrivateUser(sessionHash: string | undefined, usesMobileDevice: boolean): Promise<Server.PrivateUser> {
@@ -43,60 +40,67 @@ async function buildPrivateUser(sessionHash: string | undefined, usesMobileDevic
   };
 }
 
-function setupHeartbeat(connection: WS, isAlive: { value: boolean }): NodeJS.Timeout {
+function setupHeartbeat(user: FullUser, isAlive: { value: boolean }): NodeJS.Timeout {
   return setInterval(() => {
     if (!isAlive.value) {
       console.log('/!\\ Connection is dead, closing');
-      connection.terminate();
-      updateUsersList();
+      user.connection.terminate();
+      if (user.worldId) updateUsersListForWorld(user.worldId);
       return;
     }
     isAlive.value = false;
-    connection.ping();
+    user.connection.ping();
   }, PING_INTERVAL_MS);
 }
 
-async function sendInitialState(user: FullUser): Promise<void> {
-  updateUsersList();
-  console.log(`New connection: [${user.ip}] ${user.privateUser.name}`);
-
+async function sendChatForWorld(user: FullUser, world: World): Promise<void> {
   try {
-    const dbMessages = await getMessages(!!user.privateUser.moderatorLevel, MAX_MESSAGES_LOADED, !user.privateUser.isLoggedIn);
+    const messages = await world.getChat({
+      includeDeleted: !!user.privateUser.moderatorLevel,
+      max: MAX_MESSAGES_LOADED,
+      showHelp: !user.privateUser.isLoggedIn,
+    });
 
-    if (dbMessages) {
-      const userMessages = dbMessages.filter(
-        (msg) => msg.type === Server.MessageType.TEXT || msg.type === Server.MessageType.ENHANCED || msg.type === Server.MessageType.SCORE,
-      ) as Server.ChatMessage.SavedType[];
+    const userMessages = messages.filter(
+      (msg) => msg.type === Server.MessageType.TEXT || msg.type === Server.MessageType.ENHANCED || msg.type === Server.MessageType.SCORE,
+    ) as Server.ChatMessage.SavedType[];
 
-      sendToUser(user.connection, {
-        type: Server.MessageType.GET_MESSAGES,
-        content: userMessages,
-      });
-    }
+    sendToUser(user.connection, {
+      type: Server.MessageType.GET_MESSAGES,
+      content: userMessages,
+    });
   } catch (err) {
     console.error('Error getting messages:', err);
   }
+}
 
+async function sendDailyWordsForWorld(user: FullUser, world: World): Promise<void> {
   try {
-    const word = await getOrCreateTodaysWord();
-    if (!word) {
+    const game = await world.getGameState();
+    if (!game.solution) {
       console.error('No word found for today');
       return;
     }
 
-    const validWords = await getValidWords(word.toUpperCase());
-    const attempts = await getTodaysTriesForPlayer(user.privateUser.name);
+    const tries = await world.getTries(user.privateUser.name);
 
     sendToUser(user.connection, {
       type: Server.MessageType.DAILY_WORDS,
       content: {
-        words: [...validWords.map((w) => w.toUpperCase()), word.toUpperCase()],
-        attempts,
+        words: game.validWords,
+        attempts: tries.attempts.map((letters) => letters.join('')),
       },
     });
   } catch (err) {
     console.error('Error getting daily words:', err);
   }
+}
+
+export async function sendWorldInitialState(user: FullUser): Promise<void> {
+  if (!user.worldId) return;
+  const world = worldRegistry.getOrDefault(user.worldId);
+  await sendChatForWorld(user, world);
+  await sendDailyWordsForWorld(user, world);
 }
 
 function logIncomingMessage(message: Client.Message): void {
@@ -120,24 +124,21 @@ export async function handleNewConnection(connection: WS, req: IncomingMessage):
     const usesMobileDevice = cookies.mobileDevice === 'true';
 
     const privateUser = await buildPrivateUser(sessionHash, usesMobileDevice);
-    const user = new FullUser(generateRandomHash(), privateUser, connection, ip);
+    const user = new FullUser(generateRandomHash(), privateUser, connection, ip, null);
 
     sendToUser(user.connection, {
       type: Server.MessageType.LOGIN,
       content: { user: user.privateUser },
     });
 
-    sendToUser(user.connection, {
-      type: Server.MessageType.STATS,
-      content: await getScoreDistribution(user.privateUser.name),
-    });
-
     const currentState = store.getState();
     currentState.users[user.id] = user;
     store.setState(currentState);
 
+    console.log(`New connection: [${user.ip}] ${user.privateUser.name} → lobby`);
+
     const isAlive = { value: true };
-    const heartbeat = setupHeartbeat(connection, isAlive);
+    const heartbeat = setupHeartbeat(user, isAlive);
 
     connection.on('message', (raw: WS.RawData) => {
       isAlive.value = true;
@@ -165,10 +166,11 @@ export async function handleNewConnection(connection: WS, req: IncomingMessage):
       const state = store.getState();
       delete state.users[user.id];
       store.setState(state);
-      updateUsersList();
+      if (user.worldId) {
+        worldRegistry.getOrDefault(user.worldId).removeMember(user.id);
+        updateUsersListForWorld(user.worldId);
+      }
     });
-
-    void sendInitialState(user);
   } catch (e) {
     console.error(e);
   }

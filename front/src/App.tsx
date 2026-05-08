@@ -1,22 +1,18 @@
 import React, { use, useEffect } from 'react';
+import classNames from 'classnames';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
-import Header from './components/Header/Header';
-import Main from './components/Main/Main';
-import { useGlobalKeyPress } from './hooks/keyboardEvents/useKeyPress';
-import useTheme from './hooks/useTheme';
-import AchievementsStack from './components/AchievementsStack/AchievementsStack';
-import Tab from './components/Tab/Tab';
-import Stats from './components/Stats/Stats';
-import CustomWord from './components/CustomWord/CustomWord';
-import EndPage from './components/EndPage/EndPage';
-import Chat from './components/Chat/Chat';
 import { useWebSocketStore } from './stores/useWebSocketStore';
 import WebSocketPingHandler from './utils/webSocketPingHandler';
 import twemoji from './assets/fonts/TwemojiMozilla-Regular.ttf';
-import { TooltipProvider } from './components/Tooltip/TooltipProvider';
-import Cursors from './components/Cursors/Cursors';
-import OwnCursorNameTag from './components/Cursors/OwnCursorNameTag/OwnCursorNameTag';
-import { isDesktop } from 'react-device-detect';
+import { TooltipProvider } from './ui/Tooltip/TooltipProvider';
+import Header from './ui/Header/Header';
+import { Theme } from './theme/theme';
+import useTheme from './hooks/useTheme';
+import MainMenu from './routes/MainMenu/MainMenu';
+import WorldSelection from './routes/WorldSelection/WorldSelection';
+import Quotidien from './routes/Quotidien/Quotidien';
+import Settings from './ui/Settings/Settings';
 
 const fontFile = new FontFace('Twemoji', `url(${twemoji})`, {
   unicodeRange:
@@ -36,14 +32,8 @@ interface AppProp {
 }
 
 const App: React.FC<AppProp> = ({ onLoad }) => {
-  const tabButtonRef = React.useRef<HTMLButtonElement>(null);
-  const statsButtonRef = React.useRef<HTMLButtonElement>(null);
-  const customWordButtonRef = React.useRef<HTMLButtonElement>(null);
-  const endPageButtonRef = React.useRef<HTMLButtonElement>(null);
-  const chatButtonRef = React.useRef<HTMLButtonElement>(null);
-
-  const { theme, setTheme } = useTheme();
   const { connect } = useWebSocketStore.getState();
+  const { theme } = useTheme();
 
   useEffect(() => {
     connect();
@@ -51,42 +41,26 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
 
   use(twemojiPromise);
 
-  useGlobalKeyPress();
-
   useEffect(() => {
     onLoad?.();
   }, [onLoad]);
 
   return (
-    <div id="root-container">
+    <div id="root-container" className={classNames({ dark: theme === Theme.DARK })}>
       <TooltipProvider>
         <Header theme={theme} />
-        <Main
-          theme={theme}
-          setTheme={setTheme}
-          tabButtonRef={tabButtonRef}
-          statsButtonRef={statsButtonRef}
-          customWordButtonRef={customWordButtonRef}
-          endPageButtonRef={endPageButtonRef}
-          chatButtonRef={chatButtonRef}
-        />
+        <Routes>
+          <Route path="/" element={<MainMenu />} />
+          <Route path="/quotidien" element={<WorldSelection />} />
+          <Route path="/quotidien/:lang" element={<Quotidien />} />
+          <Route path="/quotidien/:lang/c/:encoded" element={<Quotidien />} />
+          <Route path="/fr" element={<Navigate to="/quotidien/fr" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
 
-        <Cursors />
-
-        {/* Floating interfaces */}
-        <div className="windows">
-          <Chat chatButtonRef={chatButtonRef} />
-          <Stats statsButtonRef={statsButtonRef} />
-          <AchievementsStack lifeTime={4} transitionDuration={0.5} />
-          <CustomWord customWordButtonRef={customWordButtonRef} />
-          <EndPage endPageButtonRef={endPageButtonRef} />
-          <Tab tabButtonRef={tabButtonRef} />
-        </div>
-
+        <Settings />
         <WebSocketPingHandler />
       </TooltipProvider>
-
-      {isDesktop && <OwnCursorNameTag />}
     </div>
   );
 };

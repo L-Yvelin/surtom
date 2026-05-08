@@ -1,0 +1,46 @@
+import { JSX, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import classes from './MainMenu.module.css';
+import Button from '../../ui/Button/Button';
+import Tooltip from '../../ui/Tooltip/Tooltip';
+import MinecraftTooltip from '../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
+import Credits from '../../features/Game/Credits/Credits';
+import { SETTINGS_TOAST_ID } from '../../ui/Settings/Settings';
+import useUIStore from '../../stores/useUIStore';
+
+function MainMenu(): JSX.Element {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const optionsButtonRef = useRef<HTMLDivElement>(null);
+  const toggle = useUIStore((s) => s.toggle);
+
+  return (
+    <>
+      <div className={classes.menu}>
+        <div data-backdrop className={classes.backdrop}></div>
+
+        <div className={classes.buttons}>
+          <Button text={t('mainMenu.daily')} onClick={() => navigate('/quotidien')} className={classes.primaryButton} />
+          <Tooltip tooltipContent={<MinecraftTooltip title={t('mainMenu.competitive')} children={t('mainMenu.competitiveSoon')} />}>
+            <div className={classes.tooltipWrapper}>
+              <Button text={t('mainMenu.competitive')} disabled className={classes.primaryButton} />
+            </div>
+          </Tooltip>
+          <div ref={optionsButtonRef}>
+            <Button text={t('mainMenu.options')} onClick={() => toggle(SETTINGS_TOAST_ID)} className={classes.primaryButton} />
+          </div>
+          <Tooltip tooltipContent={<MinecraftTooltip title={'???'} children={'🙅'} />}>
+            <Button text={t('mainMenu.quit')} disabled className={classes.primaryButton} />
+          </Tooltip>
+        </div>
+
+        <div className={classes.creditsWrapper}>
+          <Credits />
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default MainMenu;

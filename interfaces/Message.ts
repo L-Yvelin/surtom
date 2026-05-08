@@ -7,6 +7,8 @@ export namespace Client {
     SCORE_TO_CHAT = 'scoreToChat',
     TRY = 'try',
     CURSOR_POSITION = 'cursorPosition',
+    JOIN_WORLD = 'joinWorld',
+    LIST_WORLDS = 'listWorlds',
   }
 
   export type Message =
@@ -16,7 +18,9 @@ export namespace Client {
     | { type: MessageType.CHAT_MESSAGE; content: TextChatMessageContent }
     | { type: MessageType.SCORE_TO_CHAT; content: ScoreContent }
     | { type: MessageType.TRY; content: string }
-    | { type: MessageType.CURSOR_POSITION; content: { cursor: CursorPosition } };
+    | { type: MessageType.CURSOR_POSITION; content: { cursor: CursorPosition } }
+    | { type: MessageType.JOIN_WORLD; content: { worldId: string } }
+    | { type: MessageType.LIST_WORLDS };
 
   export type ChatMessage =
     | { type: MessageType.CHAT_MESSAGE; content: TextChatMessageContent }
@@ -57,6 +61,15 @@ export namespace Server {
     ATTEMPT = 'attempt',
     XP = 'xp',
     CURSOR_POSITION = 'cursorPosition',
+    WORLD_LIST = 'worldList',
+  }
+
+  export interface WorldSummary {
+    id: string;
+    displayName: string;
+    language: string;
+    persistent: boolean;
+    memberCount: number;
   }
 
   export enum SavedMessageType {
@@ -86,7 +99,8 @@ export namespace Server {
       }
     | { type: MessageType.ATTEMPT; content: string }
     | { type: MessageType.XP; content: number }
-    | { type: MessageType.CURSOR_POSITION; content: CursorPositionMessage };
+    | { type: MessageType.CURSOR_POSITION; content: CursorPositionMessage }
+    | { type: MessageType.WORLD_LIST; content: WorldSummary[] };
 
   export namespace ChatMessage {
     export type Type = Text | Score | Status;

@@ -1,63 +1,76 @@
 import { RowDataPacket } from 'mysql2/promise';
 import pool from './pool.js';
-import { MotMinecraftAttributes } from '../dbModels/init-models.js';
+import { DEFAULT_LANGUAGE } from '../state/worldRegistry.js';
 
-export async function getTodaysWord(): Promise<string | null> {
-  const [results] = await pool.query<(MotMinecraftAttributes & RowDataPacket)[]>(
-    `SELECT m.MotMinecraft
-    FROM MotMinecraft m, WordHistory w
+const DEFAULT_WORLD_ID = 'fr';
+
+export async function getTodaysWord(worldId: string = DEFAULT_WORLD_ID): Promise<string | null> {
+  const [results] = await pool.query<({ Word: string } & RowDataPacket)[]>(
+    `SELECT m.Word
+    FROM MinecraftSolution m
+    JOIN WordHistory w ON w.WordID = m.ID
     WHERE DATE(w.AssignedDate) = CURDATE()
-    AND w.WordID = m.ID
+      AND w.WorldID = ?
     ORDER BY w.AssignedDate DESC
     LIMIT 1;`,
+    [worldId],
   );
-  return results.length ? results[0].MotMinecraft : null;
+  return results.length ? results[0].Word : null;
 }
 
-export async function getOrCreateTodaysWord(): Promise<string> {
-  const todaysWord = await getTodaysWord();
+export async function getOrCreateTodaysWord(worldId: string = DEFAULT_WORLD_ID, language: string = DEFAULT_LANGUAGE): Promise<string> {
+  const todaysWord = await getTodaysWord(worldId);
   if (todaysWord) return todaysWord;
 
-  const [randomWordResults] = await pool.query<(MotMinecraftAttributes & RowDataPacket)[]>(
-    `SELECT ID, MotMinecraft FROM MotMinecraft WHERE Rotation = (
-      SELECT MIN(Rotation) FROM MotMinecraft
-    ) ORDER BY RAND() LIMIT 1;`,
+  const [randomWordResults] = await pool.query<({ ID: number; Word: string } & RowDataPacket)[]>(
+    `SELECT ID, Word FROM MinecraftSolution
+     WHERE Language = ?
+       AND Rotation = (SELECT MIN(Rotation) FROM MinecraftSolution WHERE Language = ?)
+     ORDER BY RAND() LIMIT 1;`,
+    [language, language],
   );
-  if (!randomWordResults.length) throw new Error('No words available in MotMinecraft');
-  const { ID, MotMinecraft } = randomWordResults[0];
+  if (!randomWordResults.length) throw new Error(`No words available in MinecraftSolution for language ${language}`);
+  const { ID, Word } = randomWordResults[0];
 
-  await pool.query(`INSERT INTO WordHistory (WordID, AssignedDate) VALUES (?, CURDATE());`, [ID]);
-  await pool.query(`UPDATE MotMinecraft SET Rotation = Rotation + 1 WHERE ID = ?;`, [ID]);
+  await pool.query(`INSERT INTO WordHistory (WorldID, WordID, AssignedDate) VALUES (?, ?, CURDATE());`, [worldId, ID]);
+  await pool.query(`UPDATE MinecraftSolution SET Rotation = Rotation + 1 WHERE ID = ?;`, [ID]);
 
-  return MotMinecraft;
+  return Word;
 }
 
-export async function getValidWords(word: string): Promise<string[]> {
+export async function getValidWords(word: string, language: string = DEFAULT_LANGUAGE): Promise<string[]> {
   const pattern = word[0] + '_'.repeat(word.length - 1);
-  const [results] = await pool.query<({ MotValide: string } & RowDataPacket)[]>(
-    `SELECT MotMinecraftValide as MotValide
-    FROM MotMinecraftValide
-    WHERE MotMinecraftValide LIKE ?
-    UNION
-    SELECT MotFrancais as MotValide
-    FROM MotFrancais
-    WHERE MotFrancais LIKE ?;`,
-    [pattern, pattern],
+  const [results] = await pool.query<({ Word: string } & RowDataPacket)[]>(
+    `SELECT Word FROM MinecraftWord
+       WHERE Language = ? AND Word LIKE ?
+     UNION
+     SELECT Word FROM Dictionary
+       WHERE Language = ? AND Word LIKE ?;`,
+    [language, pattern, language, pattern],
   );
-  return results.length ? results.map((row) => row.MotValide) : [];
+  return results.length ? results.map((row) => row.Word) : [];
 }
 
-export async function getTodaysWordAndHistoryId(): Promise<{ wordHistoryId: number; todaysWord: string }> {
+export async function getTodaysWordAndHistoryId(
+  worldId: string = DEFAULT_WORLD_ID,
+): Promise<{ wordHistoryId: number; todaysWord: string }> {
   type WordHistoryJoinRow = {
     WordHistoryID: number;
-    MotMinecraft: string;
+    Word: string;
   };
   const [rows] = await pool.query<(WordHistoryJoinRow & RowDataPacket)[]>(
-    `SELECT w.ID as WordHistoryID, m.MotMinecraft FROM WordHistory w JOIN MotMinecraft m ON w.WordID = m.ID WHERE DATE(w.AssignedDate) = CURDATE() ORDER BY w.AssignedDate DESC LIMIT 1;`,
+    `SELECT w.ID as WordHistoryID, m.Word
+     FROM WordHistory w
+     JOIN MinecraftSolution m ON w.WordID = m.ID
+     WHERE DATE(w.AssignedDate) = CURDATE()
+       AND w.WorldID = ?
+     ORDER BY w.AssignedDate DESC
+     LIMIT 1;`,
+    [worldId],
   );
   if (!Array.isArray(rows) || rows.length === 0) throw new Error('Mot du jour introuvable.');
   return {
     wordHistoryId: rows[0].WordHistoryID,
-    todaysWord: rows[0].MotMinecraft.toUpperCase(),
+    todaysWord: rows[0].Word.toUpperCase(),
   };
 }
