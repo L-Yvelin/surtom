@@ -24,7 +24,8 @@ const useGameLogic = () => {
   const sendMessage = useWebSocketStore((s) => s.sendMessage);
 
   useEffect(() => {
-    if (!solution || gameFinished()) return;
+    if (gameFinished()) setLetters([]);
+    if (!solution) return;
     setLetters([{ letter: solution[0], state: LetterState.Correct }]);
   }, [solution, setLetters, gameFinished]);
 
