@@ -1,7 +1,8 @@
 .button {
+  --button-height: min(8.5vw, 5vh);
   all: unset;
   color: white;
-  height: 65px;
+  height: var(--button-height);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,11 +12,19 @@
   padding: 0.5cqh;
   box-sizing: border-box;
   aspect-ratio: 10;
-
   border-image-source: url('/src/assets/images/ui/button.png');
-  border-image-slice: 4 fill;
-  border-image-width: 12px;
-  border-image-repeat: stretch;
+  border-image-slice: 2 fill;
+  --button-border: calc(var(--button-height) * 0.1);
+  border-image-width: var(--button-border);
+  border-image-repeat: round;
+}
+
+.square {
+  aspect-ratio: 1 / 1;
+}
+
+.half {
+  aspect-ratio: 5 / 1;
 }
 
 .text {
@@ -35,12 +44,4 @@
 .disabled,
 .disabled:hover {
   border-image-source: url('/src/assets/images/ui/button_disabled.png');
-}
-
-.square {
-  aspect-ratio: 1 / 1;
-}
-
-.half {
-  aspect-ratio: 5 / 1; /* half of 10, so visually "half width" */
 }

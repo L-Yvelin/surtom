@@ -49,7 +49,6 @@ function EndPage({ endPageButtonRef }: EndPageProps): JSX.Element {
         <Button
           text={<img src={copyIcon} alt={t('endPage.copyIconAlt')} className={classes.copyIcon} />}
           onClick={() => handleCopy()}
-          className={classes.copyScore}
           size="square"
         />
       </div>
