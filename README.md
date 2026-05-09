@@ -91,26 +91,13 @@ cd back
 npm run db:setup      # = db:migrate + db:seed
 ```
 
-That creates all tables (via Drizzle migrations in `back/src/db/migrations/`) and inserts the default Worlds (`fr`, `en`) plus the system / funny-name `Player` rows.
+That creates all tables (via Drizzle migrations in `back/src/db/migrations/`) and inserts:
 
-### 5. (Optional) Seed word lists
+- the default Worlds (`fr`, `en`),
+- the system / funny-name `Player` rows,
+- the word lists (`Dictionary`, `MinecraftWord`, `MinecraftSolution`) for both languages, loaded from the checked-in text files in `back/data/seed-output/<lang>/`.
 
-The base seed does **not** populate the dictionary, MinecraftSolution, or MinecraftWord tables. To seed words for a language, use:
-
-```bash
-cd back
-npm run db:seed:words -- \
-  --lang fr \
-  --lang-file data/minecraft-lang/fr_fr.json \
-  --dict data/dictionary/fr.txt \
-  --apply
-```
-
-(Repeat with `--lang en`, the corresponding `en_us.json`, and `data/dictionary/en.txt`.)
-
-Without `--apply`, the script runs in dry-run mode and writes the candidate word lists to `back/data/seed-output/<lang>/`.
-
-### 6. Run dev servers
+### 5. Run dev servers
 
 ```bash
 # from the repo root
@@ -125,38 +112,27 @@ Backend on port 27020, frontend on the Vite dev server.
 
 The DB layer uses [Drizzle ORM](https://orm.drizzle.team/) with MySQL. The single source of truth for the schema is `back/src/db/schema.ts`.
 
-| Command (run inside `back/`)   | What it does                                                                                                                                                                 |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run db:generate`          | Diffs `schema.ts` against the last applied migration and emits a new SQL migration into `src/db/migrations/`.                                                                |
-| `npm run db:migrate`           | Applies any pending migrations (tracks state in the `__drizzle_migrations` table).                                                                                           |
-| `npm run db:seed`              | Idempotently inserts default Worlds + system Players.                                                                                                                        |
-| `npm run db:seed:words -- ...` | Bulk-inserts dictionary / MinecraftSolution / MinecraftWord rows for a language.                                                                                             |
-| `npm run db:setup`             | Convenience: `db:migrate` then `db:seed`.                                                                                                                                    |
-| `npm run db:baseline`          | One-off: marks all existing migrations as already applied (for an existing DB that already has the schema, e.g. after pulling this branch on top of a hand-bootstrapped DB). |
-| `npm run db:studio`            | Opens Drizzle Studio (a web UI to browse rows) at `https://local.drizzle.studio`.                                                                                            |
+| Command (run inside `back/`)   | What it does                                                                                                                                                         |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run db:generate`          | Diffs `schema.ts` against the last applied migration and emits a new SQL migration into `src/db/migrations/`.                                                        |
+| `npm run db:migrate`           | Applies pending migrations via `drizzle-kit migrate` (tracks state in the `__drizzle_migrations` table).                                                             |
+| `npm run db:seed`              | Idempotently inserts default Worlds, system Players, and word lists for both languages, loaded from `back/data/seed-output/<lang>/`.                                 |
+| `npm run db:seed:words -- ...` | Regenerates the word lists by extracting from raw Minecraft lang files / dictionaries; writes to `back/data/seed-output/<lang>/` (add `--apply` to also push to DB). |
+| `npm run db:setup`             | Convenience: `db:migrate` then `db:seed`.                                                                                                                            |
+| `npm run db:studio`            | Opens Drizzle Studio (web UI to browse rows) at `https://local.drizzle.studio`.                                                                                      |
 
 ### Adding a new column / table
 
 1. Edit `back/src/db/schema.ts`.
-2. Run `npm run db:generate` (give it a meaningful name with `--name add_xyz`).
-3. Inspect the generated SQL in `src/db/migrations/`.
+2. Run `npm run db:generate -- --name add_xyz` to produce a migration.
+3. Inspect the generated SQL in `back/src/db/migrations/`.
 4. Run `npm run db:migrate`.
 5. Commit the schema change AND the generated migration files together.
 
-### Migrating an existing DB (was bootstrapped before Drizzle)
-
-If you have an old `surtom` database that was set up via the old `01-schema.sql` / `02-seed.sql` flow and you do **not** want to wipe it:
+### Resetting your local DB
 
 ```bash
-cd back
-npm run db:baseline      # tells Drizzle: "this DB already matches 0000_init"
-npm run db:seed          # idempotent, safe to re-run
-```
-
-If you don't care about the existing data, the simpler path is:
-
-```bash
-docker compose down -v   # wipes the mysql_data volume
+docker compose down -v    # wipes the mysql_data volume
 docker compose up -d mysql
 cd back && npm run db:setup
 ```

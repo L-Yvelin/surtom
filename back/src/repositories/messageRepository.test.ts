@@ -1,5 +1,5 @@
 import { Client, Server } from '@surtom/interfaces';
-import { createMockDb } from '../db/__mocks__/mockDb.js';
+import { createMockDb } from '../db/testing.js';
 
 const mock = createMockDb();
 jest.mock('../db/client.js', () => ({
