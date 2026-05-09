@@ -26,27 +26,6 @@
   gap: 1vh;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1vh;
-}
-
-.button {
-  --button-width: min(85vw, 500px);
-  width: var(--button-width);
-  min-width: var(--button-width);
-  height: unset;
-  flex-grow: 0;
-}
-
-.grid .button {
-  width: calc(var(--button-width) / 2);
-  min-width: calc(var(--button-width) / 2);
-  aspect-ratio: 5;
-  background-size: cover;
-}
-
 .title {
   font-size: 2.4vh;
   letter-spacing: 0.05em;

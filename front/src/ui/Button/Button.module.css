@@ -1,41 +1,29 @@
 .button {
   all: unset;
   color: white;
-  height: 100%;
-  width: 100%;
-  flex-grow: 1;
+  height: 65px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-size: 100%;
-  background-repeat: no-repeat;
   container-type: size;
   text-shadow: 0.25cqh 0.25cqh 0 rgba(0, 0, 0, 0.5);
   padding: 0.5cqh;
   box-sizing: border-box;
+  aspect-ratio: 10;
+
+  border-image-source: url('/src/assets/images/ui/button.png');
+  border-image-slice: 4 fill;
+  border-image-width: 12px;
+  border-image-repeat: stretch;
 }
 
 .text {
   font-size: 45cqh;
 }
 
-.normal {
-  aspect-ratio: 10;
-  background-image: url('/src/assets/images/ui/button.png');
-}
-
-.normal:hover {
-  background-image: url('/src/assets/images/ui/button_highlighted.png');
-}
-
-.square {
-  aspect-ratio: 1;
-  background-image: url('/src/assets/images/ui/button_square.png');
-}
-
-.square:hover {
-  background-image: url('/src/assets/images/ui/button_highlighted_square.png');
+.button:hover {
+  border-image-source: url('/src/assets/images/ui/button_highlighted.png');
 }
 
 .disabled {
@@ -44,13 +32,15 @@
   text-shadow: 0.25cqh 0.25cqh 0 rgba(0, 0, 0, 0.3);
 }
 
-.normal.disabled,
-.normal.disabled:hover {
-  background-image: url('/src/assets/images/ui/button_disabled.png');
+.disabled,
+.disabled:hover {
+  border-image-source: url('/src/assets/images/ui/button_disabled.png');
 }
 
-.square.disabled,
-.square.disabled:hover {
-  background-image: url('/src/assets/images/ui/button_square.png');
-  filter: grayscale(1) brightness(0.7);
+.square {
+  aspect-ratio: 1 / 1;
+}
+
+.half {
+  aspect-ratio: 5 / 1; /* half of 10, so visually "half width" */
 }

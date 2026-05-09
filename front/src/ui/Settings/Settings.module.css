@@ -27,19 +27,16 @@
 
 .grid {
   width: 100%;
-  max-width: calc(2 * 500px + 1vh);
+  max-width: calc(2 * 650px + 1vh);
   margin-inline: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(85vw, 500px), 500px));
+  grid-template-columns: repeat(auto-fit, minmax(min(85vw, 650px), 650px));
   gap: 1vh;
   justify-content: center;
   align-items: center;
 }
 
 .button {
-  width: min(85vw, 500px);
-  min-width: min(85vw, 500px);
-  height: unset;
   flex-grow: 0;
 }
 
