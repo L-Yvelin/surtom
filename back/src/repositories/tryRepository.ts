@@ -1,34 +1,33 @@
-import { RowDataPacket } from 'mysql2/promise';
-import pool from './pool.js';
-import { TryAttributes } from '../dbModels/init-models.js';
+import { and, eq, sql } from 'drizzle-orm';
+import { db } from '../db/client.js';
+import { player, tryTable, wordHistory } from '../db/schema.js';
 
 export async function getTodaysTriesForPlayer(playerName: string): Promise<string[]> {
-  const [rows] = await pool.query<(Pick<TryAttributes, 'Attempts'> & RowDataPacket)[]>(
-    `SELECT Attempts FROM Try t
-     JOIN Player p ON t.PlayerID = p.ID
-     JOIN WordHistory w ON t.WordHistoryID = w.ID
-     WHERE p.Username = ? AND DATE(w.AssignedDate) = CURDATE()`,
-    [playerName],
-  );
+  const rows = await db
+    .select({ attempts: tryTable.attempts })
+    .from(tryTable)
+    .innerJoin(player, eq(tryTable.playerId, player.id))
+    .innerJoin(wordHistory, eq(tryTable.wordHistoryId, wordHistory.id))
+    .where(and(eq(player.username, playerName), sql`DATE(${wordHistory.assignedDate}) = CURDATE()`));
+
   if (!rows.length) return [];
-  const parsed: string[][] = JSON.parse(rows[0].Attempts);
+  const parsed: string[][] = JSON.parse(rows[0].attempts);
   return parsed.map((letters) => letters.join(''));
 }
 
 export async function getOrCreateTry(playerId: number, wordHistoryId: number): Promise<{ attempts: string[][]; win: boolean }> {
-  const [rows] = await pool.query<(Pick<TryAttributes, 'Attempts' | 'Win'> & RowDataPacket)[]>(
-    `SELECT Attempts, Win FROM Try WHERE PlayerID = ? AND WordHistoryID = ?`,
-    [playerId, wordHistoryId],
-  );
+  const rows = await db
+    .select({ attempts: tryTable.attempts, win: tryTable.win })
+    .from(tryTable)
+    .where(and(eq(tryTable.playerId, playerId), eq(tryTable.wordHistoryId, wordHistoryId)))
+    .limit(1);
 
-  if (Array.isArray(rows) && rows.length > 0) {
+  if (rows.length > 0) {
     const row = rows[0];
-
-    const attempts: string[][] = row.Attempts ? JSON.parse(row.Attempts) : [];
-
+    const attempts: string[][] = row.attempts ? JSON.parse(row.attempts) : [];
     return {
       attempts: Array.isArray(attempts) ? attempts.map((w) => (Array.isArray(w) ? w : [])) : [],
-      win: Boolean(row.Win),
+      win: Boolean(row.win),
     };
   }
 
@@ -36,9 +35,20 @@ export async function getOrCreateTry(playerId: number, wordHistoryId: number): P
 }
 
 export async function updateTry(playerId: number, wordHistoryId: number, attempts: string[][], win: boolean): Promise<void> {
-  await pool.query(
-    `INSERT INTO Try (PlayerID, WordHistoryID, Attempts, Win, AttemptCount) VALUES (?, ?, ?, ?, ?)
-    ON DUPLICATE KEY UPDATE Attempts = VALUES(Attempts), Win = VALUES(Win), AttemptCount = VALUES(AttemptCount);`,
-    [playerId, wordHistoryId, JSON.stringify(attempts), win, attempts.length],
-  );
+  await db
+    .insert(tryTable)
+    .values({
+      playerId,
+      wordHistoryId,
+      attempts: JSON.stringify(attempts),
+      win: win ? 1 : 0,
+      attemptCount: attempts.length,
+    })
+    .onDuplicateKeyUpdate({
+      set: {
+        attempts: JSON.stringify(attempts),
+        win: win ? 1 : 0,
+        attemptCount: attempts.length,
+      },
+    });
 }

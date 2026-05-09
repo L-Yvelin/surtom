@@ -1,86 +1,79 @@
-import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
-import pool from './pool.js';
+import { and, desc, eq, isNull, or, sql } from 'drizzle-orm';
 import { Client, Server } from '@surtom/interfaces';
-import { MessageAttributes } from '../dbModels/init-models.js';
+import { db } from '../db/client.js';
+import { message, player, scoreContent, textContent, wordHistory } from '../db/schema.js';
 import { getPlayerByName } from './playerRepository.js';
 import { getTodaysWord } from './wordRepository.js';
 
-type MessageJoinRow = {
-  ID: number;
-  Username: string;
-  Timestamp: string | Date;
-  Type: string;
-  Text: string | null;
-  ImageData?: string | null;
-  ReplyID?: number | null;
-  Answer?: string | null;
-  Attempts?: string | null;
-  IsCustom?: number | null;
-  IsAdmin?: number;
-  Deleted?: number | null;
+interface MessageJoinRow {
+  id: number;
+  username: string;
+  timestamp: Date;
+  type: 'TEXT' | 'ENHANCED' | 'SCORE';
+  text: string | null;
+  imageData: string | null;
+  replyId: number | null;
+  answer: string | null;
+  attempts: string | null;
+  isCustom: number | null;
+  isAdmin: number;
+  deleted: number | null;
+}
+
+const MESSAGE_JOIN_FIELDS = {
+  id: message.id,
+  username: player.username,
+  timestamp: message.timestamp,
+  type: message.type,
+  text: textContent.text,
+  imageData: textContent.imageData,
+  replyId: textContent.replyId,
+  answer: scoreContent.answer,
+  attempts: scoreContent.attempts,
+  isCustom: scoreContent.isCustom,
+  isAdmin: player.isAdmin,
+  deleted: message.deleted,
 };
-
-const MESSAGE_JOIN_SELECT = `
-  m.ID,
-  p.Username,
-  m.Timestamp,
-  m.Type,
-  tc.Text,
-  tc.ImageData,
-  tc.ReplyID,
-  sc.Answer,
-  sc.Attempts,
-  sc.IsCustom,
-  p.IsAdmin,
-  m.Deleted
-`;
-
-const MESSAGE_JOIN_FROM = `
-  FROM Message m
-  JOIN Player p ON m.PlayerID = p.ID
-  LEFT JOIN TextContent tc ON m.ID = tc.ID
-  LEFT JOIN ScoreContent sc ON m.ID = sc.ID
-`;
 
 function mapMessage(row: MessageJoinRow): Server.ChatMessage.SavedType {
   const baseContent: Server.ChatMessage.Content.BaseMessageContent = {
-    id: row.ID.toString(),
+    id: row.id.toString(),
     user: {
-      name: row.Username,
-      moderatorLevel: row.IsAdmin ?? 0,
+      name: row.username,
+      moderatorLevel: row.isAdmin ?? 0,
     },
-    timestamp: new Date(row.Timestamp).toISOString(),
-    deleted: row.Deleted ?? 0,
+    timestamp: new Date(row.timestamp).toISOString(),
+    deleted: row.deleted ?? 0,
   };
-  if (row.Type === 'SCORE') {
+  if (row.type === 'SCORE') {
     return {
       type: Server.MessageType.SCORE,
       content: {
         ...baseContent,
-        answer: row.Answer ?? '',
-        attempts: row.Attempts ? JSON.parse(row.Attempts) : [],
+        answer: row.answer ?? '',
+        attempts: row.attempts ? JSON.parse(row.attempts) : [],
       },
     } as Server.ChatMessage.SavedType;
   }
 
   const messageType =
-    row.Type === 'ENHANCED'
+    row.type === 'ENHANCED'
       ? Server.MessageType.ENHANCED
-      : row.Type === 'TEXT'
+      : row.type === 'TEXT'
         ? Server.MessageType.TEXT
         : Server.MessageType.PRIVATE_MESSAGE;
   return {
     type: messageType,
     content: {
       ...baseContent,
-      text: row.Text ?? '',
-      imageData: row.ImageData || undefined,
-      replyId: row.ReplyID ? row.ReplyID.toString() : undefined,
+      text: row.text ?? '',
+      imageData: row.imageData || undefined,
+      replyId: row.replyId ? row.replyId.toString() : undefined,
     },
   };
 }
 
-function mapClientMessageType(clientType: Client.MessageType): string {
+function mapClientMessageType(clientType: Client.MessageType): 'TEXT' | 'SCORE' {
   switch (clientType) {
     case Client.MessageType.SCORE_TO_CHAT:
       return 'SCORE';
@@ -113,18 +106,20 @@ export async function getMessages(
   max = 200,
   showHelp = false,
 ): Promise<Server.ChatMessage.SavedType[]> {
-  const conditions: string[] = ['m.WorldID = ?'];
-  if (!includeDeleted) conditions.push('(m.Deleted IS NULL OR m.Deleted = 0)');
-  const whereClause = `WHERE ${conditions.join(' AND ')}`;
-  const query = `
-    SELECT ${MESSAGE_JOIN_SELECT}
-    ${MESSAGE_JOIN_FROM}
-    ${whereClause}
-    ORDER BY m.Timestamp DESC
-    LIMIT ?;
-  `;
-  const [results] = await pool.query<(MessageJoinRow & RowDataPacket)[]>(query, [worldId, max]);
-  const messages = results.length ? results.map((row) => mapMessage(row)) : [];
+  const baseWhere = eq(message.worldId, worldId);
+  const where = includeDeleted ? baseWhere : and(baseWhere, or(isNull(message.deleted), eq(message.deleted, 0)));
+
+  const rows = await db
+    .select(MESSAGE_JOIN_FIELDS)
+    .from(message)
+    .innerJoin(player, eq(message.playerId, player.id))
+    .leftJoin(textContent, eq(message.id, textContent.id))
+    .leftJoin(scoreContent, eq(message.id, scoreContent.id))
+    .where(where)
+    .orderBy(desc(message.timestamp))
+    .limit(max);
+
+  const messages = rows.map((row) => mapMessage(row as MessageJoinRow));
   if (showHelp) {
     messages.unshift(getHelpMessage());
   }
@@ -132,48 +127,53 @@ export async function getMessages(
 }
 
 export async function getMessageById(id: number): Promise<Server.ChatMessage.SavedType | undefined> {
-  const [results] = await pool.query<(MessageJoinRow & RowDataPacket)[]>(
-    `SELECT ${MESSAGE_JOIN_SELECT} ${MESSAGE_JOIN_FROM} WHERE m.ID = ?`,
-    [id],
-  );
-  return results.length ? mapMessage(results[0]) : undefined;
+  const rows = await db
+    .select(MESSAGE_JOIN_FIELDS)
+    .from(message)
+    .innerJoin(player, eq(message.playerId, player.id))
+    .leftJoin(textContent, eq(message.id, textContent.id))
+    .leftJoin(scoreContent, eq(message.id, scoreContent.id))
+    .where(eq(message.id, id))
+    .limit(1);
+  return rows.length ? mapMessage(rows[0] as MessageJoinRow) : undefined;
 }
 
 export async function getLastMessageTimestamp(): Promise<string | null> {
-  const [results] = await pool.query<(Pick<MessageAttributes, 'Timestamp'> & RowDataPacket)[]>(
-    'SELECT Timestamp FROM Message ORDER BY Timestamp DESC LIMIT 1',
-  );
-  return results.length ? (results[0].Timestamp as unknown as string) : null;
+  const rows = await db.select({ timestamp: message.timestamp }).from(message).orderBy(desc(message.timestamp)).limit(1);
+  return rows.length ? rows[0].timestamp.toISOString() : null;
 }
 
-export async function saveMessage(user: Server.PrivateUser, message: Client.ChatMessage, worldId = 'fr'): Promise<Server.Message> {
-  const player = await getPlayerByName(user.name);
-  if (!player) throw new Error('Player not found');
+export async function saveMessage(user: Server.PrivateUser, msg: Client.ChatMessage, worldId = 'fr'): Promise<Server.Message> {
+  const found = await getPlayerByName(user.name);
+  if (!found) throw new Error('Player not found');
 
   const timestamp = new Date();
-  const [messageResult] = await pool.query<ResultSetHeader>(
-    'INSERT INTO Message (PlayerID, WorldID, Timestamp, Type) VALUES (?, ?, ?, ?)',
-    [player.id, worldId, timestamp, mapClientMessageType(message.type)],
-  );
+  const insertResult = await db.insert(message).values({
+    playerId: found.id,
+    worldId,
+    timestamp,
+    type: mapClientMessageType(msg.type),
+  });
+  const messageId = (insertResult as unknown as [{ insertId: number }, unknown])[0].insertId;
 
-  const messageId = messageResult.insertId;
-
-  switch (message.type) {
+  switch (msg.type) {
     case Client.MessageType.SCORE_TO_CHAT: {
-      const { custom, attempts } = message.content;
-      const answer = message.content.custom ? message.content.custom : await getTodaysWord(worldId);
-      const [wordHistoryRows] = await pool.query<(RowDataPacket & { ID: number })[]>(
-        'SELECT ID FROM WordHistory WHERE WorldID = ? AND DATE(AssignedDate) = CURDATE() ORDER BY AssignedDate DESC LIMIT 1',
-        [worldId],
-      );
-      const wordHistoryId = wordHistoryRows.length ? wordHistoryRows[0].ID : null;
-      await pool.query('INSERT INTO ScoreContent (ID, WordHistoryID, Answer, Attempts, IsCustom) VALUES (?, ?, ?, ?, ?)', [
-        messageId,
+      const { custom, attempts } = msg.content;
+      const answer = msg.content.custom ? msg.content.custom : await getTodaysWord(worldId);
+      const wordHistoryRows = await db
+        .select({ id: wordHistory.id })
+        .from(wordHistory)
+        .where(and(eq(wordHistory.worldId, worldId), sql`DATE(${wordHistory.assignedDate}) = CURDATE()`))
+        .orderBy(desc(wordHistory.assignedDate))
+        .limit(1);
+      const wordHistoryId = wordHistoryRows.length ? wordHistoryRows[0].id : 0;
+      await db.insert(scoreContent).values({
+        id: messageId,
         wordHistoryId,
-        answer,
-        JSON.stringify(attempts),
-        !!custom,
-      ]);
+        answer: answer ?? '',
+        attempts: JSON.stringify(attempts),
+        isCustom: custom ? 1 : 0,
+      });
 
       return {
         type: Server.MessageType.MESSAGE,
@@ -194,13 +194,13 @@ export async function saveMessage(user: Server.PrivateUser, message: Client.Chat
       };
     }
     case Client.MessageType.CHAT_MESSAGE: {
-      const { text, imageData, replyId } = message.content;
-      await pool.query('INSERT INTO TextContent (ID, Text, ImageData, ReplyID) VALUES (?, ?, ?, ?)', [
-        messageId,
+      const { text, imageData, replyId } = msg.content;
+      await db.insert(textContent).values({
+        id: messageId,
         text,
-        imageData || null,
-        replyId ? parseInt(replyId) : null,
-      ]);
+        imageData: imageData || null,
+        replyId: replyId ? parseInt(replyId) : null,
+      });
 
       return {
         type: Server.MessageType.MESSAGE,
@@ -227,13 +227,14 @@ export async function saveMessage(user: Server.PrivateUser, message: Client.Chat
 }
 
 export async function toggleMessage(messageId: number, user: Server.PrivateUser): Promise<boolean> {
-  const message = await getMessageById(messageId);
-  if (!message) return false;
+  const existing = await getMessageById(messageId);
+  if (!existing) return false;
 
-  if (user.moderatorLevel < message.content.deleted && message.content.user.name === user.name) return false;
+  if (user.moderatorLevel < existing.content.deleted && existing.content.user.name === user.name) return false;
 
-  const newDeletedStatus = message.content.deleted ? 0 : user.moderatorLevel;
+  const newDeletedStatus = existing.content.deleted ? 0 : user.moderatorLevel;
 
-  const [result] = await pool.query<ResultSetHeader>('UPDATE Message SET Deleted = ? WHERE ID = ?', [newDeletedStatus, messageId]);
-  return result.affectedRows > 0;
+  const updateResult = await db.update(message).set({ deleted: newDeletedStatus }).where(eq(message.id, messageId));
+  const affected = (updateResult as unknown as [{ affectedRows: number }, unknown])[0].affectedRows;
+  return affected > 0;
 }

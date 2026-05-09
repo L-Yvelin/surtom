@@ -1,29 +1,14 @@
-import { RowDataPacket } from 'mysql2/promise';
-import pool from './pool.js';
-
-type PlayerXpRow = {
-  XP: number;
-};
+import { sql } from 'drizzle-orm';
+import { db } from '../db/client.js';
+import { player, tryTable } from '../db/schema.js';
 
 export async function getPlayerXp(playerName: string): Promise<number> {
-  const [rows] = await pool.query<(PlayerXpRow & RowDataPacket)[]>(
-    `
-    SELECT 
-      COALESCE(SUM(
-        CASE
-          WHEN t.Win = 1 THEN 35 - POW(t.AttemptCount - 1, 2)
-          ELSE 5
-        END
-      ), 0) AS XP
-    FROM Try t
-    WHERE t.PlayerID = (
-      SELECT p.ID
-      FROM Player p
-      WHERE p.Username = ?
-    );
-    `,
-    [playerName],
-  );
+  const rows = await db
+    .select({
+      xp: sql<number>`COALESCE(SUM(CASE WHEN ${tryTable.win} = 1 THEN 35 - POW(${tryTable.attemptCount} - 1, 2) ELSE 5 END), 0)`,
+    })
+    .from(tryTable)
+    .where(sql`${tryTable.playerId} = (SELECT ${player.id} FROM ${player} WHERE ${player.username} = ${playerName})`);
 
-  return rows[0]?.XP ?? 0;
+  return Number(rows[0]?.xp ?? 0);
 }

@@ -29,9 +29,7 @@ services:
     ports: ['27022:3306']
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./back/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro,Z
-      - ./back/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro,Z
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       timeout: 5s

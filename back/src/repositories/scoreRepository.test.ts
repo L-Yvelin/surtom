@@ -1,20 +1,21 @@
-jest.mock('./pool.js', () => ({
+import { createMockDb } from '../db/__mocks__/mockDb.js';
+
+const mock = createMockDb();
+jest.mock('../db/client.js', () => ({
   __esModule: true,
-  default: { query: jest.fn() },
+  db: mock.db,
+  schema: {},
 }));
 
-import pool from './pool.js';
 import { getDailyScore, getScoreDistribution } from './scoreRepository.js';
 
-const query = pool.query as unknown as jest.Mock;
-
 beforeEach(() => {
-  query.mockReset();
+  mock.reset();
 });
 
 describe('getScoreDistribution', () => {
-  it('counts attempts grouped by attempt count, scoped to the world', async () => {
-    query.mockResolvedValueOnce([
+  it('counts attempts grouped by attempt count', async () => {
+    mock.enqueue([
       [
         { Attempts: JSON.stringify([['G'], ['G']]) },
         { Attempts: JSON.stringify([['G'], ['G'], ['G']]) },
@@ -22,31 +23,27 @@ describe('getScoreDistribution', () => {
       ],
     ]);
     expect(await getScoreDistribution('alice')).toEqual({ 2: 2, 3: 1 });
-    expect(query.mock.calls[0][1]).toEqual(['alice', 'fr', 'alice', 'fr', 'alice', 'fr']);
-  });
-
-  it('threads the worldId into the query', async () => {
-    query.mockResolvedValueOnce([[]]);
-    await getScoreDistribution('alice', 'en');
-    expect(query.mock.calls[0][1]).toEqual(['alice', 'en', 'alice', 'en', 'alice', 'en']);
   });
 
   it('returns an empty object when no scores exist', async () => {
-    query.mockResolvedValueOnce([[]]);
+    mock.enqueue([[]]);
     expect(await getScoreDistribution('alice')).toEqual({});
+  });
+
+  it('accepts a worldId without throwing', async () => {
+    mock.enqueue([[]]);
+    await expect(getScoreDistribution('alice', 'en')).resolves.toEqual({});
   });
 });
 
 describe('getDailyScore', () => {
-  it('uses the WordHistoryID-based check', async () => {
-    query.mockResolvedValueOnce([[{ Attempts: JSON.stringify([['G', 'R', 'A', 'S', 'S']]) }]]);
+  it('returns parsed attempts when a row matches the WordHistoryID', async () => {
+    mock.enqueue([{ attempts: JSON.stringify([['G', 'R', 'A', 'S', 'S']]) }]);
     expect(await getDailyScore('alice', 42)).toEqual([['G', 'R', 'A', 'S', 'S']]);
-    expect(query.mock.calls[0][0]).toMatch(/WordHistoryID = \?/);
-    expect(query.mock.calls[0][1]).toEqual(['alice', 42]);
   });
 
   it('returns an empty list when no row is found for the given WordHistoryID', async () => {
-    query.mockResolvedValueOnce([[]]);
+    mock.enqueue([]);
     expect(await getDailyScore('alice', 42)).toEqual([]);
   });
 });

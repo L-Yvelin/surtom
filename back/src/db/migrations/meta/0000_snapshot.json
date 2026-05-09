@@ -1,0 +1,674 @@
+{
+  "version": "5",
+  "dialect": "mysql",
+  "id": "dcdb5fc7-35bc-490a-9a6b-79f0932f8669",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "Dictionary": {
+      "name": "Dictionary",
+      "columns": {
+        "ID": {
+          "name": "ID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "Language": {
+          "name": "Language",
+          "type": "varchar(8)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Word": {
+          "name": "Word",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "Dictionary_uk_Language_Word": {
+          "name": "Dictionary_uk_Language_Word",
+          "columns": ["Language", "Word"],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "Dictionary_ID_pk": {
+          "name": "Dictionary_ID_pk",
+          "columns": ["ID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "Message": {
+      "name": "Message",
+      "columns": {
+        "ID": {
+          "name": "ID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "PlayerID": {
+          "name": "PlayerID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "WorldID": {
+          "name": "WorldID",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Timestamp": {
+          "name": "Timestamp",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "Type": {
+          "name": "Type",
+          "type": "enum('TEXT','ENHANCED','SCORE')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'TEXT'"
+        },
+        "Deleted": {
+          "name": "Deleted",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "PlayerID": {
+          "name": "PlayerID",
+          "columns": ["PlayerID"],
+          "isUnique": false
+        },
+        "Message_idx_WorldID_Timestamp": {
+          "name": "Message_idx_WorldID_Timestamp",
+          "columns": ["WorldID", "Timestamp"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "Message_fk_Player": {
+          "name": "Message_fk_Player",
+          "tableFrom": "Message",
+          "tableTo": "Player",
+          "columnsFrom": ["PlayerID"],
+          "columnsTo": ["ID"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "Message_fk_World": {
+          "name": "Message_fk_World",
+          "tableFrom": "Message",
+          "tableTo": "World",
+          "columnsFrom": ["WorldID"],
+          "columnsTo": ["ID"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "Message_ID_pk": {
+          "name": "Message_ID_pk",
+          "columns": ["ID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "MinecraftSolution": {
+      "name": "MinecraftSolution",
+      "columns": {
+        "ID": {
+          "name": "ID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "Language": {
+          "name": "Language",
+          "type": "varchar(8)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Word": {
+          "name": "Word",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Rotation": {
+          "name": "Rotation",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "AssignedDate": {
+          "name": "AssignedDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "MinecraftSolution_uk_Language_Word": {
+          "name": "MinecraftSolution_uk_Language_Word",
+          "columns": ["Language", "Word"],
+          "isUnique": true
+        },
+        "MinecraftSolution_idx_Language_Rotation": {
+          "name": "MinecraftSolution_idx_Language_Rotation",
+          "columns": ["Language", "Rotation"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "MinecraftSolution_ID_pk": {
+          "name": "MinecraftSolution_ID_pk",
+          "columns": ["ID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "MinecraftWord": {
+      "name": "MinecraftWord",
+      "columns": {
+        "ID": {
+          "name": "ID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "Language": {
+          "name": "Language",
+          "type": "varchar(8)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Word": {
+          "name": "Word",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "MinecraftWord_uk_Language_Word": {
+          "name": "MinecraftWord_uk_Language_Word",
+          "columns": ["Language", "Word"],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "MinecraftWord_ID_pk": {
+          "name": "MinecraftWord_ID_pk",
+          "columns": ["ID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "Player": {
+      "name": "Player",
+      "columns": {
+        "ID": {
+          "name": "ID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "Username": {
+          "name": "Username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Password": {
+          "name": "Password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "SessionHash": {
+          "name": "SessionHash",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "RegistrationDate": {
+          "name": "RegistrationDate",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "IsAdmin": {
+          "name": "IsAdmin",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "IsBanned": {
+          "name": "IsBanned",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "Username": {
+          "name": "Username",
+          "columns": ["Username"],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "Player_ID_pk": {
+          "name": "Player_ID_pk",
+          "columns": ["ID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "ScoreContent": {
+      "name": "ScoreContent",
+      "columns": {
+        "ID": {
+          "name": "ID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "WordHistoryID": {
+          "name": "WordHistoryID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Answer": {
+          "name": "Answer",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Attempts": {
+          "name": "Attempts",
+          "type": "longtext",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "IsCustom": {
+          "name": "IsCustom",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "ScoreContent_idx_WordHistoryID": {
+          "name": "ScoreContent_idx_WordHistoryID",
+          "columns": ["WordHistoryID"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "ScoreContent_fk_Message": {
+          "name": "ScoreContent_fk_Message",
+          "tableFrom": "ScoreContent",
+          "tableTo": "Message",
+          "columnsFrom": ["ID"],
+          "columnsTo": ["ID"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "ScoreContent_fk_WordHistory": {
+          "name": "ScoreContent_fk_WordHistory",
+          "tableFrom": "ScoreContent",
+          "tableTo": "WordHistory",
+          "columnsFrom": ["WordHistoryID"],
+          "columnsTo": ["ID"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "ScoreContent_ID_pk": {
+          "name": "ScoreContent_ID_pk",
+          "columns": ["ID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {
+        "ScoreContent_chk_1": {
+          "name": "ScoreContent_chk_1",
+          "value": "json_valid(`Attempts`)"
+        }
+      }
+    },
+    "TextContent": {
+      "name": "TextContent",
+      "columns": {
+        "ID": {
+          "name": "ID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Text": {
+          "name": "Text",
+          "type": "longtext",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ImageData": {
+          "name": "ImageData",
+          "type": "longtext",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ReplyID": {
+          "name": "ReplyID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "ReplyID": {
+          "name": "ReplyID",
+          "columns": ["ReplyID"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "TextContent_fk_Message": {
+          "name": "TextContent_fk_Message",
+          "tableFrom": "TextContent",
+          "tableTo": "Message",
+          "columnsFrom": ["ID"],
+          "columnsTo": ["ID"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "TextContent_fk_Reply": {
+          "name": "TextContent_fk_Reply",
+          "tableFrom": "TextContent",
+          "tableTo": "Message",
+          "columnsFrom": ["ReplyID"],
+          "columnsTo": ["ID"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "TextContent_ID_pk": {
+          "name": "TextContent_ID_pk",
+          "columns": ["ID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "Try": {
+      "name": "Try",
+      "columns": {
+        "PlayerID": {
+          "name": "PlayerID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "WordHistoryID": {
+          "name": "WordHistoryID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Attempts": {
+          "name": "Attempts",
+          "type": "longtext",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Win": {
+          "name": "Win",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "AttemptCount": {
+          "name": "AttemptCount",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "Try_idx_WordHistory": {
+          "name": "Try_idx_WordHistory",
+          "columns": ["WordHistoryID"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "Try_fk_Player": {
+          "name": "Try_fk_Player",
+          "tableFrom": "Try",
+          "tableTo": "Player",
+          "columnsFrom": ["PlayerID"],
+          "columnsTo": ["ID"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "Try_fk_WordHistory": {
+          "name": "Try_fk_WordHistory",
+          "tableFrom": "Try",
+          "tableTo": "WordHistory",
+          "columnsFrom": ["WordHistoryID"],
+          "columnsTo": ["ID"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "Try_PlayerID_WordHistoryID_pk": {
+          "name": "Try_PlayerID_WordHistoryID_pk",
+          "columns": ["PlayerID", "WordHistoryID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {
+        "Try_chk_1": {
+          "name": "Try_chk_1",
+          "value": "json_valid(`Attempts`)"
+        }
+      }
+    },
+    "WordHistory": {
+      "name": "WordHistory",
+      "columns": {
+        "ID": {
+          "name": "ID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "WorldID": {
+          "name": "WorldID",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "WordID": {
+          "name": "WordID",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "AssignedDate": {
+          "name": "AssignedDate",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {
+        "WordID": {
+          "name": "WordID",
+          "columns": ["WordID"],
+          "isUnique": false
+        },
+        "WordHistory_idx_WorldID_AssignedDate": {
+          "name": "WordHistory_idx_WorldID_AssignedDate",
+          "columns": ["WorldID", "AssignedDate"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "WordHistory_fk_MinecraftSolution": {
+          "name": "WordHistory_fk_MinecraftSolution",
+          "tableFrom": "WordHistory",
+          "tableTo": "MinecraftSolution",
+          "columnsFrom": ["WordID"],
+          "columnsTo": ["ID"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "WordHistory_fk_World": {
+          "name": "WordHistory_fk_World",
+          "tableFrom": "WordHistory",
+          "tableTo": "World",
+          "columnsFrom": ["WorldID"],
+          "columnsTo": ["ID"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "WordHistory_ID_pk": {
+          "name": "WordHistory_ID_pk",
+          "columns": ["ID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "World": {
+      "name": "World",
+      "columns": {
+        "ID": {
+          "name": "ID",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "DisplayName": {
+          "name": "DisplayName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Language": {
+          "name": "Language",
+          "type": "varchar(8)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "World_idx_Language": {
+          "name": "World_idx_Language",
+          "columns": ["Language"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "World_ID_pk": {
+          "name": "World_ID_pk",
+          "columns": ["ID"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    }
+  },
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {},
+    "indexes": {}
+  }
+}

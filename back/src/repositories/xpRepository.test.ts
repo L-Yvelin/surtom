@@ -1,30 +1,31 @@
-jest.mock('./pool.js', () => ({
+import { createMockDb } from '../db/__mocks__/mockDb.js';
+
+const mock = createMockDb();
+jest.mock('../db/client.js', () => ({
   __esModule: true,
-  default: { query: jest.fn() },
+  db: mock.db,
+  schema: {},
 }));
 
-import pool from './pool.js';
 import { getPlayerXp } from './xpRepository.js';
 
-const query = pool.query as unknown as jest.Mock;
-
 beforeEach(() => {
-  query.mockReset();
+  mock.reset();
 });
 
 describe('getPlayerXp', () => {
   it('returns the XP value reported by the query', async () => {
-    query.mockResolvedValueOnce([[{ XP: 123 }]]);
+    mock.enqueue([{ xp: 123 }]);
     expect(await getPlayerXp('alice')).toBe(123);
   });
 
   it('returns 0 when no row is returned', async () => {
-    query.mockResolvedValueOnce([[]]);
+    mock.enqueue([]);
     expect(await getPlayerXp('alice')).toBe(0);
   });
 
   it('returns 0 when XP is null', async () => {
-    query.mockResolvedValueOnce([[{ XP: null }]]);
+    mock.enqueue([{ xp: null }]);
     expect(await getPlayerXp('alice')).toBe(0);
   });
 });
