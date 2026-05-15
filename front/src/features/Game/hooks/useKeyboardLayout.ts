@@ -57,7 +57,7 @@ export default function useKeyboardLayout({ fallback, valueInStorage, setValueIn
 
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, []);
+  }, [setValueInStorage]);
 
   return layout;
 }

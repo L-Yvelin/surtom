@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useRef, useState } from 'react';
+import { JSX, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './ChatInput.module.css';
 import useChatStore from '../../../stores/useChatStore';
@@ -41,12 +41,16 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
   const messages = useChatStore((s) => s.messages);
   const focusInput = useChatStore((s) => s.focusInput);
   const setFocusInput = useChatStore((s) => s.setFocusInput);
-  const { push: pushHistory, handleKeyDown: handleHistoryKeyDown, reset: resetHistory, inputRef: historyInputRef } = useChatInputHistory();
+  const {
+    push: pushHistory,
+    handleKeyDown: handleHistoryKeyDown,
+    reset: resetHistory,
+  } = useChatInputHistory({ getCurrentInput: () => keyboardRef.current?.value ?? '' });
   const [cursorPos, setCursorPos] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const active = useInputSuggestions(input, cursorPos);
 
-  const focusInputFunction = useCallback((message?: string) => {
+  const focusInputFunction = (message?: string) => {
     if (keyboardRef.current) {
       keyboardRef.current.focus();
       if (message) {
@@ -54,11 +58,11 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
         keyboardRef.current.setSelectionRange(keyboardRef.current.value.length, keyboardRef.current.value.length);
       }
     }
-  }, []);
+  };
 
   useEffect(() => {
     setFocusInput(focusInputFunction);
-  }, [focusInputFunction, setFocusInput]);
+  }, [setFocusInput]);
 
   useEffect(() => {
     if (keyboardRef.current && display) {
@@ -156,17 +160,7 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
             }
           })()}
       </div>
-      <input
-        className={classes.input}
-        type="text"
-        ref={(el) => {
-          keyboardRef.current = el;
-          historyInputRef.current = el;
-        }}
-        value={input}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-      />
+      <input className={classes.input} type="text" ref={keyboardRef} value={input} onChange={handleChange} onKeyDown={handleKeyDown} />
       {active && <SuggestionDropdown active={active} onSelect={selectSuggestion} selectedIndex={selectedIndex} />}
     </div>
   );

@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import classes from './Cursors.module.css';
 import PlayerCursor from './PlayerCursor/PlayerCursor';
@@ -23,9 +23,8 @@ const Cursors = ({ className, ...props }: CursorsProps) => {
     return () => observer.disconnect();
   }, []);
 
-  const playerNames = useMemo(() => new Set(playerList.map((p) => p.name)), [playerList]);
-
-  const visibleCursors = useMemo(() => cursors.filter((c) => playerNames.has(c.user.name)), [cursors, playerNames]);
+  const playerNames = new Set(playerList.map((p) => p.name));
+  const visibleCursors = cursors.filter((c) => playerNames.has(c.user.name));
 
   return (
     <div aria-hidden ref={containerRef} className={classNames(classes.container, className)} {...props}>
@@ -36,4 +35,4 @@ const Cursors = ({ className, ...props }: CursorsProps) => {
   );
 };
 
-export default memo(Cursors);
+export default Cursors;

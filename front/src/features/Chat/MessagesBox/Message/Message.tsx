@@ -1,4 +1,4 @@
-import { JSX, memo } from 'react';
+import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Message.module.css';
 import { Server, Client } from '@surtom/interfaces';
@@ -31,11 +31,9 @@ const MessageContent = ({ message }: { message: Server.ChatMessage.Type }): JSX.
     } else if (isTextMessage(message)) {
       return <UserContent message={message} />;
     } else {
-      console.log(`Unknown type: ${message}`);
       return <></>;
     }
   } else {
-    console.log(`Unknown type: ${message}`);
     return <></>;
   }
 };
@@ -69,7 +67,6 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
       type: Client.MessageType.DELETE_MESSAGE,
       content: intId,
     });
-    console.log(`Deleting message with id: ${id}`);
   };
 
   const isMention = isTextMessage(message) && username && message.content.text.includes(`@${username}`);
@@ -141,4 +138,4 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
   );
 }
 
-export default memo(Message);
+export default Message;

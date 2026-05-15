@@ -1,4 +1,3 @@
-import { memo, useMemo } from 'react';
 import { Server } from '@surtom/interfaces';
 import Cursor from '../Cursor/Cursor';
 import classes from './PlayerCursor.module.css';
@@ -11,15 +10,12 @@ interface CursorProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const PlayerCursor = ({ cursor, containerWidth, containerHeight, className, ...props }: CursorProps) => {
-  const style = useMemo<React.CSSProperties>(
-    () => ({
-      transform: `translate3d(${cursor.cursor.x * containerWidth}px, ${cursor.cursor.y * containerHeight}px, 0)`,
-      willChange: 'transform',
-    }),
-    [cursor.cursor.x, cursor.cursor.y, containerWidth, containerHeight],
-  );
+  const style: React.CSSProperties = {
+    transform: `translate3d(${cursor.cursor.x * containerWidth}px, ${cursor.cursor.y * containerHeight}px, 0)`,
+    willChange: 'transform',
+  };
 
   return <Cursor user={cursor.user} className={classNames(classes.container, className)} {...props} style={style} />;
 };
 
-export default memo(PlayerCursor);
+export default PlayerCursor;

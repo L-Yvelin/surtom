@@ -40,5 +40,5 @@ export function useLevelAnimation(level: number, setRealtimeLevel: React.Dispatc
     });
 
     return cancel;
-  }, [level, setRealtimeLevel, hasLoaded]);
+  }, [level, setRealtimeLevel, hasLoaded, sound]);
 }

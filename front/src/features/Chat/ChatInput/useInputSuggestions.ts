@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { Server } from '@surtom/interfaces';
 import useGameStore from '../../../stores/useGameStore';
 import discordEmojis from '../../../assets/discord-emojis.json';
 
@@ -14,7 +14,7 @@ type IndexedSuggestion = Suggestion & {
 
 type Trigger = {
   char: string;
-  getSuggestions: () => IndexedSuggestion[];
+  getSuggestions: (players: Server.User[]) => IndexedSuggestion[];
 };
 
 const EMOJI_SUGGESTIONS: IndexedSuggestion[] = (discordEmojis as { emojis: { names: string[]; surrogates: string }[] }).emojis.flatMap(
@@ -35,8 +35,7 @@ function getEmojiSuggestions(): IndexedSuggestion[] {
   return EMOJI_SUGGESTIONS;
 }
 
-function getPlayerSuggestions(): IndexedSuggestion[] {
-  const players = useGameStore.getState().playerList;
+function getPlayerSuggestions(players: Server.User[]): IndexedSuggestion[] {
   return players.map((p) => {
     const label = p.name;
     const value = `@${p.name}`;
@@ -61,7 +60,7 @@ export type ActiveSuggestion = {
   suggestions: Suggestion[];
 };
 
-export function matchTrigger(text: string, cursorPos: number): ActiveSuggestion | null {
+export function matchTrigger(text: string, cursorPos: number, players: Server.User[]): ActiveSuggestion | null {
   const textBeforeCursor = text.slice(0, cursorPos);
 
   for (const { char, getSuggestions } of TRIGGERS) {
@@ -72,7 +71,7 @@ export function matchTrigger(text: string, cursorPos: number): ActiveSuggestion 
     const query = textBeforeCursor.slice(lastTrigger + 1);
     if (query.includes(' ') && char === ':') continue;
 
-    const all = getSuggestions();
+    const all = getSuggestions(players);
     const queryLower = query.toLowerCase();
     const filtered = query ? all.filter((s) => s.labelLower.includes(queryLower) || s.valueLower.includes(queryLower)) : all;
 
@@ -97,8 +96,5 @@ export function applySuggestion(text: string, active: ActiveSuggestion, suggesti
 
 export function useInputSuggestions(input: string, cursorPos: number) {
   const playerList = useGameStore((s) => s.playerList);
-
-  const active = useMemo(() => matchTrigger(input, cursorPos), [input, cursorPos, playerList]);
-
-  return active;
+  return matchTrigger(input, cursorPos, playerList);
 }

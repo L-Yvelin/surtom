@@ -1,4 +1,4 @@
-import { JSX, useMemo } from 'react';
+import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './EndPage.module.css';
 import { getLetterColor } from '../Game/Chest/Grid/types';
@@ -21,9 +21,7 @@ function EndPage({ endPageButtonRef }: EndPageProps): JSX.Element {
   const sendMessage = useWebSocketStore((s) => s.sendMessage);
   const setVisibility = useUIStore((s) => s.setVisibility);
 
-  const emojiScore = useMemo(() => {
-    return tries.map((word) => word.map(({ state }) => getLetterColor(state ?? LetterState.Miss)).join('')).join('\n');
-  }, [tries]);
+  const emojiScore = tries.map((word) => word.map(({ state }) => getLetterColor(state ?? LetterState.Miss)).join('')).join('\n');
 
   function handleCopy() {
     const copyText = `${t('endPage.shareTextPrefix')} ${window.location.href}\n${emojiScore}`;

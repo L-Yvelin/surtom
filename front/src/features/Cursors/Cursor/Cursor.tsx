@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { Server } from '@surtom/interfaces';
 import classes from './Cursor.module.css';
 import classNames from 'classnames';
@@ -21,4 +20,4 @@ const Cursor = ({ user, className, nameTagClassName, ...props }: CursorProps) =>
   );
 };
 
-export default memo(Cursor);
+export default Cursor;

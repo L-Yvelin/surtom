@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useMemo, useRef } from 'react';
+import { JSX, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Server } from '@surtom/interfaces';
 import Message from './Message/Message';
@@ -17,77 +17,66 @@ function MessagesBox({ messages, onCloseToBottom }: MessagesBoxProps): JSX.Eleme
   const containerRef = useRef<HTMLDivElement>(null);
   const setScrollToBottom = useChatStore((state) => state.setScrollToBottom);
 
-  const dateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(i18n.language, {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }),
-    [i18n.language],
-  );
+  const dateFormatter = new Intl.DateTimeFormat(i18n.language, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = () => {
     containerRef.current?.scrollTo({
       top: containerRef.current.scrollHeight,
       behavior: 'instant',
     });
-  }, []);
+  };
 
   useEffect(() => {
     setScrollToBottom(scrollToBottom);
-  }, [setScrollToBottom, scrollToBottom]);
+  }, [setScrollToBottom]);
 
-  const onCloseToBottomRef = useRef(onCloseToBottom);
-  onCloseToBottomRef.current = onCloseToBottom;
-
-  const handleScroll = useCallback(() => {
-    if (!onCloseToBottomRef.current || !containerRef.current) return;
+  const handleScroll = () => {
+    if (!onCloseToBottom || !containerRef.current) return;
     const { scrollTop } = containerRef.current;
     const isNearBottom = scrollTop > -NEAR_BOTTOM_THRESHOLD;
+    onCloseToBottom(isNearBottom);
+  };
 
-    onCloseToBottomRef.current(isNearBottom);
-  }, []);
+  const renderedMessages: JSX.Element[] = [];
+  let prevDate: string | null = null;
+  const reversed = messages.slice().reverse();
 
-  const renderedMessages = useMemo(() => {
-    const out: JSX.Element[] = [];
-    let prevDate: string | null = null;
-    const reversed = messages.slice().reverse();
+  for (let i = 0; i < reversed.length; i++) {
+    const msg = reversed[i];
+    const hasTimestamp = 'timestamp' in msg.content;
+    const id = `${hasTimestamp ? msg.content.timestamp : 'no-ts'}-${msg.type}-${'id' in msg.content ? msg.content.id : 'no-id'}`;
 
-    for (let i = 0; i < reversed.length; i++) {
-      const msg = reversed[i];
-      const hasTimestamp = 'timestamp' in msg.content;
-      const id = `${hasTimestamp ? msg.content.timestamp : 'no-ts'}-${msg.type}-${'id' in msg.content ? msg.content.id : 'no-id'}`;
+    let dateSeparator: JSX.Element | null = null;
 
-      let dateSeparator: JSX.Element | null = null;
+    if (hasTimestamp) {
+      const currentDate = dateFormatter.format(new Date(msg.content.timestamp));
 
-      if (hasTimestamp) {
-        const currentDate = dateFormatter.format(new Date(msg.content.timestamp));
-
-        if (prevDate && currentDate !== prevDate) {
-          dateSeparator = (
-            <div key={`date-${id}`} className={classes.date} data-key={`date-${id}`}>
-              <span className={classes.dateLeftBar}></span>
-              {prevDate}
-              <span className={classes.dateRightBar}></span>
-            </div>
-          );
-        }
-
-        prevDate = currentDate;
+      if (prevDate && currentDate !== prevDate) {
+        dateSeparator = (
+          <div key={`date-${id}`} className={classes.date} data-key={`date-${id}`}>
+            <span className={classes.dateLeftBar}></span>
+            {prevDate}
+            <span className={classes.dateRightBar}></span>
+          </div>
+        );
       }
 
-      if (dateSeparator) out.push(dateSeparator);
-
-      out.push(
-        <div key={id} data-key={id} {...('id' in msg.content && { 'data-id': msg.content.id })}>
-          <Message message={msg} />
-        </div>,
-      );
+      prevDate = currentDate;
     }
-    return out;
-  }, [messages, dateFormatter]);
+
+    if (dateSeparator) renderedMessages.push(dateSeparator);
+
+    renderedMessages.push(
+      <div key={id} data-key={id} {...('id' in msg.content && { 'data-id': msg.content.id })}>
+        <Message message={msg} />
+      </div>,
+    );
+  }
 
   return (
     <div ref={containerRef} className={classes.messages} onScroll={handleScroll}>

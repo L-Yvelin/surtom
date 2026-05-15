@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useRef } from 'react';
 import useClickOutside from './useClickOutside';
 import useUIStore, { useVisibility } from '../stores/useUIStore';
 import { useModalScope } from '../stores/useInputStore';
@@ -8,7 +8,7 @@ const useToast = (id: string, toastButtonRef?: React.RefObject<HTMLElement | nul
   const visible = useVisibility(id);
   const setVisibility = useUIStore((s) => s.setVisibility);
 
-  const close = useCallback(() => setVisibility(id, false), [id, setVisibility]);
+  const close = () => setVisibility(id, false);
 
   useClickOutside(toastRef, close, toastButtonRef ? [toastButtonRef] : []);
   useModalScope(id, visible, close);

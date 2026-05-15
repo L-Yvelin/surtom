@@ -1,4 +1,4 @@
-import { JSX, useMemo, useState } from 'react';
+import { JSX, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Server } from '@surtom/interfaces';
@@ -8,6 +8,10 @@ import WorldEntry, { World } from './WorldEntry/WorldEntry';
 import { useFetchWorlds } from '../../hooks/useFetchWorlds';
 import { useWorldsStore } from '../../stores/useWorldsStore';
 
+function buildDescription(t: (key: string, opts?: object) => string, summary: Server.WorldSummary): string {
+  return `${t('worldSelection.memberCount', { count: summary.memberCount })} · ${summary.language.toUpperCase()}`;
+}
+
 function WorldSelection(): JSX.Element {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -16,14 +20,15 @@ function WorldSelection(): JSX.Element {
   const worlds = useWorldsStore((s) => s.worlds);
   const isFetching = useWorldsStore((s) => s.isFetching);
 
-  const toUiWorld = (summary: Server.WorldSummary): World => ({
-    id: summary.id,
-    name: summary.displayName,
-    persistent: summary.persistent,
-    description: `${t('worldSelection.memberCount', { count: summary.memberCount })} · ${summary.language.toUpperCase()}`,
-  });
+  const uiWorlds: World[] = [...(worlds ?? [])]
+    .sort((a, b) => b.id.localeCompare(a.id))
+    .map((summary) => ({
+      id: summary.id,
+      name: summary.displayName,
+      persistent: summary.persistent,
+      description: buildDescription(t, summary),
+    }));
 
-  const uiWorlds = useMemo(() => (worlds?.sort((a, b) => b.id.localeCompare(a.id)) ?? []).map(toUiWorld), [worlds, t]);
   const [selectedId, setSelectedId] = useState<string>('');
   const [search, setSearch] = useState('');
 

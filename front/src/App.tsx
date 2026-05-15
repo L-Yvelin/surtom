@@ -32,12 +32,11 @@ interface AppProp {
 }
 
 const App: React.FC<AppProp> = ({ onLoad }) => {
-  const { connect } = useWebSocketStore.getState();
   const { theme } = useTheme();
 
   useEffect(() => {
-    connect();
-  }, [connect]);
+    useWebSocketStore.getState().connect();
+  }, []);
 
   use(twemojiPromise);
 

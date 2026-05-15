@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, useMemo } from 'react';
+import { useState } from 'react';
 import {
   loadHistory,
   saveHistory,
@@ -7,87 +7,78 @@ import {
   navigateHistory,
 } from '../utils/chatInputHistoryStorage';
 
-export default function useChatInputHistory() {
+interface UseChatInputHistoryOptions {
+  getCurrentInput: () => string;
+}
+
+export default function useChatInputHistory({ getCurrentInput }: UseChatInputHistoryOptions) {
   const [history, setHistory] = useState<string[]>(() => loadHistory());
-  const [index, setIndex] = useState<number | null>(null); // index in filteredHistory
+  const [index, setIndex] = useState<number | null>(null);
   const [tempInput, setTempInput] = useState<string>('');
   const [filterText, setFilterText] = useState<string>('');
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const filteredHistory = useMemo(() => filterHistory(history, filterText), [history, filterText]);
+  const filteredHistory = filterHistory(history, filterText);
 
-  const push = useCallback((input: string) => {
-    if (input.includes('/login') || input.includes('/register')) return; // Don't save login or register commands in history
+  const push = (input: string) => {
+    if (input.includes('/login') || input.includes('/register')) return;
 
-    setHistory((prev) => {
-      const newHistory = pushHistoryService(prev, input);
-      saveHistory(newHistory);
-      return newHistory;
-    });
+    const newHistory = pushHistoryService(history, input);
+    setHistory(newHistory);
+    saveHistory(newHistory);
     setIndex(null);
     setTempInput('');
     setFilterText('');
-  }, []);
+  };
 
-  const reset = useCallback(() => {
+  const reset = () => {
     setIndex(null);
     setFilterText('');
-  }, []);
+  };
 
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>, setInput: (v: string) => void) => {
-      if (event.key === 'ArrowUp') {
-        event.preventDefault();
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, setInput: (v: string) => void) => {
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
 
-        if (index === null) {
-          const currentInput = inputRef.current?.value || '';
-          setTempInput(currentInput);
-          setFilterText(currentInput);
-        }
-
-        if (filteredHistory.length === 0 && filterText === '') {
-          // if starting navigation on empty input, filter by empty string
-          // which is the whole history
-          const fullHistory = filterHistory(history, '');
-          if (fullHistory.length === 0) return;
-          const newIdx = fullHistory.length - 1;
-          setInput(fullHistory[newIdx]);
-          setIndex(newIdx);
-          return;
-        }
-
-        if (filteredHistory.length === 0) return;
-
-        setIndex((idx) => {
-          const newIdx = navigateHistory(filteredHistory, idx, 'up');
-          if (typeof newIdx === 'number') {
-            setInput(filteredHistory[newIdx]);
-          }
-          return newIdx;
-        });
-      } else if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        if (index === null) return; // Can't go down if not navigating
-
-        setIndex((idx) => {
-          const newIdx = navigateHistory(filteredHistory, idx, 'down');
-          if (newIdx === null) {
-            setInput(tempInput || '');
-          } else {
-            setInput(filteredHistory[newIdx]);
-          }
-          return newIdx;
-        });
+      if (index === null) {
+        const currentInput = getCurrentInput();
+        setTempInput(currentInput);
+        setFilterText(currentInput);
       }
-    },
-    [history, tempInput, index, filteredHistory, filterText],
-  );
+
+      if (filteredHistory.length === 0 && filterText === '') {
+        const fullHistory = filterHistory(history, '');
+        if (fullHistory.length === 0) return;
+        const newIdx = fullHistory.length - 1;
+        setInput(fullHistory[newIdx]);
+        setIndex(newIdx);
+        return;
+      }
+
+      if (filteredHistory.length === 0) return;
+
+      const newIdx = navigateHistory(filteredHistory, index, 'up');
+      if (typeof newIdx === 'number') {
+        setInput(filteredHistory[newIdx]);
+      }
+      setIndex(newIdx);
+    } else if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (index === null) return;
+
+      const newIdx = navigateHistory(filteredHistory, index, 'down');
+      if (newIdx === null) {
+        setInput(tempInput || '');
+      } else {
+        setInput(filteredHistory[newIdx]);
+      }
+      setIndex(newIdx);
+    }
+  };
 
   return {
     history,
     push,
     handleKeyDown,
     reset,
-    inputRef,
   };
 }

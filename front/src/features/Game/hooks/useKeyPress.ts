@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import useShortcuts from './useShortcuts';
 import useGameLogic from './useGameLogic';
 import useGameStore from '../../../stores/useGameStore';
 import { useVisibility } from '../../../stores/useUIStore';
 import useInputStore from '../../../stores/useInputStore';
 import useChatStore from '../../../stores/useChatStore';
-import { dispatchKey, KeyDispatchDeps } from './keyDispatcher';
+import { dispatchKey } from './keyDispatcher';
 
 const useKeyPress = () => {
   const gameFinished = useGameStore((s) => s.gameFinished);
@@ -15,27 +15,16 @@ const useKeyPress = () => {
   const shortcutsState = useShortcuts();
   const gameLogicState = useGameLogic();
 
-  const handlersRef = useRef<KeyDispatchDeps>({
-    showChat,
-    focusInput,
-    gameFinished,
-    shortcutsKeyDown: shortcutsState.handleKeyDown,
-    shortcutsKeyUp: shortcutsState.handleKeyUp,
-    gameKeyDown: gameLogicState.handleKeyDown,
-  });
-
-  handlersRef.current = {
-    showChat,
-    focusInput,
-    gameFinished,
-    shortcutsKeyDown: shortcutsState.handleKeyDown,
-    shortcutsKeyUp: shortcutsState.handleKeyUp,
-    gameKeyDown: gameLogicState.handleKeyDown,
+  const handleKeyPress = (event: KeyboardEvent, state: 'up' | 'down') => {
+    dispatchKey(event, state, useInputStore.getState().top(), {
+      showChat,
+      focusInput,
+      gameFinished,
+      shortcutsKeyDown: shortcutsState.handleKeyDown,
+      shortcutsKeyUp: shortcutsState.handleKeyUp,
+      gameKeyDown: gameLogicState.handleKeyDown,
+    });
   };
-
-  const handleKeyPress = useCallback((event: KeyboardEvent, state: 'up' | 'down') => {
-    dispatchKey(event, state, useInputStore.getState().top(), handlersRef.current);
-  }, []);
 
   return {
     ...shortcutsState,

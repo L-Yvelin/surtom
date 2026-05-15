@@ -1,4 +1,3 @@
-import { memo, useMemo } from 'react';
 import { Server } from '@surtom/interfaces';
 import classes from './NameTag.module.css';
 import classNames from 'classnames';
@@ -10,10 +9,7 @@ interface NameTagProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const NameTag = ({ user, className, style, ref, ...props }: NameTagProps) => {
-  const mergedStyle = useMemo<React.CSSProperties>(
-    () => ({ color: getPlayerColor(user.moderatorLevel, user.name), ...style }),
-    [user.moderatorLevel, user.name, style],
-  );
+  const mergedStyle: React.CSSProperties = { color: getPlayerColor(user.moderatorLevel, user.name), ...style };
 
   return (
     <div ref={ref} className={classNames(classes.container, className)} style={mergedStyle} {...props}>
@@ -22,4 +18,4 @@ const NameTag = ({ user, className, style, ref, ...props }: NameTagProps) => {
   );
 };
 
-export default memo(NameTag);
+export default NameTag;

@@ -1,4 +1,4 @@
-import { JSX, useMemo } from 'react';
+import { JSX, useState } from 'react';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import classes from './Splash.module.css';
@@ -7,14 +7,15 @@ interface SplashProps {
   className?: string;
 }
 
+function pickSplashLine(t: (key: string, opts?: object) => string): string {
+  const lines = t('splash.lines', { returnObjects: true }) as string[];
+  if (!Array.isArray(lines) || lines.length === 0) return '';
+  return lines[Math.floor(Math.random() * lines.length)];
+}
+
 function Splash({ className }: SplashProps): JSX.Element {
   const { t } = useTranslation();
-
-  const text = useMemo(() => {
-    const lines = t('splash.lines', { returnObjects: true }) as string[];
-    if (!Array.isArray(lines) || lines.length === 0) return '';
-    return lines[Math.floor(Math.random() * lines.length)];
-  }, [t]);
+  const [text] = useState(() => pickSplashLine(t));
 
   return (
     <div className={classNames(classes.splash, className)}>

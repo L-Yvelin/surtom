@@ -5,8 +5,8 @@ import classNames from 'classnames';
 import Marquee from '../Marquee/Marquee';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 
-const buttonAudio = new Audio(buttonSound);
-buttonAudio.preload = 'auto';
+const buttonAudio: HTMLAudioElement | null = typeof Audio !== 'undefined' ? new Audio(buttonSound) : null;
+if (buttonAudio) buttonAudio.preload = 'auto';
 
 interface ButtonProps {
   text: ReactNode;
@@ -23,7 +23,7 @@ function Button({ text, onClick, className = '', size = 'normal', disabled = fal
     if (disabled) return;
     onClick?.(e);
     try {
-      if (!sound) return;
+      if (!sound || !buttonAudio) return;
 
       buttonAudio.currentTime = 0;
       void buttonAudio.play();
