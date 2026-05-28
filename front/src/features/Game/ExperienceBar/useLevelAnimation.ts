@@ -2,20 +2,9 @@ import { useEffect, useRef } from 'react';
 import levelUpSound from '../../../assets/sounds/level_up.mp3';
 import { animateLevel } from './animateLevel';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
+import { createSoundPlayer } from '../../../utils/sound';
 
-let levelUpAudio: HTMLAudioElement | null = null;
-
-const playLevelUp = () => {
-  try {
-    if (!levelUpAudio) {
-      levelUpAudio = new Audio(levelUpSound);
-    }
-    levelUpAudio.currentTime = 0;
-    void levelUpAudio.play();
-  } catch {
-    /* noop */
-  }
-};
+const levelUp = createSoundPlayer(levelUpSound);
 
 export function useLevelAnimation(level: number, setRealtimeLevel: React.Dispatch<React.SetStateAction<number>>, hasLoaded: boolean): void {
   const previousLevelRef = useRef(level);
@@ -33,7 +22,7 @@ export function useLevelAnimation(level: number, setRealtimeLevel: React.Dispatc
       from,
       to: level,
       onUpdate: setRealtimeLevel,
-      onLevelUp: sound ? playLevelUp : () => {},
+      onLevelUp: sound ? levelUp.play : () => {},
       onComplete: () => {
         previousLevelRef.current = level;
       },

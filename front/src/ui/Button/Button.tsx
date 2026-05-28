@@ -4,9 +4,9 @@ import buttonSound from '../../assets/sounds/menu_stereo.mp3';
 import classNames from 'classnames';
 import Marquee from '../Marquee/Marquee';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { createSoundPlayer } from '../../utils/sound';
 
-const buttonAudio: HTMLAudioElement | null = typeof Audio !== 'undefined' ? new Audio(buttonSound) : null;
-if (buttonAudio) buttonAudio.preload = 'auto';
+const clickSound = createSoundPlayer(buttonSound);
 
 interface ButtonProps {
   text: ReactNode;
@@ -22,14 +22,7 @@ function Button({ text, onClick, className = '', size = 'normal', disabled = fal
   function handleOnClick(e: React.MouseEvent<HTMLButtonElement>) {
     if (disabled) return;
     onClick?.(e);
-    try {
-      if (!sound || !buttonAudio) return;
-
-      buttonAudio.currentTime = 0;
-      void buttonAudio.play();
-    } catch {
-      return;
-    }
+    if (sound) clickSound.play();
   }
 
   return (

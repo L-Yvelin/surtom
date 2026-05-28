@@ -12,6 +12,7 @@
   padding: 0.5cqh;
   box-sizing: border-box;
   aspect-ratio: 10;
+
   border-image-source: url('/src/assets/images/ui/button.png');
   border-image-slice: 2 fill;
   --button-border: calc(var(--button-height) * 0.1);
