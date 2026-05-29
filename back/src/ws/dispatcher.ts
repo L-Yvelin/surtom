@@ -7,6 +7,7 @@ import { handleTryMessage } from '../handlers/tryHandler.js';
 import { handleCursorPosition } from '../handlers/cursorHandler.js';
 import { handleIsTyping } from '../handlers/typingHandler.js';
 import { handleJoinWorld } from '../handlers/joinWorldHandler.js';
+import { handleLeaveWorld } from '../handlers/leaveWorldHandler.js';
 import { handleListWorlds } from '../handlers/listWorldsHandler.js';
 import { dispatchCustomMessage } from './customType.js';
 import { RATE_LIMIT_FREE_MESSAGES, COOLDOWN_INITIAL_SECONDS } from '../config/constants.js';
@@ -21,6 +22,7 @@ const RATE_EXEMPT_TYPES = new Set<Client.MessageType>([
   Client.MessageType.IS_TYPING,
   Client.MessageType.CURSOR_POSITION,
   Client.MessageType.JOIN_WORLD,
+  Client.MessageType.LEAVE_WORLD,
   Client.MessageType.LIST_WORLDS,
 ]);
 
@@ -78,6 +80,9 @@ export async function handleMessage(user: FullUser, message: Client.Message): Pr
       break;
     case Client.MessageType.JOIN_WORLD:
       await handleJoinWorld(user, message.content);
+      break;
+    case Client.MessageType.LEAVE_WORLD:
+      handleLeaveWorld(user);
       break;
     case Client.MessageType.LIST_WORLDS:
       handleListWorlds(user);

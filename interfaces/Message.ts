@@ -8,6 +8,7 @@ export namespace Client {
     TRY = 'try',
     CURSOR_POSITION = 'cursorPosition',
     JOIN_WORLD = 'joinWorld',
+    LEAVE_WORLD = 'leaveWorld',
     LIST_WORLDS = 'listWorlds',
   }
 
@@ -20,6 +21,7 @@ export namespace Client {
     | { type: MessageType.TRY; content: string }
     | { type: MessageType.CURSOR_POSITION; content: { cursor: CursorPosition } }
     | { type: MessageType.JOIN_WORLD; content: { worldId: string } }
+    | { type: MessageType.LEAVE_WORLD }
     | { type: MessageType.LIST_WORLDS };
 
   export type ChatMessage =

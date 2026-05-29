@@ -32,6 +32,8 @@ beforeEach(() => {
     letters: [{ letter: 'B', state: LetterState.Miss }],
     achievements: [{ id: 'a', title: 't', description: 'd' }],
     hasLoaded: true,
+    showProgression: false,
+    wasFinishedOnLoad: true,
   });
   useChatStore.setState({
     messages: [message],
@@ -83,6 +85,8 @@ describe('resetGameWorld', () => {
     expect(useGameStore.getState().solution).toBeUndefined();
     expect(useGameStore.getState().validWords).toStrictEqual([]);
     expect(useGameStore.getState().hasLoaded).toBe(false);
+    expect(useGameStore.getState().showProgression).toBe(true);
+    expect(useGameStore.getState().wasFinishedOnLoad).toBe(false);
     expect(useChatStore.getState().messages).toHaveLength(1);
     expect(useChatStore.getState().messages[0].type).toBe(Server.MessageType.TEXT);
     expect(useCursorsStore.getState().cursors).toStrictEqual([]);

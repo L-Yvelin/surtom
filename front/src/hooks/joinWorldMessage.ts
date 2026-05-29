@@ -6,3 +6,7 @@ export function buildJoinWorldMessage(worldId: string): Client.Message {
     content: { worldId },
   };
 }
+
+export function buildLeaveWorldMessage(): Client.Message {
+  return { type: Client.MessageType.LEAVE_WORLD };
+}

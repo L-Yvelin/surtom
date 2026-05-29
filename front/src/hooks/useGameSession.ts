@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import useChatStore from '../stores/useChatStore';
 import useCursorsStore from '../stores/useCursorsStore';
 import useGameStore from '../stores/useGameStore';
@@ -19,14 +19,8 @@ export function resetGameWorld(): void {
 }
 
 export function useGameSession(worldId: string = 'default'): void {
-  const previousWorldIdRef = useRef<string | undefined>(undefined);
-
   useEffect(() => {
-    if (previousWorldIdRef.current !== undefined && previousWorldIdRef.current !== worldId) {
-      resetGameWorld();
-    }
-    previousWorldIdRef.current = worldId;
-
+    resetGameWorld();
     return () => {
       resetGameSession();
     };
