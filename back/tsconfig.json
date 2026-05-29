@@ -10,5 +10,6 @@
     "moduleResolution": "node"
   },
   "references": [{ "path": "../interfaces" }],
-  "exclude": ["node_modules", "scripts", "**/*.test.ts", "**/*.spec.ts"]
+  "include": ["src"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }
