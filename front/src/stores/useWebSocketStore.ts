@@ -7,6 +7,7 @@ import { handleServerMessage } from './wsMessageHandler';
 
 interface WebSocketState {
   isConnected: boolean;
+  isReady: boolean;
   lastMessageTimestamp: string;
   ws: WebSocket | null;
   reconnectTimer: NodeJS.Timeout | null;
@@ -89,7 +90,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
 
     socket.onclose = () => {
       console.warn('WebSocket connection closed!');
-      set({ isConnected: false, isConnecting: false, ws: null });
+      set({ isConnected: false, isReady: false, isConnecting: false, ws: null });
       scheduleReconnect();
     };
 
@@ -119,7 +120,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
       clearTimeout(reconnectTimer);
       set({ reconnectTimer: null });
     }
-    set({ isConnecting: false, isConnected: false });
+    set({ isConnecting: false, isConnected: false, isReady: false });
   };
 
   const sendMessage = (message: Client.Message) => {
@@ -131,6 +132,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
 
   return {
     isConnected: false,
+    isReady: false,
     lastMessageTimestamp: '',
     ws: null,
     reconnectTimer: null,

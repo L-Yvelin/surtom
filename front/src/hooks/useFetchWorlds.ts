@@ -4,14 +4,14 @@ import { useWorldsStore } from '../stores/useWorldsStore';
 import { buildListWorldsMessage } from './listWorldsMessage';
 
 export function useFetchWorlds(): void {
-  const isConnected = useWebSocketStore((s) => s.isConnected);
+  const isReady = useWebSocketStore((s) => s.isReady);
 
   useEffect(() => {
-    if (!isConnected) return;
+    if (!isReady) return;
 
     const { setFetching, reset } = useWorldsStore.getState();
     reset();
     setFetching(true);
     useWebSocketStore.getState().sendMessage(buildListWorldsMessage());
-  }, [isConnected]);
+  }, [isReady]);
 }

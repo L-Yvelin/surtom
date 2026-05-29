@@ -4,6 +4,7 @@ import useGameStore from './useGameStore';
 import useChatStore from './useChatStore';
 import useCursorsStore from './useCursorsStore';
 import { useWorldsStore } from './useWorldsStore';
+import { useWebSocketStore } from './useWebSocketStore';
 import { getValidatedWords, isGameFinished } from '../features/Game/utils/gameLogic';
 
 const COOKIE_SESSION_HASH = 'modHash';
@@ -23,6 +24,7 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
       if (data.content.sessionHash) {
         Cookies.set(COOKIE_SESSION_HASH, data.content.sessionHash, { expires: 365 });
       }
+      useWebSocketStore.setState({ isReady: true });
       break;
     case Server.MessageType.EVAL:
       try {

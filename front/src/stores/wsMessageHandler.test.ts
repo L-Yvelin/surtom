@@ -6,6 +6,17 @@ jest.mock('js-cookie', () => ({
   default: { set: (...args: unknown[]) => cookiesSet(...args) },
 }));
 
+const wsState: { isReady: boolean } = { isReady: false };
+jest.mock('./useWebSocketStore', () => ({
+  __esModule: true,
+  useWebSocketStore: {
+    setState: (patch: Partial<typeof wsState>) => {
+      Object.assign(wsState, patch);
+    },
+    getState: () => wsState,
+  },
+}));
+
 import useGameStore, { defaultPlayer } from './useGameStore';
 import useChatStore from './useChatStore';
 import useCursorsStore from './useCursorsStore';
@@ -41,6 +52,7 @@ beforeEach(() => {
   });
   useChatStore.setState({ messages: [], answeringTo: null });
   useCursorsStore.setState({ cursors: [] });
+  wsState.isReady = false;
 });
 
 describe('LOGIN', () => {
@@ -57,6 +69,12 @@ describe('LOGIN', () => {
   test('does not write a cookie when sessionHash is missing', () => {
     handleServerMessage({ type: Server.MessageType.LOGIN, content: { user: basePrivateUser } }, makeDeps());
     expect(cookiesSet).not.toHaveBeenCalled();
+  });
+
+  test('flips the WS store to ready (acks the server-side connection handshake)', () => {
+    expect(wsState.isReady).toBe(false);
+    handleServerMessage({ type: Server.MessageType.LOGIN, content: { user: basePrivateUser } }, makeDeps());
+    expect(wsState.isReady).toBe(true);
   });
 });
 
