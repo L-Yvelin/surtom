@@ -8,15 +8,12 @@ import { createSoundPlayer } from '../../utils/sound';
 
 const clickSound = createSoundPlayer(buttonSound);
 
-interface ButtonProps {
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   text: ReactNode;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  className?: string;
   size?: 'normal' | 'square';
-  disabled?: boolean;
-}
+};
 
-function Button({ text, onClick, className = '', size = 'normal', disabled = false }: ButtonProps): JSX.Element {
+function Button({ text, onClick, className = '', size = 'normal', disabled = false, ...props }: ButtonProps): JSX.Element {
   const sound = useSettingsStore((s) => s.sound);
 
   function handleOnClick(e: React.MouseEvent<HTMLButtonElement>) {
@@ -27,6 +24,7 @@ function Button({ text, onClick, className = '', size = 'normal', disabled = fal
 
   return (
     <button
+      {...props}
       className={classNames(classes.button, classes[size], className, { [classes.disabled]: disabled })}
       onClick={handleOnClick}
       disabled={disabled}
