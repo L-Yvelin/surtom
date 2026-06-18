@@ -1,0 +1,9 @@
+.model {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transition: transform 150ms linear;
+}

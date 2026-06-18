@@ -1,0 +1,17 @@
+.face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  backface-visibility: hidden;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  transition:
+    width 150ms linear,
+    height 150ms linear,
+    transform 150ms linear,
+    background-size 150ms linear,
+    background-position 150ms linear;
+}
