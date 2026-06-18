@@ -1,0 +1,11 @@
+.button {
+  all: unset;
+  position: relative;
+  height: 7vh;
+  width: 7vh;
+  cursor: pointer;
+}
+
+.button * {
+  transition: none !important;
+}
