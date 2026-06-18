@@ -112,14 +112,14 @@ Backend on port 27020, frontend on the Vite dev server.
 
 The DB layer uses [Drizzle ORM](https://orm.drizzle.team/) with MySQL. The single source of truth for the schema is `back/src/db/schema.ts`.
 
-| Command (run inside `back/`)   | What it does                                                                                                                                                         |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run db:generate`          | Diffs `schema.ts` against the last applied migration and emits a new SQL migration into `src/db/migrations/`.                                                        |
-| `npm run db:migrate`           | Applies pending migrations via `drizzle-kit migrate` (tracks state in the `__drizzle_migrations` table).                                                             |
-| `npm run db:seed`              | Idempotently inserts default Worlds, system Players, and word lists for both languages, loaded from `back/data/seed-output/<lang>/`.                                 |
-| `npm run db:seed:words -- ...` | Regenerates the word lists by extracting from raw Minecraft lang files / dictionaries; writes to `back/data/seed-output/<lang>/` (add `--apply` to also push to DB). |
-| `npm run db:setup`             | Convenience: `db:migrate` then `db:seed`.                                                                                                                            |
-| `npm run db:studio`            | Opens Drizzle Studio (web UI to browse rows) at `https://local.drizzle.studio`.                                                                                      |
+| Command (run inside `back/`)         | What it does                                                                                                                                                                       |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run db:generate`                | Diffs `schema.ts` against the last applied migration and emits a new SQL migration into `src/db/migrations/`.                                                                      |
+| `npm run db:migrate`                 | Applies pending migrations via `drizzle-kit migrate` (tracks state in the `__drizzle_migrations` table).                                                                           |
+| `npm run db:seed`                    | Idempotently inserts default Worlds, system Players, and word lists for both languages, loaded from `back/data/seed-output/<lang>/`.                                               |
+| `npm run db:seed:words -- --lang fr` | Regenerates the word lists by extracting from raw Minecraft lang files / dictionaries; writes to `back/data/seed-output/<lang>/`. Add `--apply` to also push the result to the DB. |
+| `npm run db:setup`                   | Convenience: `db:migrate` then `db:seed`.                                                                                                                                          |
+| `npm run db:studio`                  | Opens Drizzle Studio (web UI to browse rows) at `https://local.drizzle.studio`.                                                                                                    |
 
 ### Adding a new column / table
 
