@@ -40,6 +40,9 @@ function Settings(): JSX.Element {
             onClick={cycleSound}
             className={classes.button}
           />
+          {/* Invisible button so the children are pair */}
+          {/* That way display flex can behave like 2 columns */}
+          <Button text="" className={classes.invisibleButton} />
         </div>
 
         <Button text={t('settings.done')} onClick={close} className={classes.button} />

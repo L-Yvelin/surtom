@@ -26,18 +26,21 @@
 }
 
 .grid {
-  width: 100%;
-  max-width: calc(2 * 650px + 1vh);
-  margin-inline: auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(85vw, 650px), 650px));
+  max-width: 1300px;
+  display: flex;
+  flex-wrap: wrap;
   gap: 1vh;
   justify-content: center;
-  align-items: center;
 }
 
 .button {
   flex-grow: 0;
+}
+
+.invisibleButton {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .title {
