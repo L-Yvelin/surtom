@@ -20,6 +20,8 @@
 }
 
 .content {
+  flex: 1;
+  min-width: 0;
   overflow-wrap: break-word;
   line-height: 1.9vh;
 }

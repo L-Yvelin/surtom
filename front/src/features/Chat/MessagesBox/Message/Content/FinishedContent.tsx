@@ -1,10 +1,13 @@
 import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 import { Server, Client, LetterState } from '@surtom/interfaces';
 import { getLetterColor } from '../../../../Game/Chest/Grid/types';
 import useGameStore from '../../../../../stores/useGameStore';
 import { useWebSocketStore } from '../../../../../stores/useWebSocketStore';
 import classes from './FinishedContent.module.css';
+
+const RULE = '-'.repeat(200);
 
 function FinishedContent({ message }: { message: Server.ChatMessage.GameFinished }): JSX.Element {
   const { t } = useTranslation();
@@ -32,15 +35,24 @@ function FinishedContent({ message }: { message: Server.ChatMessage.GameFinished
 
   return (
     <span className={classes.root}>
-      <span>{win ? t('chat.gameWon') : t('chat.gameLost')}</span>
-      {' · '}
-      <button className={hasSharedScore ? classes.disabledBtn : classes.actionBtn} onClick={handleShareInChat} disabled={hasSharedScore}>
-        {t('chat.shareInChat')}
-      </button>
-      {' · '}
-      <button className={classes.actionBtn} onClick={handleCopy}>
-        {t('chat.copyScore')}
-      </button>
+      <span className={classes.titleRow}>
+        <span className={classNames(classes.rule, classes.ruleLeft)} aria-hidden>
+          {RULE}
+        </span>
+        <span className={classes.title}>{win ? t('chat.gameWon') : t('chat.gameLost')}</span>
+        <span className={classNames(classes.rule, classes.ruleRight)} aria-hidden>
+          {RULE}
+        </span>
+      </span>
+      <span className={classes.actions}>
+        <button className={hasSharedScore ? classes.disabledBtn : classes.actionBtn} onClick={handleShareInChat} disabled={hasSharedScore}>
+          {t('chat.shareInChat')}
+        </button>
+        <span className={classes.sep}>·</span>
+        <button className={classes.actionBtn} onClick={handleCopy}>
+          {t('chat.copyScore')}
+        </button>
+      </span>
     </span>
   );
 }
