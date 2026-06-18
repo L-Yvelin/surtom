@@ -43,9 +43,26 @@ export async function handleTryMessage(user: FullUser, content: string): Promise
     const isWin = attempt.toUpperCase() === solution;
     await world.recordTry(user.privateUser.name, attemptLetters, isWin);
 
-    sendSuccess(user.connection, isWin ? 'Bravo, vous avez trouvé le mot !' : 'Tentative enregistrée !');
+    const isGameOver = isWin || attempts.length + 1 >= MAX_TRIES_PER_GAME;
 
-    if (world.persistent && (isWin || attempts.length + 1 >= MAX_TRIES_PER_GAME)) {
+    if (!isGameOver) {
+      sendSuccess(user.connection, 'Tentative enregistrée !');
+    } else {
+      sendToUser(user.connection, {
+        type: Server.MessageType.MESSAGE,
+        content: {
+          type: Server.MessageType.GAME_FINISHED,
+          content: {
+            win: isWin,
+            attempts: [...attempts, attemptLetters],
+            hasSharedScore: false,
+            timestamp: new Date().toISOString(),
+          },
+        },
+      });
+    }
+
+    if (world.persistent && isGameOver) {
       const xp = await getPlayerXp(user.privateUser.name);
       sendToUser(user.connection, {
         type: Server.MessageType.XP,

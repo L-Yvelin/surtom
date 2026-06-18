@@ -24,7 +24,7 @@ export interface ChatFetchOptions {
 export interface WorldStore {
   getGameState(): Promise<GameState>;
 
-  getChat(opts: ChatFetchOptions): Promise<Server.ChatMessage.SavedType[]>;
+  getChat(opts: ChatFetchOptions): Promise<Server.ChatMessage.Type[]>;
   saveMessage(user: Server.PrivateUser, message: Client.ChatMessage, scoreSolution?: string): Promise<Server.Message>;
   toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<boolean>;
 
@@ -53,7 +53,7 @@ export class DbWorldStore implements WorldStore {
     };
   }
 
-  async getChat(opts: ChatFetchOptions): Promise<Server.ChatMessage.SavedType[]> {
+  async getChat(opts: ChatFetchOptions): Promise<Server.ChatMessage.Type[]> {
     return repoGetMessages(this.worldId, opts.includeDeleted, opts.max, opts.showHelp);
   }
 
@@ -123,7 +123,7 @@ export class MemoryWorldStore implements WorldStore {
     };
   }
 
-  async getChat(_opts: ChatFetchOptions): Promise<Server.ChatMessage.SavedType[]> {
+  async getChat(_opts: ChatFetchOptions): Promise<Server.ChatMessage.Type[]> {
     return [...this.chat];
   }
 

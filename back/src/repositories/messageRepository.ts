@@ -83,29 +83,14 @@ function mapClientMessageType(clientType: Client.MessageType): 'TEXT' | 'SCORE' 
   }
 }
 
-export function getHelpMessage(): Server.ChatMessage.SavedType {
+export function getHelpMessage(): Server.ChatMessage.Help {
   return {
-    type: Server.MessageType.ENHANCED,
-    content: {
-      id: '0',
-      user: { name: 'System', moderatorLevel: 2 },
-      text: JSON.stringify([
-        { text: 'Faites ', color: 'LemonChiffon' },
-        { text: '/help', color: 'DarkKhaki' },
-        { text: " pour plus d'information", color: 'LemonChiffon' },
-      ]),
-      timestamp: new Date().toISOString(),
-      deleted: 0,
-    },
+    type: Server.MessageType.HELP,
+    content: { timestamp: new Date().toISOString() },
   };
 }
 
-export async function getMessages(
-  worldId = 'fr',
-  includeDeleted = false,
-  max = 200,
-  showHelp = false,
-): Promise<Server.ChatMessage.SavedType[]> {
+export async function getMessages(worldId = 'fr', includeDeleted = false, max = 200, showHelp = false): Promise<Server.ChatMessage.Type[]> {
   const baseWhere = eq(message.worldId, worldId);
   const where = includeDeleted ? baseWhere : and(baseWhere, or(isNull(message.deleted), eq(message.deleted, 0)));
 
@@ -119,7 +104,7 @@ export async function getMessages(
     .orderBy(desc(message.timestamp))
     .limit(max);
 
-  const messages = rows.map((row) => mapMessage(row as MessageJoinRow));
+  const messages: Server.ChatMessage.Type[] = rows.map((row) => mapMessage(row as MessageJoinRow));
   if (showHelp) {
     messages.unshift(getHelpMessage());
   }

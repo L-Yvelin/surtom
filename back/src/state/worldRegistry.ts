@@ -12,7 +12,7 @@ export interface World {
   persistent: boolean;
 
   getGameState(): Promise<GameState>;
-  getChat(opts: ChatFetchOptions): Promise<Server.ChatMessage.SavedType[]>;
+  getChat(opts: ChatFetchOptions): Promise<Server.ChatMessage.Type[]>;
   saveMessage(user: Server.PrivateUser, message: Client.ChatMessage, scoreSolution?: string): Promise<Server.Message>;
   toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<boolean>;
   getTries(playerName: string): Promise<{ attempts: string[][]; win: boolean }>;

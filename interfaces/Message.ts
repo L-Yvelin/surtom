@@ -64,6 +64,8 @@ export namespace Server {
     XP = 'xp',
     CURSOR_POSITION = 'cursorPosition',
     WORLD_LIST = 'worldList',
+    GAME_FINISHED = 'gameFinished',
+    HELP = 'help',
   }
 
   export interface WorldSummary {
@@ -83,13 +85,13 @@ export namespace Server {
 
   export type Message =
     | { type: MessageType.DELETE_MESSAGE; content: number }
-    | { type: MessageType.GET_MESSAGES; content: ChatMessage.SavedType[] }
+    | { type: MessageType.GET_MESSAGES; content: ChatMessage.Type[] }
     | { type: MessageType.IS_TYPING; content: string }
     | { type: MessageType.LAST_TIME_MESSAGE; content: string }
     | { type: MessageType.LOG; content: string }
     | {
         type: MessageType.MESSAGE;
-        content: ChatMessage.Text | ChatMessage.Score | ChatMessage.Status;
+        content: ChatMessage.Text | ChatMessage.Score | ChatMessage.Status | ChatMessage.GameFinished;
       }
     | { type: MessageType.STATS; content: Record<`${number}`, number> }
     | { type: MessageType.LOGIN; content: LoginMessage }
@@ -105,7 +107,7 @@ export namespace Server {
     | { type: MessageType.WORLD_LIST; content: WorldSummary[] };
 
   export namespace ChatMessage {
-    export type Type = Text | Score | Status;
+    export type Type = Text | Score | Status | GameFinished | Help;
     export type SavedType = Text | Score;
 
     export type Text =
@@ -133,6 +135,16 @@ export namespace Server {
           type: MessageType.ERROR;
           content: Pick<Content.TextMessageContent, 'text'> & Pick<Content.BaseMessageContent, 'timestamp'>;
         };
+
+    export type GameFinished = {
+      type: MessageType.GAME_FINISHED;
+      content: { win: boolean; attempts: string[][]; hasSharedScore: boolean; timestamp: string };
+    };
+
+    export type Help = {
+      type: MessageType.HELP;
+      content: { timestamp: string };
+    };
 
     export namespace Content {
       export interface BaseMessageContent {

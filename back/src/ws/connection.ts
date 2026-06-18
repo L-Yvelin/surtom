@@ -12,7 +12,7 @@ import { getRandomFunnyName } from '../utils/randomName.js';
 import { getPlayerBySessionHash } from '../repositories/playerRepository.js';
 import { getPlayerXp } from '../repositories/xpRepository.js';
 import { updateUsersListForWorld } from '../handlers/userListHandler.js';
-import { MAX_MESSAGES_LOADED, PING_INTERVAL_MS } from '../config/constants.js';
+import { MAX_MESSAGES_LOADED, MAX_TRIES_PER_GAME, PING_INTERVAL_MS } from '../config/constants.js';
 
 async function buildPrivateUser(sessionHash: string | undefined, usesMobileDevice: boolean): Promise<Server.PrivateUser> {
   const player = sessionHash ? await getPlayerBySessionHash(sessionHash) : undefined;
@@ -62,8 +62,12 @@ async function sendChatForWorld(user: FullUser, world: World): Promise<void> {
     });
 
     const userMessages = messages.filter(
-      (msg) => msg.type === Server.MessageType.TEXT || msg.type === Server.MessageType.ENHANCED || msg.type === Server.MessageType.SCORE,
-    ) as Server.ChatMessage.SavedType[];
+      (msg) =>
+        msg.type === Server.MessageType.TEXT ||
+        msg.type === Server.MessageType.ENHANCED ||
+        msg.type === Server.MessageType.SCORE ||
+        msg.type === Server.MessageType.HELP,
+    );
 
     sendToUser(user.connection, {
       type: Server.MessageType.GET_MESSAGES,
@@ -91,6 +95,23 @@ async function sendDailyWordsForWorld(user: FullUser, world: World): Promise<voi
         attempts: tries.attempts.map((letters) => letters.join('')),
       },
     });
+
+    const isFinished = tries.win || tries.attempts.length >= MAX_TRIES_PER_GAME;
+    if (isFinished) {
+      const hasSharedScore = await world.hasSharedScore(user.privateUser.name);
+      sendToUser(user.connection, {
+        type: Server.MessageType.MESSAGE,
+        content: {
+          type: Server.MessageType.GAME_FINISHED,
+          content: {
+            win: tries.win,
+            attempts: tries.attempts,
+            hasSharedScore,
+            timestamp: new Date().toISOString(),
+          },
+        },
+      });
+    }
   } catch (err) {
     console.error('Error getting daily words:', err);
   }
