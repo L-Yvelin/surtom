@@ -8,7 +8,7 @@ import SwipeActions from '../../../../ui/SwipeActions/SwipeActions';
 import useChatStore from '../../../../stores/useChatStore';
 import CustomContextMenu from '../../../../ui/ContextMenu/ContextMenu';
 import MessageContextMenu from './MessageContextMenu/MessageContextMenu';
-import useGameStore from '../../../../stores/useGameStore';
+import usePlayerStore from '../../../../stores/usePlayerStore';
 import answerIcon from '../../../../assets/images/ui/answer.svg';
 import deleteIcon from '../../../../assets/images/ui/delete.svg';
 import { isPrivateMessage, isSavedChatMessage, isScoreMessage, isStatusMessage, isTextMessage } from '../../utils/messageFormatting';
@@ -43,8 +43,8 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
   const setAnsweringTo = useChatStore((s) => s.setAnsweringTo);
   const focusInput = useChatStore((s) => s.focusInput);
   const sendMessage = useWebSocketStore((s) => s.sendMessage);
-  const username = useGameStore((state) => state.player.name);
-  const myModeratorLevel = useGameStore((state) => state.player.moderatorLevel);
+  const username = usePlayerStore((state) => state.player.name);
+  const myModeratorLevel = usePlayerStore((state) => state.player.moderatorLevel);
 
   let id = '';
   let user: { name: string; moderatorLevel: number } = {

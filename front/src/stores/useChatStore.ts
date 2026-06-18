@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Server } from '@surtom/interfaces';
-import { defaultPlayer } from './useGameStore';
+import { defaultPlayer } from './usePlayerStore';
 import { isSavedChatMessage } from '../features/Chat/utils/messageFormatting';
 
 interface ChatStore {

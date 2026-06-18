@@ -2,7 +2,7 @@ import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Server } from '@surtom/interfaces';
 import classes from '../Message.module.css';
-import { getValidatedWords } from '../../../../Game/utils/gameLogic';
+import { getValidatedWords, isGameFinished } from '../../../../Game/utils/gameLogic';
 import PlayerName from '../PlayerName/PlayerName';
 import Tooltip from '../../../../../ui/Tooltip/Tooltip';
 import Grid from '../../../../Game/Chest/Grid/Grid';
@@ -13,7 +13,7 @@ function ScoreContent({ message }: { message: Server.ChatMessage.Score }): JSX.E
   const tries = message.content.attempts;
   const answer = message.content.answer;
   const words = getValidatedWords(tries, answer);
-  const gameFinished = useGameStore((s) => s.gameFinished());
+  const gameFinished = useGameStore((s) => isGameFinished(s.tries));
 
   return (
     <span>

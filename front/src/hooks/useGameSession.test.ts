@@ -1,5 +1,6 @@
 import { LetterState, Server, Word } from '@surtom/interfaces';
-import useGameStore, { defaultPlayer } from '../stores/useGameStore';
+import useGameStore from '../stores/useGameStore';
+import usePlayerStore, { defaultPlayer } from '../stores/usePlayerStore';
 import useChatStore from '../stores/useChatStore';
 import useCursorsStore from '../stores/useCursorsStore';
 import useUIStore from '../stores/useUIStore';
@@ -24,8 +25,8 @@ const message: Server.ChatMessage.Text = {
 };
 
 beforeEach(() => {
+  usePlayerStore.setState({ player: { ...defaultPlayer, name: 'Alice', xp: 42 } });
   useGameStore.setState({
-    player: { ...defaultPlayer, name: 'Alice', xp: 42 },
     tries: [word],
     solution: 'CHIEN',
     validWords: ['CHIEN'],
@@ -55,8 +56,8 @@ describe('resetGameSession', () => {
 
   test('preserves App-tier and World-tier state across all stores', () => {
     resetGameSession();
-    expect(useGameStore.getState().player.name).toBe('Alice');
-    expect(useGameStore.getState().player.xp).toBe(42);
+    expect(usePlayerStore.getState().player.name).toBe('Alice');
+    expect(usePlayerStore.getState().player.xp).toBe(42);
     expect(useGameStore.getState().tries).toStrictEqual([word]);
     expect(useGameStore.getState().solution).toBe('CHIEN');
     expect(useGameStore.getState().validWords).toStrictEqual(['CHIEN']);
@@ -94,7 +95,7 @@ describe('resetGameWorld', () => {
 
   test('preserves App-tier player identity', () => {
     resetGameWorld();
-    expect(useGameStore.getState().player.name).toBe('Alice');
-    expect(useGameStore.getState().player.xp).toBe(42);
+    expect(usePlayerStore.getState().player.name).toBe('Alice');
+    expect(usePlayerStore.getState().player.xp).toBe(42);
   });
 });

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import classes from './Chest.module.css';
 import Grid from './Grid/Grid';
 import useGameStore from '../../../stores/useGameStore';
+import { isGameFinished } from '../utils/gameLogic';
 import EyeOpen from '../../../assets/images/ui/eye_open.svg?react';
 import EyeClosed from '../../../assets/images/ui/eye_closed.svg?react';
 
@@ -19,7 +20,7 @@ function Chest(): JSX.Element {
   const solution = useGameStore((s) => s.solution);
   const tries = useGameStore((s) => s.tries);
   const letters = useGameStore((s) => s.letters);
-  const gameFinished = useGameStore((s) => s.gameFinished());
+  const gameFinished = useGameStore((s) => isGameFinished(s.tries));
   const wasFinishedOnLoad = useGameStore((s) => s.wasFinishedOnLoad);
   const showProgression = useGameStore((s) => s.showProgression);
   const setShowProgression = useGameStore((s) => s.setShowProgression);

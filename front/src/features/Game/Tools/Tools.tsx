@@ -15,6 +15,7 @@ import useGameStore from '../../../stores/useGameStore';
 import useUIStore from '../../../stores/useUIStore';
 import useTheme from '../../../hooks/useTheme';
 import { Theme } from '../../../theme/theme';
+import { isGameFinished } from '../utils/gameLogic';
 
 interface ToolsProps {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
@@ -27,7 +28,7 @@ interface ToolsProps {
 function Tools({ tabButtonRef, statsButtonRef, endPageButtonRef, chatButtonRef, customWordButtonRef }: ToolsProps): JSX.Element {
   const { t } = useTranslation();
   const playerList = useGameStore((s) => s.playerList);
-  const gameFinished = useGameStore((s) => s.gameFinished);
+  const gameFinished = useGameStore((s) => isGameFinished(s.tries));
   const toggle = useUIStore((s) => s.toggle);
   const { theme, setTheme } = useTheme();
 
@@ -57,9 +58,9 @@ function Tools({ tabButtonRef, statsButtonRef, endPageButtonRef, chatButtonRef, 
       <div className={classNames(classes.tools, classes.rightTools)}>
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.scoreTitle')} children={t('tools.scoreHintLocked')} />}>
           <button
-            className={classNames(!gameFinished() ? classes.disabled : undefined, classes.tool)}
+            className={classNames(!gameFinished ? classes.disabled : undefined, classes.tool)}
             ref={endPageButtonRef}
-            onClick={() => gameFinished() && toggle('endPage')}
+            onClick={() => gameFinished && toggle('endPage')}
           >
             <img src={tabLectern} alt={t('tools.scoreAlt')} className={classes.toolImage} />
           </button>

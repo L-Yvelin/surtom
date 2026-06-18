@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Client } from '@surtom/interfaces';
-import useGameStore from '../../../stores/useGameStore';
+import usePlayerStore from '../../../stores/usePlayerStore';
 import { useWebSocketStore } from '../../../stores/useWebSocketStore';
 import NameTag from '../../../ui/NameTag/NameTag';
 import classes from './OwnCursorNameTag.module.css';
@@ -8,7 +8,7 @@ import classes from './OwnCursorNameTag.module.css';
 const THROTTLE_MS = 50;
 
 const OwnCursorNameTag = () => {
-  const player = useGameStore((s) => s.player);
+  const player = usePlayerStore((s) => s.player);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

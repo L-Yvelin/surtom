@@ -1,5 +1,5 @@
 import { Server } from '@surtom/interfaces';
-import { defaultPlayer } from './useGameStore';
+import { defaultPlayer } from './usePlayerStore';
 import useCursorsStore from './useCursorsStore';
 
 const makeCursor = (name: string, x: number, y: number): Server.CursorPositionMessage => ({

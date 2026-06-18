@@ -5,7 +5,7 @@ import Credits from './Credits/Credits';
 import Keyboard from './Keyboard/Keyboard';
 import ExperienceBar from './ExperienceBar/ExperienceBar';
 import Chest from './Chest/Chest';
-import useGameStore from '../../stores/useGameStore';
+import usePlayerStore from '../../stores/usePlayerStore';
 import useKeyboardLayout from './hooks/useKeyboardLayout';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { KeyboardLayouts } from './Keyboard/utils';
@@ -27,7 +27,7 @@ function Game({ tabButtonRef, statsButtonRef, customWordButtonRef, endPageButton
     valueInStorage: keyboard,
     setValueInStorage: setKeyboard,
   });
-  const player = useGameStore((s) => s.player);
+  const player = usePlayerStore((s) => s.player);
 
   return (
     <main className={classes.main}>

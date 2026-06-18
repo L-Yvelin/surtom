@@ -2,13 +2,14 @@ import { useEffect } from 'react';
 import useShortcuts from './useShortcuts';
 import useGameLogic from './useGameLogic';
 import useGameStore from '../../../stores/useGameStore';
+import { isGameFinished } from '../utils/gameLogic';
 import { useVisibility } from '../../../stores/useUIStore';
 import useInputStore from '../../../stores/useInputStore';
 import useChatStore from '../../../stores/useChatStore';
 import { dispatchKey } from './keyDispatcher';
 
 const useKeyPress = () => {
-  const gameFinished = useGameStore((s) => s.gameFinished);
+  const gameFinished = useGameStore((s) => isGameFinished(s.tries));
   const showChat = useVisibility('chat');
   const focusInput = useChatStore((s) => s.focusInput);
 

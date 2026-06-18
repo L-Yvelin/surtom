@@ -2,7 +2,6 @@ import { AchievementProps } from '../features/AchievementsStack/Achievement/Achi
 import { Tries, Server, Word } from '@surtom/interfaces';
 import { ScoreStats } from '../features/Stats/utils/scoreCalculation';
 import { create } from 'zustand';
-import { isGameFinished } from '../features/Game/utils/gameLogic';
 
 interface GameState {
   solution: string | undefined;
@@ -13,13 +12,9 @@ interface GameState {
   setTries: (tries: Tries) => void;
   addTry: (word: Word) => void;
   letters: Word;
-  gameFinished: () => boolean;
   showProgression: boolean;
   setShowProgression: (showProgression: boolean) => void;
   setLetters: (letters: Word) => void;
-  player: Server.User;
-  setPlayer: (updatedPlayer: Partial<Server.User>) => void;
-  setXP: (xp: number) => void;
   playerList: Server.User[];
   setPlayerList: (players: Server.User[]) => void;
   addPlayer: (player: Server.User) => void;
@@ -37,14 +32,6 @@ interface GameState {
   resetWorld: () => void;
 }
 
-export const defaultPlayer: Server.User = {
-  name: '',
-  isMobile: false,
-  isLoggedIn: false,
-  moderatorLevel: 0,
-  xp: 0,
-};
-
 const initialSession = {
   achievements: [] as AchievementProps[],
   letters: [] as Word,
@@ -61,39 +48,15 @@ const initialWorld = {
   wasFinishedOnLoad: false,
 };
 
-const initialApp = {
-  player: defaultPlayer,
-};
-
-const useGameStore = create<GameState>((set, get) => ({
-  ...initialApp,
+const useGameStore = create<GameState>((set) => ({
   ...initialWorld,
   ...initialSession,
-  setSolution: (solution) =>
-    set(() => ({
-      solution,
-    })),
+  setSolution: (solution) => set(() => ({ solution })),
   setValidWords: (validWords) => set({ validWords }),
   setTries: (tries) => set({ tries }),
   addTry: (word) => set((state) => ({ tries: [...(state.tries || []), word] })),
-  gameFinished: () => isGameFinished(get().tries),
   setShowProgression: (showProgression) => set({ showProgression }),
   setLetters: (letters) => set({ letters }),
-  setPlayer: (updatedPlayer) =>
-    set((state) => ({
-      player: {
-        ...defaultPlayer,
-        ...state.player,
-        ...updatedPlayer,
-      },
-    })),
-  setXP: (xp) =>
-    set((state) => ({
-      player: {
-        ...state.player,
-        xp,
-      },
-    })),
   setPlayerList: (players) => set({ playerList: players }),
   addPlayer: (player) => set((state) => ({ playerList: [...(state.playerList || []), player] })),
   removePlayer: (playerName) =>

@@ -1,6 +1,7 @@
 import { Server } from '@surtom/interfaces';
 import Cookies from 'js-cookie';
 import useGameStore from './useGameStore';
+import usePlayerStore from './usePlayerStore';
 import useChatStore from './useChatStore';
 import useCursorsStore from './useCursorsStore';
 import { useWorldsStore } from './useWorldsStore';
@@ -15,12 +16,13 @@ export interface MessageHandlerDeps {
 
 export function handleServerMessage(data: Server.Message, deps: MessageHandlerDeps): void {
   const game = useGameStore.getState();
+  const player = usePlayerStore.getState();
   const chat = useChatStore.getState();
   const cursors = useCursorsStore.getState();
 
   switch (data.type) {
     case Server.MessageType.LOGIN:
-      game.setPlayer(data.content.user);
+      player.setPlayer(data.content.user);
       if (data.content.sessionHash) {
         Cookies.set(COOKIE_SESSION_HASH, data.content.sessionHash, { expires: 365 });
       }
@@ -67,7 +69,7 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
       break;
     }
     case Server.MessageType.XP:
-      game.setXP(data.content);
+      player.setXP(data.content);
       break;
     case Server.MessageType.CURSOR_POSITION:
       cursors.addOrUpdateCursor(data.content);

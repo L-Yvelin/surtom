@@ -17,7 +17,8 @@ jest.mock('./useWebSocketStore', () => ({
   },
 }));
 
-import useGameStore, { defaultPlayer } from './useGameStore';
+import useGameStore from './useGameStore';
+import usePlayerStore, { defaultPlayer } from './usePlayerStore';
 import useChatStore from './useChatStore';
 import useCursorsStore from './useCursorsStore';
 import { handleServerMessage, MessageHandlerDeps } from './wsMessageHandler';
@@ -37,13 +38,13 @@ const baseMessageMeta = {
 
 beforeEach(() => {
   cookiesSet.mockClear();
+  usePlayerStore.setState({ player: defaultPlayer });
   useGameStore.setState({
     solution: undefined,
     validWords: [],
     tries: [],
     letters: [],
     showProgression: true,
-    player: defaultPlayer,
     playerList: [],
     scores: {},
     achievements: [],
@@ -58,7 +59,7 @@ beforeEach(() => {
 describe('LOGIN', () => {
   test('sets the player from the message content', () => {
     handleServerMessage({ type: Server.MessageType.LOGIN, content: { user: basePrivateUser } }, makeDeps());
-    expect(useGameStore.getState().player).toEqual(expect.objectContaining({ name: 'Alice' }));
+    expect(usePlayerStore.getState().player).toEqual(expect.objectContaining({ name: 'Alice' }));
   });
 
   test('persists the session hash cookie when provided', () => {
@@ -90,10 +91,10 @@ describe('STATS / USER_LIST / XP', () => {
   });
 
   test('XP updates only the xp field', () => {
-    useGameStore.setState({ player: { ...baseUser, xp: 1 } });
+    usePlayerStore.setState({ player: { ...baseUser, xp: 1 } });
     handleServerMessage({ type: Server.MessageType.XP, content: 99 }, makeDeps());
-    expect(useGameStore.getState().player.xp).toBe(99);
-    expect(useGameStore.getState().player.name).toBe('Alice');
+    expect(usePlayerStore.getState().player.xp).toBe(99);
+    expect(usePlayerStore.getState().player.name).toBe('Alice');
   });
 });
 

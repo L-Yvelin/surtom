@@ -3,7 +3,7 @@ import type { InputScope } from '../../../stores/useInputStore';
 export interface KeyDispatchDeps {
   showChat: boolean;
   focusInput: (message?: string) => void;
-  gameFinished: () => boolean;
+  gameFinished: boolean;
   shortcutsKeyDown: (event: KeyboardEvent) => void;
   shortcutsKeyUp: (event: KeyboardEvent) => void;
   gameKeyDown: (event: KeyboardEvent) => void;
@@ -19,9 +19,9 @@ export function dispatchKey(event: KeyboardEvent, state: 'up' | 'down', topScope
   if (state === 'down') {
     if (deps.showChat && isGameKey(event)) {
       deps.focusInput();
-    } else if (!isGameKey(event) || deps.gameFinished() || event.altKey) {
+    } else if (!isGameKey(event) || deps.gameFinished || event.altKey) {
       deps.shortcutsKeyDown(event);
-    } else if (!modalOpen && !deps.gameFinished()) {
+    } else if (!modalOpen && !deps.gameFinished) {
       deps.gameKeyDown(event);
     }
   } else {

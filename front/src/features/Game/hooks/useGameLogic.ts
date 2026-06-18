@@ -3,7 +3,7 @@ import i18n from '../../../i18n';
 import { Achievement } from '../../AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../../AchievementsStack/Achievement/utils';
 import { LetterState } from '@surtom/interfaces';
-import { isGuessValid, validateWord, areWinningColors } from '../utils/gameLogic';
+import { isGuessValid, validateWord, areWinningColors, isGameFinished } from '../utils/gameLogic';
 import useGameStore from '../../../stores/useGameStore';
 import useUIStore from '../../../stores/useUIStore';
 import { useWebSocketStore } from '../../../stores/useWebSocketStore';
@@ -17,14 +17,14 @@ const useGameLogic = () => {
   const solution = useGameStore((s) => s.solution);
   const addAchievement = useGameStore((s) => s.addAchievement);
   const validWords = useGameStore((s) => s.validWords);
-  const gameFinished = useGameStore((s) => s.gameFinished);
+  const gameFinished = useGameStore((s) => isGameFinished(s.tries));
 
   const setVisibility = useUIStore((s) => s.setVisibility);
   const skipFirstLetter = useRef(true);
   const sendMessage = useWebSocketStore((s) => s.sendMessage);
 
   useEffect(() => {
-    if (gameFinished()) {
+    if (gameFinished) {
       setLetters([]);
       return;
     }

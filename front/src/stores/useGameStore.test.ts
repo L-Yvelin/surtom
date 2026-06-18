@@ -1,5 +1,6 @@
 import { LetterState, Server, Word } from '@surtom/interfaces';
-import useGameStore, { defaultPlayer } from './useGameStore';
+import useGameStore from './useGameStore';
+import { defaultPlayer } from './usePlayerStore';
 
 const makeUser = (overrides: Partial<Server.User>): Server.User => ({
   ...defaultPlayer,
@@ -19,37 +20,11 @@ beforeEach(() => {
     tries: [],
     letters: [],
     showProgression: true,
-    player: defaultPlayer,
     playerList: [],
     scores: {},
     achievements: [],
     hasLoaded: false,
     wasFinishedOnLoad: false,
-  });
-});
-
-describe('player', () => {
-  test('setPlayer merges into defaults (missing fields fall back to defaultPlayer)', () => {
-    useGameStore.getState().setPlayer({ name: 'Alice' });
-    expect(useGameStore.getState().player).toStrictEqual({ ...defaultPlayer, name: 'Alice' });
-  });
-
-  test('setPlayer preserves existing fields not in the patch', () => {
-    useGameStore.setState({ player: makeUser({ name: 'Alice', xp: 42 }) });
-    useGameStore.getState().setPlayer({ moderatorLevel: 2 });
-    expect(useGameStore.getState().player).toStrictEqual({
-      ...defaultPlayer,
-      name: 'Alice',
-      xp: 42,
-      moderatorLevel: 2,
-    });
-  });
-
-  test('setXP updates only the xp field on the player', () => {
-    useGameStore.setState({ player: makeUser({ name: 'Alice', xp: 1 }) });
-    useGameStore.getState().setXP(99);
-    expect(useGameStore.getState().player.xp).toBe(99);
-    expect(useGameStore.getState().player.name).toBe('Alice');
   });
 });
 
@@ -88,15 +63,6 @@ describe('tries', () => {
     expect(useGameStore.getState().tries).toStrictEqual([word]);
     useGameStore.getState().addTry(word);
     expect(useGameStore.getState().tries).toHaveLength(2);
-  });
-
-  test('gameFinished delegates to isGameFinished (winning try → true)', () => {
-    useGameStore.setState({ tries: [word] });
-    expect(useGameStore.getState().gameFinished()).toBe(true);
-  });
-
-  test('gameFinished returns false when no winning try and < 6 tries', () => {
-    expect(useGameStore.getState().gameFinished()).toBe(false);
   });
 });
 
@@ -140,13 +106,6 @@ describe('resetSession', () => {
     useGameStore.setState({ letters: partial });
     useGameStore.getState().resetSession();
     expect(useGameStore.getState().letters).toStrictEqual([]);
-  });
-
-  test('preserves player identity (App tier)', () => {
-    const alice = makeUser({ name: 'Alice', xp: 42 });
-    useGameStore.setState({ player: alice });
-    useGameStore.getState().resetSession();
-    expect(useGameStore.getState().player).toStrictEqual(alice);
   });
 
   test('preserves World-tier fields (tries, solution, scores, etc.)', () => {
@@ -201,13 +160,6 @@ describe('resetWorld', () => {
     expect(state.hasLoaded).toBe(false);
     expect(state.showProgression).toBe(true);
     expect(state.wasFinishedOnLoad).toBe(false);
-  });
-
-  test('preserves App-tier player identity', () => {
-    const alice = makeUser({ name: 'Alice', xp: 42 });
-    useGameStore.setState({ player: alice, tries: [word] });
-    useGameStore.getState().resetWorld();
-    expect(useGameStore.getState().player).toStrictEqual(alice);
   });
 
   test('does not touch Session-tier fields (achievements, letters)', () => {

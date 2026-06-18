@@ -6,7 +6,7 @@ const ev = (key: string, opts: { altKey?: boolean } = {}): KeyboardEvent => ({ k
 const makeDeps = (overrides: Partial<KeyDispatchDeps> = {}): KeyDispatchDeps => ({
   showChat: false,
   focusInput: jest.fn(),
-  gameFinished: () => false,
+  gameFinished: false,
   shortcutsKeyDown: jest.fn(),
   shortcutsKeyUp: jest.fn(),
   gameKeyDown: jest.fn(),
@@ -68,7 +68,7 @@ describe('dispatchKey - empty stack (game scope)', () => {
   });
 
   test('letter key while gameFinished is true is treated as a shortcut (not a game key)', () => {
-    const deps = makeDeps({ gameFinished: () => true });
+    const deps = makeDeps({ gameFinished: true });
     dispatchKey(ev('a'), 'down', null, deps);
     expect(deps.shortcutsKeyDown).toHaveBeenCalledTimes(1);
     expect(deps.gameKeyDown).not.toHaveBeenCalled();
