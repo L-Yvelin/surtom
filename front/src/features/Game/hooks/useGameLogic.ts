@@ -83,13 +83,13 @@ const useGameLogic = () => {
 
   const handleWin = () => {
     setLetters([]);
-    setVisibility('endPage', true);
+    setVisibility('chat', true);
     addAchievement(new Achievement(i18n.t('achievements.winTitle'), i18n.t('achievements.winSubtitle'), AchievementIcon.BOOK));
   };
 
   const handleLoss = () => {
     setLetters([]);
-    setVisibility('endPage', true);
+    setVisibility('chat', true);
     addAchievement(new Achievement(i18n.t('achievements.lossTitle'), i18n.t('achievements.lossSubtitle'), AchievementIcon.BOOK));
   };
 

@@ -6,7 +6,6 @@ import { useGlobalKeyPress } from '../../features/Game/hooks/useKeyPress';
 import AchievementsStack from '../../features/AchievementsStack/AchievementsStack';
 import Tab from '../../features/Tab/Tab';
 import Stats from '../../features/Stats/Stats';
-import EndPage from '../../features/EndPage/EndPage';
 import Chat from '../../features/Chat/Chat';
 import Cursors from '../../features/Cursors/Cursors';
 import OwnCursorNameTag from '../../features/Cursors/OwnCursorNameTag/OwnCursorNameTag';
@@ -17,7 +16,6 @@ import { useJoinWorld } from '../../hooks/useJoinWorld';
 function Quotidien(): JSX.Element {
   const tabButtonRef = React.useRef<HTMLButtonElement>(null);
   const statsButtonRef = React.useRef<HTMLButtonElement>(null);
-  const endPageButtonRef = React.useRef<HTMLButtonElement>(null);
   const chatButtonRef = React.useRef<HTMLButtonElement>(null);
 
   const { lang } = useParams<{ lang: string }>();
@@ -30,14 +28,13 @@ function Quotidien(): JSX.Element {
   return (
     <>
       <WorldLoading />
-      <Main tabButtonRef={tabButtonRef} statsButtonRef={statsButtonRef} endPageButtonRef={endPageButtonRef} chatButtonRef={chatButtonRef} />
+      <Main tabButtonRef={tabButtonRef} statsButtonRef={statsButtonRef} chatButtonRef={chatButtonRef} />
 
       <Cursors />
 
       <div className="windows">
         <Chat chatButtonRef={chatButtonRef} />
         <Stats statsButtonRef={statsButtonRef} />
-        <EndPage endPageButtonRef={endPageButtonRef} />
         <Tab tabButtonRef={tabButtonRef} />
       </div>
 
