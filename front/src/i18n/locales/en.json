@@ -48,9 +48,9 @@
     "playersTitle": "Connected players",
     "playersHint": "Send private messages by clicking the bubble",
     "playersAlt": "Player list icon",
-    "statsTitle": "Statistics",
-    "statsHint": "How much time have you wasted on this site?",
-    "statsAlt": "Stats icon",
+    "menuTitle": "Menu",
+    "menuHint": "Open the game menu",
+    "menuAlt": "Menu icon",
     "chatTitle": "Live chat",
     "chatHint": "Chat with the community and share your score",
     "chatAlt": "Chat icon",
@@ -132,7 +132,8 @@
     "soundOff": "Off"
   },
   "gameMenu": {
-    "title": "Game menu",
+    "achievements": "Achievements",
+    "statistics": "Statistics",
     "backToGame": "Back to Game",
     "options": "Options",
     "quit": "Save and Quit to Title"

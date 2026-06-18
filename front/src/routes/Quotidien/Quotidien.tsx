@@ -15,7 +15,7 @@ import { useJoinWorld } from '../../hooks/useJoinWorld';
 
 function Quotidien(): JSX.Element {
   const tabButtonRef = React.useRef<HTMLButtonElement>(null);
-  const statsButtonRef = React.useRef<HTMLButtonElement>(null);
+  const menuButtonRef = React.useRef<HTMLButtonElement>(null);
   const chatButtonRef = React.useRef<HTMLButtonElement>(null);
 
   const { lang } = useParams<{ lang: string }>();
@@ -28,13 +28,13 @@ function Quotidien(): JSX.Element {
   return (
     <>
       <WorldLoading />
-      <Main tabButtonRef={tabButtonRef} statsButtonRef={statsButtonRef} chatButtonRef={chatButtonRef} />
+      <Main tabButtonRef={tabButtonRef} menuButtonRef={menuButtonRef} chatButtonRef={chatButtonRef} />
 
       <Cursors />
 
       <div className="windows">
         <Chat chatButtonRef={chatButtonRef} />
-        <Stats statsButtonRef={statsButtonRef} />
+        <Stats />
         <Tab tabButtonRef={tabButtonRef} />
       </div>
 

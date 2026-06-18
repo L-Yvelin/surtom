@@ -48,9 +48,9 @@
     "playersTitle": "Joueurs connectés",
     "playersHint": "Envoyez des messages privés en cliquant sur la bulle",
     "playersAlt": "Icône liste des joueurs",
-    "statsTitle": "Statistiques",
-    "statsHint": "Combien de temps avez-vous perdu sur ce site ?",
-    "statsAlt": "Icône statistiques",
+    "menuTitle": "Menu",
+    "menuHint": "Ouvrir le menu de jeu",
+    "menuAlt": "Icône menu",
     "chatTitle": "Tchat en direct",
     "chatHint": "Discutez avec la communauté et partagez votre score",
     "chatAlt": "Icône tchat",
@@ -132,7 +132,8 @@
     "soundOff": "Off"
   },
   "gameMenu": {
-    "title": "Menu de jeu",
+    "achievements": "Succès",
+    "statistics": "Statistiques",
     "backToGame": "Retour au jeu",
     "options": "Options",
     "quit": "Sauvegarder et Quitter"

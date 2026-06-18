@@ -2,7 +2,7 @@ import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Tools.module.css';
 import tabImage from '../../../assets/images/tools/multiplayer.png';
-import tabScore from '../../../assets/images/tools/stats2.png';
+import tabMenu from '../../../assets/images/ui/cog.png';
 import tabChat from '../../../assets/images/tools/chat.webp';
 import tabLampOff from '../../../assets/images/tools/lamp-off.webp';
 import tabLampOn from '../../../assets/images/tools/lamp-on.webp';
@@ -13,14 +13,15 @@ import useGameStore from '../../../stores/useGameStore';
 import useUIStore from '../../../stores/useUIStore';
 import useTheme from '../../../hooks/useTheme';
 import { Theme } from '../../../theme/theme';
+import { GAME_MENU_TOAST_ID } from '../../../ui/GameMenu/GameMenu';
 
 interface ToolsProps {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
-  statsButtonRef: React.RefObject<HTMLButtonElement | null>;
+  menuButtonRef: React.RefObject<HTMLButtonElement | null>;
   chatButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
-function Tools({ tabButtonRef, statsButtonRef, chatButtonRef }: ToolsProps): JSX.Element {
+function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.Element {
   const { t } = useTranslation();
   const playerList = useGameStore((s) => s.playerList);
   const toggle = useUIStore((s) => s.toggle);
@@ -43,9 +44,9 @@ function Tools({ tabButtonRef, statsButtonRef, chatButtonRef }: ToolsProps): JSX
             <img src={tabImage} alt={t('tools.playersAlt')} className={classes.toolImage} />
           </button>
         </Tooltip>
-        <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.statsTitle')} children={t('tools.statsHint')} />}>
-          <button className={classes.tool} ref={statsButtonRef} onClick={() => toggle('stats')}>
-            <img src={tabScore} alt={t('tools.statsAlt')} className={classes.toolImage} />
+        <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.menuTitle')} children={t('tools.menuHint')} />}>
+          <button className={classes.tool} ref={menuButtonRef} onClick={() => toggle(GAME_MENU_TOAST_ID)}>
+            <img src={tabMenu} alt={t('tools.menuAlt')} className={classes.toolImage} />
           </button>
         </Tooltip>
       </div>

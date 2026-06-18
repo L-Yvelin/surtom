@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Stats.module.css';
 import ScoreDistribution from './ScoreDistribution/ScoreDistribution';
@@ -8,11 +8,7 @@ import MinecraftToast from '../../ui/MinecraftToast/MinecraftToast';
 import useGameStore from '../../stores/useGameStore';
 import useUIStore, { useVisibility } from '../../stores/useUIStore';
 
-interface StatsProps {
-  statsButtonRef: React.RefObject<HTMLButtonElement | null>;
-}
-
-function Stats({ statsButtonRef }: StatsProps): JSX.Element {
+function Stats(): JSX.Element {
   const { t } = useTranslation();
   const scores = useGameStore((s) => s.scores);
   const setVisibility = useUIStore((s) => s.setVisibility);
@@ -20,7 +16,7 @@ function Stats({ statsButtonRef }: StatsProps): JSX.Element {
   const { total, increaseFactor } = calculateStats(scores);
 
   return (
-    <MinecraftToast id="stats" toastButtonRef={statsButtonRef} className={classes.stats}>
+    <MinecraftToast id="stats" className={classes.stats}>
       <div className={classes.title}>{t('stats.gamesCount', { count: total })}</div>
       <div className={classes.subtitle}>{t('stats.scoreDistribution')}</div>
       <ScoreDistribution display={display} scores={scores} total={total} increaseFactor={increaseFactor} />

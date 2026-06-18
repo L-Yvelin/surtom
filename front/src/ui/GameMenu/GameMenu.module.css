@@ -26,6 +26,19 @@
   gap: 1vh;
 }
 
+.row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  gap: 1vh;
+  padding-bottom: 3vh;
+}
+
+.row button {
+  aspect-ratio: unset;
+  flex: 1;
+}
+
 .title {
   font-size: 2.4vh;
   letter-spacing: 0.05em;
