@@ -46,12 +46,6 @@
     "copyIconAlt": "Icône copier",
     "shareTextPrefix": "Mon score sur"
   },
-  "customWord": {
-    "title": "Mot personnalisé",
-    "start": "Lancer la partie",
-    "achievementTitle": "Succès obtenu !",
-    "achievementText": "Jouer avec les limites"
-  },
   "worldLoading": {
     "label": "Chargement du mot"
   },
@@ -68,9 +62,6 @@
     "chatTitle": "Tchat en direct",
     "chatHint": "Discutez avec la communauté et partagez votre score",
     "chatAlt": "Icône tchat",
-    "customWordTitle": "Mot personnalisé",
-    "customWordHint": "Faites jouer vos amis avec votre propre mot",
-    "customWordAlt": "Icône mot personnalisé",
     "themeTitle": "Changeur de thème",
     "themeHint": "Personnalisez votre interface",
     "themeAlt": "Icône changement de thème"

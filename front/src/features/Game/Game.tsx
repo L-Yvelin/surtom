@@ -14,12 +14,11 @@ import GameMenu from '../../ui/GameMenu/GameMenu';
 interface GameProps {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
   statsButtonRef: React.RefObject<HTMLButtonElement | null>;
-  customWordButtonRef: React.RefObject<HTMLButtonElement | null>;
   endPageButtonRef: React.RefObject<HTMLButtonElement | null>;
   chatButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
-function Game({ tabButtonRef, statsButtonRef, customWordButtonRef, endPageButtonRef, chatButtonRef }: GameProps): JSX.Element {
+function Game({ tabButtonRef, statsButtonRef, endPageButtonRef, chatButtonRef }: GameProps): JSX.Element {
   const keyboard = useSettingsStore((s) => s.keyboard);
   const setKeyboard = useSettingsStore((s) => s.setKeyboard);
   const layout = useKeyboardLayout({
@@ -35,7 +34,6 @@ function Game({ tabButtonRef, statsButtonRef, customWordButtonRef, endPageButton
       <Tools
         tabButtonRef={tabButtonRef}
         statsButtonRef={statsButtonRef}
-        customWordButtonRef={customWordButtonRef}
         endPageButtonRef={endPageButtonRef}
         chatButtonRef={chatButtonRef}
       />

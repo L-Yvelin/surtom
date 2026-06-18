@@ -5,7 +5,6 @@ import tabImage from '../../../assets/images/tools/multiplayer.png';
 import tabScore from '../../../assets/images/tools/stats2.png';
 import tabLectern from '../../../assets/images/tools/lectern.webp';
 import tabChat from '../../../assets/images/tools/chat.webp';
-import tabBook from '../../../assets/images/tools/book_and_quill.webp';
 import tabLampOff from '../../../assets/images/tools/lamp-off.webp';
 import tabLampOn from '../../../assets/images/tools/lamp-on.webp';
 import MinecraftTooltip from '../../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
@@ -20,12 +19,11 @@ import { isGameFinished } from '../utils/gameLogic';
 interface ToolsProps {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
   statsButtonRef: React.RefObject<HTMLButtonElement | null>;
-  customWordButtonRef: React.RefObject<HTMLButtonElement | null>;
   endPageButtonRef: React.RefObject<HTMLButtonElement | null>;
   chatButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
-function Tools({ tabButtonRef, statsButtonRef, endPageButtonRef, chatButtonRef, customWordButtonRef }: ToolsProps): JSX.Element {
+function Tools({ tabButtonRef, statsButtonRef, endPageButtonRef, chatButtonRef }: ToolsProps): JSX.Element {
   const { t } = useTranslation();
   const playerList = useGameStore((s) => s.playerList);
   const gameFinished = useGameStore((s) => isGameFinished(s.tries));
@@ -69,11 +67,6 @@ function Tools({ tabButtonRef, statsButtonRef, endPageButtonRef, chatButtonRef, 
           <button className={classes.tool} ref={chatButtonRef} onClick={() => toggle('chat')}>
             <div id="chat-notification-circle"></div>
             <img src={tabChat} alt={t('tools.chatAlt')} className={classes.toolImage} />
-          </button>
-        </Tooltip>
-        <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.customWordTitle')} children={t('tools.customWordHint')} />}>
-          <button className={classes.tool} onClick={() => toggle('customWord')} ref={customWordButtonRef}>
-            <img src={tabBook} alt={t('tools.customWordAlt')} className={classes.toolImage} />
           </button>
         </Tooltip>
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.themeTitle')} children={t('tools.themeHint')} />}>
