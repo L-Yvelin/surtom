@@ -11,17 +11,31 @@ import MessageContextMenu from './MessageContextMenu/MessageContextMenu';
 import usePlayerStore from '../../../../stores/usePlayerStore';
 import answerIcon from '../../../../assets/images/ui/answer.svg';
 import deleteIcon from '../../../../assets/images/ui/delete.svg';
-import { isPrivateMessage, isSavedChatMessage, isScoreMessage, isStatusMessage, isTextMessage } from '../../utils/messageFormatting';
+import {
+  isPrivateMessage,
+  isSavedChatMessage,
+  isScoreMessage,
+  isStatusMessage,
+  isTextMessage,
+  isFinishedMessage,
+  isHelpMessage,
+} from '../../utils/messageFormatting';
 import { isMobile } from 'react-device-detect';
 import StatusContent from './Content/StatusContent';
 import ScoreContent from './Content/ScoreContent';
 import UserContent from './Content/UserContent';
 import PrivateMessageContent from './Content/PrivateMessageContent';
+import FinishedContent from './Content/FinishedContent';
+import HelpContent from './Content/HelpContent';
 import { useWebSocketStore } from '../../../../stores/useWebSocketStore';
 import ReplyMessage from './ReplyMessage/ReplyMessage';
 
 const MessageContent = ({ message }: { message: Server.ChatMessage.Type }): JSX.Element => {
-  if (isStatusMessage(message)) {
+  if (isFinishedMessage(message)) {
+    return <FinishedContent message={message} />;
+  } else if (isHelpMessage(message)) {
+    return <HelpContent />;
+  } else if (isStatusMessage(message)) {
     return <StatusContent message={message} />;
   } else if (isSavedChatMessage(message)) {
     if (isScoreMessage(message)) {

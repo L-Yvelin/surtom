@@ -41,11 +41,6 @@
     "gamesCount_other": "{{count}} games",
     "scoreDistribution": "Score distribution"
   },
-  "endPage": {
-    "shareInChat": "Share score in chat",
-    "copyIconAlt": "Copy icon",
-    "shareTextPrefix": "My score on"
-  },
   "worldLoading": {
     "label": "Loading word"
   },
@@ -56,9 +51,6 @@
     "statsTitle": "Statistics",
     "statsHint": "How much time have you wasted on this site?",
     "statsAlt": "Stats icon",
-    "scoreTitle": "View score",
-    "scoreHintLocked": "Please finish the game first",
-    "scoreAlt": "End screen icon",
     "chatTitle": "Live chat",
     "chatHint": "Chat with the community and share your score",
     "chatAlt": "Chat icon",
@@ -91,6 +83,12 @@
     "messageError": "Unable to generate message",
     "privateTag": "PM",
     "scrollToBottomAlt": "Scroll to bottom arrow",
+    "shareInChat": "Share score in chat",
+    "copyScore": "Copy score",
+    "shareTextPrefix": "My score on",
+    "gameWon": "You found the word!",
+    "gameLost": "Better luck next time.",
+    "help": "Type /help for more information.",
     "rank": {
       "1": "Admin",
       "2": "Super-Admin",

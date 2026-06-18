@@ -5,7 +5,7 @@ import { isSavedChatMessage } from '../features/Chat/utils/messageFormatting';
 
 interface ChatStore {
   messages: Server.ChatMessage.Type[];
-  setMessages: (messages: Server.ChatMessage.SavedType[]) => void;
+  setMessages: (messages: Server.ChatMessage.Type[]) => void;
   answeringTo: string | null;
   setAnsweringTo: (id: string | null) => void;
   removeMessage: (messageId: string) => void;

@@ -49,6 +49,9 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
       useChatStore.getState().scrollToBottom?.();
       break;
     case Server.MessageType.MESSAGE:
+      if (data.content.type === Server.MessageType.GAME_FINISHED) {
+        game.setHasSharedScore(data.content.content.hasSharedScore);
+      }
       chat.addMessage(data.content);
       useChatStore.getState().scrollToBottom?.();
       break;

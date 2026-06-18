@@ -28,6 +28,8 @@ interface GameState {
   setHasLoaded: (hasLoaded: boolean) => void;
   wasFinishedOnLoad: boolean;
   setWasFinishedOnLoad: (wasFinishedOnLoad: boolean) => void;
+  hasSharedScore: boolean;
+  setHasSharedScore: (hasSharedScore: boolean) => void;
   resetSession: () => void;
   resetWorld: () => void;
 }
@@ -46,6 +48,7 @@ const initialWorld = {
   scores: {} as ScoreStats,
   hasLoaded: false,
   wasFinishedOnLoad: false,
+  hasSharedScore: false,
 };
 
 const useGameStore = create<GameState>((set) => ({
@@ -74,6 +77,7 @@ const useGameStore = create<GameState>((set) => ({
     })),
   setHasLoaded: (hasLoaded) => set({ hasLoaded }),
   setWasFinishedOnLoad: (wasFinishedOnLoad) => set({ wasFinishedOnLoad }),
+  setHasSharedScore: (hasSharedScore) => set({ hasSharedScore }),
   resetSession: () => set(initialSession),
   resetWorld: () => set(initialWorld),
 }));

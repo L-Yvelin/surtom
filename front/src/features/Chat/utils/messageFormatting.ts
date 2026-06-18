@@ -85,6 +85,14 @@ export function isScoreMessage(message: Server.ChatMessage.Type): message is Ser
   return message.type === Server.MessageType.SCORE;
 }
 
+export function isFinishedMessage(message: Server.ChatMessage.Type): message is Server.ChatMessage.GameFinished {
+  return message.type === Server.MessageType.GAME_FINISHED;
+}
+
+export function isHelpMessage(message: Server.ChatMessage.Type): message is Server.ChatMessage.Help {
+  return message.type === Server.MessageType.HELP;
+}
+
 export function isStatusMessage(message: Server.ChatMessage.Type): message is Server.ChatMessage.Status {
   return message.type === Server.MessageType.SUCCESS || message.type === Server.MessageType.ERROR;
 }

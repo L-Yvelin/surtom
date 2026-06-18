@@ -41,11 +41,6 @@
     "gamesCount_other": "{{count}} parties",
     "scoreDistribution": "Répartition des scores"
   },
-  "endPage": {
-    "shareInChat": "Partager le score dans le tchat",
-    "copyIconAlt": "Icône copier",
-    "shareTextPrefix": "Mon score sur"
-  },
   "worldLoading": {
     "label": "Chargement du mot"
   },
@@ -56,9 +51,6 @@
     "statsTitle": "Statistiques",
     "statsHint": "Combien de temps avez-vous perdu sur ce site ?",
     "statsAlt": "Icône statistiques",
-    "scoreTitle": "Voir le score",
-    "scoreHintLocked": "Veuillez d'abord finir la partie",
-    "scoreAlt": "Icône fin de partie",
     "chatTitle": "Tchat en direct",
     "chatHint": "Discutez avec la communauté et partagez votre score",
     "chatAlt": "Icône tchat",
@@ -91,6 +83,12 @@
     "messageError": "Impossible de générer le message",
     "privateTag": "MP",
     "scrollToBottomAlt": "Flèche pour descendre",
+    "shareInChat": "Partager le score dans le tchat",
+    "copyScore": "Copier le score",
+    "shareTextPrefix": "Mon score sur",
+    "gameWon": "Vous avez trouvé le mot !",
+    "gameLost": "Pas de chance pour cette fois.",
+    "help": "Tapez /help pour plus d'informations.",
     "rank": {
       "1": "Admin",
       "2": "Super-Admin",
