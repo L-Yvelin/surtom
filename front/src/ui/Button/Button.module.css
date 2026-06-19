@@ -7,13 +7,12 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  container-type: size;
-  text-shadow: 0.25cqh 0.25cqh 0 rgba(0, 0, 0, 0.5);
-  padding: 0.5cqh;
+  --button-text-shadow-size: calc(var(--button-height) * 0.04);
+  text-shadow: var(--button-text-shadow-size) var(--button-text-shadow-size) 0 rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
   aspect-ratio: 10;
 
-  border-image-source: url('@mc/textures/gui/sprites/widget/button.png');
+  border-image-source: var(--mc-button);
   border-image-slice: 2 fill;
   --button-border: calc(var(--button-height) * 0.1);
   border-image-width: var(--button-border);
@@ -29,11 +28,12 @@
 }
 
 .text {
-  font-size: 45cqh;
+  font-size: calc(var(--button-height) * 0.35);
+  white-space: nowrap;
 }
 
 .button:hover {
-  border-image-source: url('@mc/textures/gui/sprites/widget/button_highlighted.png');
+  border-image-source: var(--mc-button-highlighted);
 }
 
 .disabled {
@@ -44,5 +44,5 @@
 
 .disabled,
 .disabled:hover {
-  border-image-source: url('@mc/textures/gui/sprites/widget/button_disabled.png');
+  border-image-source: var(--mc-button-disabled);
 }

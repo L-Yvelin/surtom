@@ -1,11 +1,6 @@
 import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Tools.module.css';
-import tabImage from '../../../assets/images/tools/multiplayer.png';
-import tabMenu from '../../../assets/images/ui/cog.png';
-import tabChat from '../../../assets/images/tools/chat.webp';
-import tabLampOff from '@mc/textures/block/redstone_lamp.png';
-import tabLampOn from '@mc/textures/block/redstone_lamp_on.png';
 import MinecraftTooltip from '../../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
 import Tooltip from '../../../ui/Tooltip/Tooltip';
 import classNames from 'classnames';
@@ -14,6 +9,8 @@ import useUIStore from '../../../stores/useUIStore';
 import useTheme from '../../../hooks/useTheme';
 import { Theme } from '../../../theme/theme';
 import { GAME_MENU_TOAST_ID } from '../../../ui/GameMenu/GameMenu';
+import { useTexture } from '../../../stores/useResourcePackStore';
+import Button from '../../../ui/Button/Button';
 
 interface ToolsProps {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
@@ -26,6 +23,10 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
   const playerList = useGameStore((s) => s.playerList);
   const toggle = useUIStore((s) => s.toggle);
   const { theme, setTheme } = useTheme();
+  const tabLampOff = useTexture('block/redstone_lamp.png');
+  const tabLampOn = useTexture('block/redstone_lamp_on.png');
+  const tabChat = useTexture('gui/sprites/toast/social_interactions.png');
+  const tabPlayers = useTexture('gui/sprites/friends/friends.png');
 
   const nbUsers = playerList.length;
 
@@ -34,6 +35,19 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
   return (
     <div className={classes.toolbar}>
       <div className={classNames(classes.tools, classes.leftTools)}>
+        <Tooltip
+          tooltipContent={<MinecraftTooltip title={t('tools.menuTitle')} children={t('tools.menuHint')} />}
+          className={classes.optionsButtonWrapper}
+        >
+          <Button
+            className={classes.optionsButton}
+            ref={menuButtonRef}
+            shouldMarquee={false}
+            text={t('tools.menuTitle')}
+            onClick={() => toggle(GAME_MENU_TOAST_ID)}
+            aria-label={t('tools.menuAlt')}
+          />
+        </Tooltip>
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.playersTitle')} children={t('tools.playersHint')} />}>
           <button
             className={classNames(classes.tool, classes.voirTab)}
@@ -41,12 +55,7 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
             onClick={() => toggle('tab')}
             ref={tabButtonRef}
           >
-            <img src={tabImage} alt={t('tools.playersAlt')} className={classes.toolImage} />
-          </button>
-        </Tooltip>
-        <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.menuTitle')} children={t('tools.menuHint')} />}>
-          <button className={classes.tool} ref={menuButtonRef} onClick={() => toggle(GAME_MENU_TOAST_ID)}>
-            <img src={tabMenu} alt={t('tools.menuAlt')} className={classes.toolImage} />
+            <img src={tabPlayers} alt={t('tools.playersAlt')} className={classes.toolImage} />
           </button>
         </Tooltip>
       </div>
@@ -54,7 +63,7 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.chatTitle')} children={t('tools.chatHint')} />}>
           <button className={classes.tool} ref={chatButtonRef} onClick={() => toggle('chat')}>
             <div id="chat-notification-circle"></div>
-            <img src={tabChat} alt={t('tools.chatAlt')} className={classes.toolImage} />
+            <img src={tabChat} alt={t('tools.chatAlt')} className={classNames(classes.toolImage, classes.chatIcon)} />
           </button>
         </Tooltip>
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.themeTitle')} children={t('tools.themeHint')} />}>

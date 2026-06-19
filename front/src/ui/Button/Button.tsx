@@ -12,9 +12,19 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   text: ReactNode;
   size?: 'normal' | 'square';
   ref?: React.Ref<HTMLButtonElement>;
+  shouldMarquee?: boolean;
 };
 
-function Button({ text, onClick, className = '', size = 'normal', disabled = false, ref, ...props }: ButtonProps): JSX.Element {
+function Button({
+  text,
+  onClick,
+  className = '',
+  size = 'normal',
+  disabled = false,
+  ref,
+  shouldMarquee = true,
+  ...props
+}: ButtonProps): JSX.Element {
   const sound = useSettingsStore((s) => s.sound);
 
   function handleOnClick(e: React.MouseEvent<HTMLButtonElement>) {
@@ -31,7 +41,7 @@ function Button({ text, onClick, className = '', size = 'normal', disabled = fal
       onClick={handleOnClick}
       disabled={disabled}
     >
-      <Marquee text={text} className={classes.text} />
+      {shouldMarquee ? <Marquee text={text} className={classes.text} /> : <span className={classes.text}>{text}</span>}
     </button>
   );
 }

@@ -34,6 +34,22 @@
   object-fit: contain;
 }
 
+.optionsButton {
+  aspect-ratio: unset;
+  padding-inline: calc(var(--button-height) * 0.5);
+}
+
+.optionsButtonWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chatIcon {
+  clip-path: inset(10px 10px 10px 10px);
+  scale: 150%;
+}
+
 .voirTab::after {
   content: attr(data-user-count);
   color: white;
