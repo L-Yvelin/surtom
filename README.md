@@ -97,7 +97,17 @@ That creates all tables (via Drizzle migrations in `back/src/db/migrations/`) an
 - the system / funny-name `Player` rows,
 - the word lists (`Dictionary`, `MinecraftWord`, `MinecraftSolution`) for both languages, loaded from the checked-in text files in `back/data/seed-output/<lang>/`.
 
-### 5. Run dev servers
+### 5. Fetch Minecraft textures
+
+The frontend requires Minecraft textures that are not committed to the repository (they are downloaded from Mojang's servers and stored in `front/vendors/minecraft/`, which is gitignored).
+
+They are fetched automatically as a `predev`/`prebuild` hook, so you usually don't need to run this manually. If you need to force a re-download (e.g. after a version bump):
+
+```bash
+MC_FORCE=1 npm run mc:assets --workspace=front
+```
+
+### 6. Run dev servers
 
 ```bash
 # from the repo root
