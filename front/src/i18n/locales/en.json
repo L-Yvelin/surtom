@@ -15,13 +15,13 @@
     "competitive": "Competitive",
     "competitiveSoon": "Coming soon",
     "options": "Options",
-    "quit": "Quit"
+    "quit": "Quit Game"
   },
   "splash": {
     "lines": ["NAN NAN!", "🗣️SUTOM! 🤖SURTOM?", "Tah la mondialisation", "Coded in France", "100% gluten-free", "Inspired, not plagiarized"]
   },
   "worldSelection": {
-    "title": "World selection",
+    "title": "Select World",
     "search": "Search",
     "loading": "Loading worlds...",
     "empty": "No matching worlds",
@@ -29,7 +29,7 @@
     "edit": "Edit",
     "delete": "Delete",
     "recreate": "Recreate",
-    "newWorld": "New world",
+    "newWorld": "Create New World",
     "cancel": "Cancel",
     "modeDaily": "Daily mode",
     "modeTemp": "Temporary world",
@@ -67,8 +67,8 @@
   },
   "chest": {
     "christmas": "Christmas chest",
-    "ender": "Ender chest",
-    "large": "Large chest"
+    "ender": "Ender Chest",
+    "large": "Large Chest"
   },
   "chat": {
     "scoreInline_one": "finished the game in {{count}} try!",
@@ -135,7 +135,7 @@
     "achievements": "Achievements",
     "statistics": "Statistics",
     "backToGame": "Back to Game",
-    "options": "Options",
+    "options": "Options...",
     "quit": "Save and Quit to Title"
   }
 }

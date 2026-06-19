@@ -15,13 +15,13 @@
     "competitive": "Compétitif",
     "competitiveSoon": "Bientôt disponible",
     "options": "Options",
-    "quit": "Quitter"
+    "quit": "Quitter le jeu"
   },
   "splash": {
     "lines": ["NAN NAN!", "🗣️SUTOM! 🤖SURTOM?", "Tah la mondialisation", "Coded in France", "100% gluten-free", "Inspired, not plagiarized"]
   },
   "worldSelection": {
-    "title": "Sélection du monde",
+    "title": "Choix du monde",
     "search": "Rechercher",
     "loading": "Chargement des mondes...",
     "empty": "Aucun monde correspondant",
@@ -29,7 +29,7 @@
     "edit": "Modifier",
     "delete": "Supprimer",
     "recreate": "Recréer",
-    "newWorld": "Nouveau monde",
+    "newWorld": "Créer un nouveau monde",
     "cancel": "Annuler",
     "modeDaily": "Mode Quotidien",
     "modeTemp": "Monde temporaire",
@@ -134,8 +134,8 @@
   "gameMenu": {
     "achievements": "Succès",
     "statistics": "Statistiques",
-    "backToGame": "Retour au jeu",
-    "options": "Options",
-    "quit": "Sauvegarder et Quitter"
+    "backToGame": "Reprendre la partie",
+    "options": "Options...",
+    "quit": "Sauvegarder et quitter la partie"
   }
 }
