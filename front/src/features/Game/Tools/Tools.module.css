@@ -50,6 +50,10 @@
   scale: 150%;
 }
 
+.chatButton {
+  overflow: hidden;
+}
+
 .voirTab::after {
   content: attr(data-user-count);
   color: white;

@@ -61,7 +61,7 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
       </div>
       <div className={classNames(classes.tools, classes.rightTools)}>
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.chatTitle')} children={t('tools.chatHint')} />}>
-          <button className={classes.tool} ref={chatButtonRef} onClick={() => toggle('chat')}>
+          <button className={classNames(classes.tool, classes.chatButton)} ref={chatButtonRef} onClick={() => toggle('chat')}>
             <div id="chat-notification-circle"></div>
             <img src={tabChat} alt={t('tools.chatAlt')} className={classNames(classes.toolImage, classes.chatIcon)} />
           </button>
