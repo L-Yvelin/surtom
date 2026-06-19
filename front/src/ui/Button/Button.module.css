@@ -17,7 +17,7 @@
   border-image-slice: 2 fill;
   --button-border: calc(var(--button-height) * 0.1);
   border-image-width: var(--button-border);
-  border-image-repeat: round;
+  border-image-repeat: initial;
 }
 
 .square {

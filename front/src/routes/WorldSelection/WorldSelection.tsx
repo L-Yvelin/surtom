@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Server } from '@surtom/interfaces';
 import classes from './WorldSelection.module.css';
 import Button from '../../ui/Button/Button';
+import ButtonRow from '../../ui/ButtonRow/ButtonRow';
 import WorldEntry, { World } from './WorldEntry/WorldEntry';
 import { useFetchWorlds } from '../../hooks/useFetchWorlds';
 import { useWorldsStore } from '../../stores/useWorldsStore';
@@ -67,7 +68,7 @@ function WorldSelection(): JSX.Element {
       </div>
 
       <div className={classes.actions}>
-        <div className={classes.actionRow}>
+        <ButtonRow>
           <Button
             text={t('worldSelection.play')}
             onClick={() => selected && navigate(`/quotidien/${selected.id}`)}
@@ -75,15 +76,15 @@ function WorldSelection(): JSX.Element {
             className={classes.action}
           />
           <Button text={t('worldSelection.edit')} disabled className={classes.action} />
-        </div>
-        <div className={classes.actionRow}>
+        </ButtonRow>
+        <ButtonRow>
           <Button text={t('worldSelection.delete')} disabled className={classes.action} />
           <Button text={t('worldSelection.recreate')} disabled className={classes.action} />
-        </div>
-        <div className={classes.actionRow}>
+        </ButtonRow>
+        <ButtonRow>
           <Button text={t('worldSelection.newWorld')} disabled className={classes.action} />
           <Button text={t('worldSelection.cancel')} onClick={() => navigate('/')} className={classes.action} />
-        </div>
+        </ButtonRow>
       </div>
     </div>
   );

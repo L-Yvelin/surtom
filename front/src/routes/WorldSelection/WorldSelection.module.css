@@ -91,13 +91,6 @@
   gap: 1vh;
 }
 
-.actionRow {
-  display: flex;
-  flex-direction: row;
-  gap: 1vh;
-  width: 100%;
-}
-
 .action {
   flex: 1;
   height: 4.5vh;

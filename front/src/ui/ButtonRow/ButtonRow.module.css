@@ -1,0 +1,15 @@
+.row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  gap: 1vh;
+}
+
+.row > * {
+  flex: 1;
+}
+
+.row button {
+  aspect-ratio: unset;
+  width: 100%;
+}

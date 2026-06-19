@@ -8,11 +8,12 @@ import MinecraftTooltip from '../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip
 import Credits from '../../features/Game/Credits/Credits';
 import { SETTINGS_TOAST_ID } from '../../ui/Settings/Settings';
 import useUIStore from '../../stores/useUIStore';
+import ButtonRow from '../../ui/ButtonRow/ButtonRow';
 
 function MainMenu(): JSX.Element {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const optionsButtonRef = useRef<HTMLDivElement>(null);
+  const optionsButtonRef = useRef<HTMLButtonElement>(null);
   const toggle = useUIStore((s) => s.toggle);
 
   return (
@@ -27,12 +28,17 @@ function MainMenu(): JSX.Element {
               <Button text={t('mainMenu.competitive')} disabled className={classes.primaryButton} />
             </div>
           </Tooltip>
-          <div ref={optionsButtonRef}>
-            <Button text={t('mainMenu.options')} onClick={() => toggle(SETTINGS_TOAST_ID)} className={classes.primaryButton} />
-          </div>
-          <Tooltip tooltipContent={<MinecraftTooltip title={'???'} children={'🙅'} />}>
-            <Button text={t('mainMenu.quit')} disabled className={classes.primaryButton} />
-          </Tooltip>
+          <ButtonRow>
+            <Button
+              ref={optionsButtonRef}
+              text={t('mainMenu.options')}
+              onClick={() => toggle(SETTINGS_TOAST_ID)}
+              className={classes.primaryButton}
+            />
+            <Tooltip tooltipContent={<MinecraftTooltip title={'???'} children={'🙅'} />}>
+              <Button text={t('mainMenu.quit')} disabled className={classes.primaryButton} />
+            </Tooltip>
+          </ButtonRow>
         </div>
 
         <div className={classes.creditsWrapper}>
