@@ -17,7 +17,7 @@
 }
 
 .grid {
-  max-width: 1300px;
+  max-width: 2000px;
   display: flex;
   flex-wrap: wrap;
   gap: 1vh;
