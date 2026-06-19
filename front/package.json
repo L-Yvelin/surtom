@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "mc:assets": "node scripts/fetch-mc-assets.mjs",
+    "predev": "npm run mc:assets",
     "dev": "vite",
+    "prebuild": "npm run mc:assets",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -31,6 +34,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "adm-zip": "^0.5.17",
     "@types/jest": "^30.0.0",
     "@types/js-cookie": "^3.0.6",
     "@types/mocha": "^10.0.10",

@@ -10,7 +10,6 @@
     "format": "npx pretty-quick",
     "lint:secrets": "secretlint \"**/*\"",
     "prepare": "husky install || true",
-    "predev": "test -d vendor/minecraft/26.2/assets/minecraft/textures || npm run mc:assets",
     "dev": "concurrently \"npm:dev:*\"",
     "dev:back": "npm run dev --workspace=back",
     "dev:front": "npm run dev --workspace=front",
@@ -18,12 +17,10 @@
     "build:back": "npm run build --workspace=back",
     "build:front": "npm run build --workspace=front",
     "test": "npm run test --workspaces",
-    "test:back": "npm run test --workspace=back",
-    "mc:assets": "node scripts/fetch-mc-assets.mjs"
+    "test:back": "npm run test --workspace=back"
   },
   "devDependencies": {
     "@secretlint/secretlint-rule-preset-recommend": "^10.1.1",
-    "adm-zip": "^0.5.17",
     "concurrently": "^8.2.2",
     "husky": "^8.0.0",
     "prettier": "^3.6.1",

@@ -4,11 +4,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY interfaces/package*.json ./interfaces/
 COPY front/package*.json ./front/
-COPY scripts/ ./scripts/
 
 RUN npm ci
-
-RUN npm run mc:assets
 
 COPY interfaces/ ./interfaces/
 COPY front/ ./front/
