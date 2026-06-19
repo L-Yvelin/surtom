@@ -13,6 +13,9 @@ import MainMenu from './routes/MainMenu/MainMenu';
 import WorldSelection from './routes/WorldSelection/WorldSelection';
 import Quotidien from './routes/Quotidien/Quotidien';
 import Settings from './ui/Settings/Settings';
+import ResourcePacks from './ui/ResourcePacks/ResourcePacks';
+import useResourcePackStore from './stores/useResourcePackStore';
+import Stats from './features/Stats/Stats';
 
 const fontFile = new FontFace('Twemoji', `url(${twemoji})`, {
   unicodeRange:
@@ -38,6 +41,10 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
     useWebSocketStore.getState().connect();
   }, []);
 
+  useEffect(() => {
+    void useResourcePackStore.getState().init();
+  }, []);
+
   use(twemojiPromise);
 
   useEffect(() => {
@@ -58,6 +65,8 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
         </Routes>
 
         <Settings />
+        <Stats />
+        <ResourcePacks />
         <WebSocketPingHandler />
       </TooltipProvider>
     </div>

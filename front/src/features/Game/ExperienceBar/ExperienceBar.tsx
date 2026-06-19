@@ -1,9 +1,8 @@
 import { JSX, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './ExperienceBar.module.css';
-import ExperienceBackground from '@mc/textures/gui/sprites/hud/experience_bar_background.png';
-import ExperienceProgress from '@mc/textures/gui/sprites/hud/experience_bar_progress.png';
 import { useLevelAnimation } from './useLevelAnimation';
+import { useTexture } from '../../../stores/useResourcePackStore';
 import useGameStore from '../../../stores/useGameStore';
 import Tooltip from '../../../ui/Tooltip/Tooltip';
 import MinecraftTooltip from '../../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
@@ -55,6 +54,8 @@ function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
   const { t } = useTranslation();
   const level = getLevel(xp);
   const hasLoaded = useGameStore((s) => s.hasLoaded);
+  const ExperienceBackground = useTexture('gui/sprites/hud/experience_bar_background.png');
+  const ExperienceProgress = useTexture('gui/sprites/hud/experience_bar_progress.png');
 
   const [realtimeLevel, setRealtimeLevel] = useState<number>(level);
   const levelIntegerPart = Math.floor(realtimeLevel);

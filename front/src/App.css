@@ -4,7 +4,7 @@
   align-items: stretch;
   height: 100%;
   position: relative;
-  background-image: url('@mc/textures/block/dirt.png');
+  background-image: var(--mc-dirt);
   background-repeat: repeat;
   background-size: 17dvmin 17dvmin;
   image-rendering: pixelated;
@@ -12,7 +12,7 @@
 }
 
 #root-container.dark {
-  background-image: url('@mc/textures/block/netherrack.png');
+  background-image: var(--mc-netherrack);
 }
 
 .windows {

@@ -1,18 +1,9 @@
-.settings {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  top: 0 !important;
-  left: 0 !important;
-  transform: none !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  padding: 6vh 4vw !important;
-  background-size: 4vh !important;
-  box-sizing: border-box !important;
-  z-index: var(--z-settings) !important;
-  border: none !important;
+.title {
+  font-size: 2.4vh;
+  letter-spacing: 0.05em;
+  margin-bottom: 4vh;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .mainContent {
@@ -35,18 +26,4 @@
 
 .button {
   flex-grow: 0;
-}
-
-.invisibleButton {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.title {
-  font-size: 2.4vh;
-  letter-spacing: 0.05em;
-  margin-bottom: 5vh;
-  text-align: center;
-  flex-shrink: 0;
 }

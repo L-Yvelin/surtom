@@ -1,0 +1,166 @@
+.title {
+  font-size: 2.4vh;
+  letter-spacing: 0.05em;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dropHint {
+  font-size: 1.4vh;
+  opacity: 0.7;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.search {
+  width: min(60vw, 600px);
+  flex-shrink: 0;
+  padding: 1vh;
+  font-family: inherit;
+  font-size: 1.6vh;
+  color: white;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6);
+  border: 0.2vh solid #000;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2vw;
+  width: min(90vw, 1100px);
+  flex: 1;
+  min-height: 0;
+  border: 0.2vh dashed transparent;
+  box-sizing: border-box;
+}
+
+.columns.dragging {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  flex: 1 1 280px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.columnTitle {
+  font-size: 1.8vh;
+  text-align: center;
+  text-decoration: underline;
+  flex-shrink: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vh;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  padding: 0.5vh;
+  background: rgba(0, 0, 0, 0.4);
+  border: 0.2vh solid #000;
+}
+
+.entry {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  padding: 0.75vh;
+  background: rgba(0, 0, 0, 0.3);
+  border: 0.2vh solid transparent;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.entry.clickable {
+  cursor: pointer;
+}
+
+.entry.clickable:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.entryIcon {
+  width: 4.5vh;
+  height: 4.5vh;
+  flex-shrink: 0;
+  background-size: cover;
+  background-color: rgba(0, 0, 0, 0.5);
+  image-rendering: pixelated;
+}
+
+.entryText {
+  flex: 1;
+  min-width: 0;
+}
+
+.entryName {
+  font-size: 1.6vh;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.entryDescription {
+  font-size: 1.3vh;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.entryControls {
+  display: flex;
+  gap: 0.5vh;
+  flex-shrink: 0;
+}
+
+.controlButton {
+  font-family: inherit;
+  font-size: 1.6vh;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  border: 0.2vh solid #000;
+  width: 3.5vh;
+  height: 3.5vh;
+  cursor: pointer;
+}
+
+.controlButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.controlButton:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.empty {
+  font-size: 1.4vh;
+  opacity: 0.6;
+  text-align: center;
+  padding: 2vh;
+}
+
+.actions {
+  display: flex;
+  gap: 1vw;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.action {
+  flex-grow: 0;
+}

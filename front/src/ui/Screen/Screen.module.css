@@ -1,0 +1,34 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4vh 4vw;
+  gap: 1.5vh;
+  color: white;
+  text-shadow: 0.25vh 0.25vh 0 rgba(0, 0, 0, 0.5);
+  image-rendering: pixelated;
+  font-size: 2.2vh;
+  z-index: var(--z-settings) !important;
+}
+
+.panel {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--mc-dirt);
+  background-size: 17dvmin 17dvmin;
+  background-repeat: repeat;
+  background-clip: padding-box;
+}
+
+.dim {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(0.2dvh);
+}
+
+.hidden {
+  visibility: hidden;
+}

@@ -37,6 +37,10 @@
     "memberCount_other": "{{count}} players"
   },
   "stats": {
+    "title": "Statistics",
+    "gamesPlayed": "Games played",
+    "solvedIn_one": "Solved in {{count}} try",
+    "solvedIn_other": "Solved in {{count}} tries",
     "gamesCount_one": "{{count}} game",
     "gamesCount_other": "{{count}} games",
     "scoreDistribution": "Score distribution"
@@ -129,7 +133,23 @@
     "keyboardQwerty": "Qwerty",
     "sound": "Sound",
     "soundOn": "On",
-    "soundOff": "Off"
+    "soundOff": "Off",
+    "resourcePacks": "Resource Packs..."
+  },
+  "resourcePacks": {
+    "title": "Select Resource Packs",
+    "dropHint": "Drag and drop pack files (.zip) into this window to add them",
+    "search": "Search",
+    "available": "Available",
+    "selected": "Selected",
+    "empty": "No packs available",
+    "default": "Default",
+    "defaultDescription": "The default look of Surtom",
+    "addPack": "Add Pack",
+    "done": "Done",
+    "remove": "Remove pack",
+    "moveUp": "Move up",
+    "moveDown": "Move down"
   },
   "gameMenu": {
     "achievements": "Achievements",

@@ -5,7 +5,6 @@ import Main from '../../features/Game/Game';
 import { useGlobalKeyPress } from '../../features/Game/hooks/useKeyPress';
 import AchievementsStack from '../../features/AchievementsStack/AchievementsStack';
 import Tab from '../../features/Tab/Tab';
-import Stats from '../../features/Stats/Stats';
 import Chat from '../../features/Chat/Chat';
 import Cursors from '../../features/Cursors/Cursors';
 import OwnCursorNameTag from '../../features/Cursors/OwnCursorNameTag/OwnCursorNameTag';
@@ -34,7 +33,6 @@ function Quotidien(): JSX.Element {
 
       <div className="windows">
         <Chat chatButtonRef={chatButtonRef} />
-        <Stats />
         <Tab tabButtonRef={tabButtonRef} />
       </div>
 

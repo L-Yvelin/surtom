@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('@mc/textures/block/dirt.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--mc-dirt);
   background-repeat: no-repeat, repeat;
   background-size:
     100% 100%,
@@ -22,7 +22,7 @@
 }
 
 :global(#root-container.dark) .screen {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('@mc/textures/block/netherrack.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--mc-netherrack);
 }
 
 .hidden {

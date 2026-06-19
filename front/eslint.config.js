@@ -23,6 +23,23 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       'react-compiler/react-compiler': 'error',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@mc', '@mc/**'],
+              message: 'Import Minecraft textures through src/mc/textures.ts so they stay resource-pack overridable.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['**/mc/textures.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
     },
   },
 );

@@ -2,7 +2,7 @@
   box-shadow: 0 0.5vh 1.5vh black;
   -webkit-backdrop-filter: saturate(125%);
   backdrop-filter: saturate(125%);
-  background-image: url('@mc/textures/block/grass_block_side.png');
+  background-image: var(--mc-grass-block-side);
   background-repeat: repeat-x;
   image-rendering: pixelated;
   display: flex;
@@ -33,7 +33,7 @@
 }
 
 .dark {
-  background-image: url('@mc/textures/block/warped_nylium_side.png');
+  background-image: var(--mc-warped-nylium-side);
 }
 
 .splash {

@@ -2,10 +2,11 @@ import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Settings.module.css';
 import Button from '../Button/Button';
-import MinecraftToast from '../MinecraftToast/MinecraftToast';
+import Screen from '../Screen/Screen';
 import useUIStore from '../../stores/useUIStore';
 import { SUPPORTED_LOCALES, type Locale } from '../../i18n';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { RESOURCE_PACKS_TOAST_ID } from '../ResourcePacks/ResourcePacks';
 
 export const SETTINGS_TOAST_ID = 'settings';
 
@@ -28,7 +29,7 @@ function Settings(): JSX.Element {
   };
 
   return (
-    <MinecraftToast id={SETTINGS_TOAST_ID} className={classes.settings}>
+    <Screen id={SETTINGS_TOAST_ID}>
       <div className={classes.title}>{t('settings.title')}</div>
 
       <div className={classes.mainContent}>
@@ -40,14 +41,16 @@ function Settings(): JSX.Element {
             onClick={cycleSound}
             className={classes.button}
           />
-          {/* Invisible button so the children are pair */}
-          {/* That way display flex can behave like 2 columns */}
-          <Button text="" className={classes.invisibleButton} />
+          <Button
+            text={t('settings.resourcePacks')}
+            onClick={() => setVisibility(RESOURCE_PACKS_TOAST_ID, true)}
+            className={classes.button}
+          />
         </div>
 
         <Button text={t('settings.done')} onClick={close} className={classes.button} />
       </div>
-    </MinecraftToast>
+    </Screen>
   );
 }
 

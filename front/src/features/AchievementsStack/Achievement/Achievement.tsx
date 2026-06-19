@@ -1,7 +1,9 @@
 import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Achievement.module.css';
-import { AchievementIcon } from './utils';
+import { AchievementIcon, MC_TEXTURE_PREFIX } from './utils';
+import useResourcePackStore from '../../../stores/useResourcePackStore';
+import { resolveTexture } from '../../../mc/textures';
 
 export interface AchievementProps {
   id: string;
@@ -26,9 +28,11 @@ export class Achievement {
 
 function AchievementCard({ title, description, icon = AchievementIcon.BOOK }: AchievementProps): JSX.Element {
   const { t } = useTranslation();
+  const overrides = useResourcePackStore((s) => s.overrides);
+  const iconSrc = icon.startsWith(MC_TEXTURE_PREFIX) ? resolveTexture(icon.slice(MC_TEXTURE_PREFIX.length), overrides) : icon;
   return (
     <div className={classes.achievement}>
-      <img src={icon} alt={t('achievement.iconAlt')} className={classes.icon} />
+      <img src={iconSrc} alt={t('achievement.iconAlt')} className={classes.icon} />
       <div className={classes.content}>
         <div className={classes.title}>{title}</div>
         <div className={classes.description}>{description}</div>
