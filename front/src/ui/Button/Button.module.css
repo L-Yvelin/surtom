@@ -1,5 +1,4 @@
 .button {
-  --button-height: min(8.5vw, 5vh);
   all: unset;
   color: white;
   height: var(--button-height);
