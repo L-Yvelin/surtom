@@ -13,7 +13,7 @@
   box-sizing: border-box;
   aspect-ratio: 10;
 
-  border-image-source: url('/src/assets/images/ui/button.png');
+  border-image-source: url('@mc/textures/gui/sprites/widget/button.png');
   border-image-slice: 2 fill;
   --button-border: calc(var(--button-height) * 0.1);
   border-image-width: var(--button-border);
@@ -33,7 +33,7 @@
 }
 
 .button:hover {
-  border-image-source: url('/src/assets/images/ui/button_highlighted.png');
+  border-image-source: url('@mc/textures/gui/sprites/widget/button_highlighted.png');
 }
 
 .disabled {
@@ -44,5 +44,5 @@
 
 .disabled,
 .disabled:hover {
-  border-image-source: url('/src/assets/images/ui/button_disabled.png');
+  border-image-source: url('@mc/textures/gui/sprites/widget/button_disabled.png');
 }

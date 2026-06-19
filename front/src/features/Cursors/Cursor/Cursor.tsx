@@ -1,7 +1,7 @@
 import { Server } from '@surtom/interfaces';
 import classes from './Cursor.module.css';
 import classNames from 'classnames';
-import Stick from '../../../assets/images/items/stick.png';
+import Stick from '@mc/textures/item/stick.png';
 import NameTag from '../../../ui/NameTag/NameTag';
 
 interface CursorProps extends React.HTMLAttributes<HTMLDivElement> {

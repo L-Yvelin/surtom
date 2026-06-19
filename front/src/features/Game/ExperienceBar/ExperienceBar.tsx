@@ -1,8 +1,8 @@
 import { JSX, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './ExperienceBar.module.css';
-import ExperienceBackground from '../../../assets/images/ui/experience_bar_background.png';
-import ExperienceProgress from '../../../assets/images/ui/experience_bar_progress.png';
+import ExperienceBackground from '@mc/textures/gui/sprites/hud/experience_bar_background.png';
+import ExperienceProgress from '@mc/textures/gui/sprites/hud/experience_bar_progress.png';
 import { useLevelAnimation } from './useLevelAnimation';
 import useGameStore from '../../../stores/useGameStore';
 import Tooltip from '../../../ui/Tooltip/Tooltip';

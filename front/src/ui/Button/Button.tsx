@@ -1,6 +1,6 @@
 import { JSX, ReactNode } from 'react';
 import classes from './Button.module.css';
-import buttonSound from '../../assets/sounds/menu_stereo.mp3';
+import buttonSound from '@mc/sounds/random/click_stereo.ogg';
 import classNames from 'classnames';
 import Marquee from '../Marquee/Marquee';
 import { useSettingsStore } from '../../stores/useSettingsStore';

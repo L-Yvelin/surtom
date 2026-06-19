@@ -13,3 +13,4 @@ Thumbs.db
 coverage/
 mysql.json
 .backups/
+vendor/minecraft/

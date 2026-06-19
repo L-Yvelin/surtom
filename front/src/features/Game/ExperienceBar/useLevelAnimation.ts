@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import levelUpSound from '../../../assets/sounds/level_up.mp3';
+import levelUpSound from '@mc/sounds/random/levelup.ogg';
 import { animateLevel } from './animateLevel';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { createSoundPlayer } from '../../../utils/sound';
