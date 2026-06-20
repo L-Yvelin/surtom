@@ -17,7 +17,7 @@
   border-image-repeat: stretch;
 }
 
-.key:not(.correct):not(.misplaced):not(.miss):hover {
+.key:not(.miss):hover {
   border-image-source: var(--mc-beacon-button-highlighted);
 }
 
