@@ -6,9 +6,7 @@ import Screen from '../Screen/Screen';
 import useUIStore from '../../stores/useUIStore';
 import { SUPPORTED_LOCALES, type Locale } from '../../i18n';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import { RESOURCE_PACKS_TOAST_ID } from '../ResourcePacks/ResourcePacks';
-
-export const SETTINGS_TOAST_ID = 'settings';
+import { UI } from '../ids';
 
 interface SettingsProps {
   onBack?: () => void;
@@ -17,7 +15,7 @@ interface SettingsProps {
 function Settings({ onBack }: SettingsProps): JSX.Element {
   const { t, i18n } = useTranslation();
   const setVisibility = useUIStore((s) => s.setVisibility);
-  const close = onBack ?? ((): void => setVisibility(SETTINGS_TOAST_ID, false));
+  const close = onBack ?? ((): void => setVisibility(UI.SETTINGS, false));
   const cycleKeyboard = useSettingsStore((s) => s.cycleKeyboard);
   const cycleSound = useSettingsStore((s) => s.cycleSound);
   const keyboard = useSettingsStore((s) => s.keyboard);
@@ -45,11 +43,7 @@ function Settings({ onBack }: SettingsProps): JSX.Element {
             onClick={cycleSound}
             className={classes.button}
           />
-          <Button
-            text={t('settings.resourcePacks')}
-            onClick={() => setVisibility(RESOURCE_PACKS_TOAST_ID, true)}
-            className={classes.button}
-          />
+          <Button text={t('settings.resourcePacks')} onClick={() => setVisibility(UI.RESOURCE_PACKS, true)} className={classes.button} />
         </div>
 
         <Button text={onBack ? t('common.back') : t('settings.done')} onClick={close} className={classes.button} />
@@ -58,7 +52,7 @@ function Settings({ onBack }: SettingsProps): JSX.Element {
   );
 
   if (onBack) return <>{content}</>;
-  return <Screen id={SETTINGS_TOAST_ID}>{content}</Screen>;
+  return <Screen id={UI.SETTINGS}>{content}</Screen>;
 }
 
 export default Settings;

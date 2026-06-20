@@ -5,6 +5,7 @@ import Button from '../../ui/Button/Button';
 import Screen from '../../ui/Screen/Screen';
 import useGameStore from '../../stores/useGameStore';
 import useUIStore from '../../stores/useUIStore';
+import { UI } from '../../ui/ids';
 
 interface StatsProps {
   onBack?: () => void;
@@ -15,7 +16,7 @@ function Stats({ onBack }: StatsProps): JSX.Element {
   const scores = useGameStore((s) => s.scores);
   const setVisibility = useUIStore((s) => s.setVisibility);
 
-  const close = onBack ?? (() => setVisibility('stats', false));
+  const close = onBack ?? (() => setVisibility(UI.STATS, false));
 
   const total = Object.values(scores).reduce((sum, count) => sum + count, 0);
 
@@ -46,7 +47,7 @@ function Stats({ onBack }: StatsProps): JSX.Element {
   );
 
   if (onBack) return <>{content}</>;
-  return <Screen id="stats">{content}</Screen>;
+  return <Screen id={UI.STATS}>{content}</Screen>;
 }
 
 export default Stats;

@@ -6,7 +6,7 @@ import Button from '../../ui/Button/Button';
 import Tooltip from '../../ui/Tooltip/Tooltip';
 import MinecraftTooltip from '../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
 import Credits from '../../features/Game/Credits/Credits';
-import { SETTINGS_TOAST_ID } from '../../ui/Settings/Settings';
+import { UI } from '../../ui/ids';
 import useUIStore from '../../stores/useUIStore';
 import ButtonRow from '../../ui/ButtonRow/ButtonRow';
 
@@ -32,7 +32,7 @@ function MainMenu(): JSX.Element {
             <Button
               ref={optionsButtonRef}
               text={t('mainMenu.options')}
-              onClick={() => toggle(SETTINGS_TOAST_ID)}
+              onClick={() => toggle(UI.SETTINGS)}
               className={classes.primaryButton}
             />
             <Tooltip tooltipContent={<MinecraftTooltip title={'???'} children={'🙅'} />}>

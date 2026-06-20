@@ -6,6 +6,7 @@ import { LetterState } from '@surtom/interfaces';
 import { isGuessValid, validateWord, areWinningColors, isGameFinished } from '../utils/gameLogic';
 import useGameStore from '../../../stores/useGameStore';
 import useUIStore from '../../../stores/useUIStore';
+import { UI } from '../../../ui/ids';
 import { useWebSocketStore } from '../../../stores/useWebSocketStore';
 import { Client } from '@surtom/interfaces';
 
@@ -83,13 +84,13 @@ const useGameLogic = () => {
 
   const handleWin = () => {
     setLetters([]);
-    setVisibility('chat', true);
+    setVisibility(UI.CHAT, true);
     addAchievement(new Achievement(i18n.t('achievements.winTitle'), i18n.t('achievements.winSubtitle'), AchievementIcon.BOOK));
   };
 
   const handleLoss = () => {
     setLetters([]);
-    setVisibility('chat', true);
+    setVisibility(UI.CHAT, true);
     addAchievement(new Achievement(i18n.t('achievements.lossTitle'), i18n.t('achievements.lossSubtitle'), AchievementIcon.BOOK));
   };
 

@@ -4,13 +4,14 @@ import useGameLogic from './useGameLogic';
 import useGameStore from '../../../stores/useGameStore';
 import { isGameFinished } from '../utils/gameLogic';
 import { useVisibility } from '../../../stores/useUIStore';
+import { UI } from '../../../ui/ids';
 import useInputStore from '../../../stores/useInputStore';
 import useChatStore from '../../../stores/useChatStore';
 import { dispatchKey } from './keyDispatcher';
 
 const useKeyPress = () => {
   const gameFinished = useGameStore((s) => isGameFinished(s.tries));
-  const showChat = useVisibility('chat');
+  const showChat = useVisibility(UI.CHAT);
   const focusInput = useChatStore((s) => s.focusInput);
 
   const shortcutsState = useShortcuts();

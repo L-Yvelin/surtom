@@ -8,7 +8,7 @@ import useUIStore from '../../stores/useUIStore';
 import useResourcePackStore, { type ResourcePack } from '../../stores/useResourcePackStore';
 import { TEXTURES } from '../../mc/textures';
 
-export const RESOURCE_PACKS_TOAST_ID = 'resource-packs';
+import { UI } from '../ids';
 
 const DEFAULT_ICON = TEXTURES['block/grass_block_side.png'].default;
 
@@ -44,7 +44,7 @@ function PackEntry({ icon, name, description, onActivate, controls }: PackEntryP
 function ResourcePacks(): JSX.Element {
   const { t } = useTranslation();
   const setVisibility = useUIStore((s) => s.setVisibility);
-  const close = (): void => setVisibility(RESOURCE_PACKS_TOAST_ID, false);
+  const close = (): void => setVisibility(UI.RESOURCE_PACKS, false);
 
   const packs = useResourcePackStore((s) => s.packs);
   const selectedIds = useResourcePackStore((s) => s.selectedIds);
@@ -72,7 +72,7 @@ function ResourcePacks(): JSX.Element {
   const selected = selectedIds.map(byId).filter((p): p is ResourcePack => !!p);
 
   return (
-    <Screen id={RESOURCE_PACKS_TOAST_ID}>
+    <Screen id={UI.RESOURCE_PACKS}>
       <div className={classes.title}>{t('resourcePacks.title')}</div>
       <div className={classes.dropHint}>{t('resourcePacks.dropHint')}</div>
 

@@ -8,8 +8,7 @@ import useUIStore, { useVisibility } from '../../stores/useUIStore';
 import { useNavigate } from 'react-router-dom';
 import Stats from '../../features/Stats/Stats';
 import Settings from '../Settings/Settings';
-
-export const GAME_MENU_TOAST_ID = 'game-menu-settings';
+import { UI } from '../ids';
 
 type GameMenuPage = 'main' | 'stats' | 'settings';
 
@@ -20,7 +19,7 @@ interface GameMenuProps {
 function GameMenu({ menuButtonRef }: GameMenuProps): JSX.Element {
   const { t } = useTranslation();
   const setVisibility = useUIStore((s) => s.setVisibility);
-  const visible = useVisibility(GAME_MENU_TOAST_ID);
+  const visible = useVisibility(UI.GAME_MENU);
   const navigate = useNavigate();
 
   const [page, setPage] = useState<GameMenuPage>('main');
@@ -29,7 +28,7 @@ function GameMenu({ menuButtonRef }: GameMenuProps): JSX.Element {
     if (!visible) setPage('main');
   }, [visible]);
 
-  const close = useCallback((): void => setVisibility(GAME_MENU_TOAST_ID, false), [setVisibility]);
+  const close = useCallback((): void => setVisibility(UI.GAME_MENU, false), [setVisibility]);
 
   const handleEscape = useCallback((): void => {
     if (page !== 'main') setPage('main');
@@ -37,7 +36,7 @@ function GameMenu({ menuButtonRef }: GameMenuProps): JSX.Element {
   }, [page, close]);
 
   return (
-    <Screen id={GAME_MENU_TOAST_ID} variant="dim" anchorRef={menuButtonRef} onEscape={handleEscape}>
+    <Screen id={UI.GAME_MENU} variant="dim" anchorRef={menuButtonRef} onEscape={handleEscape}>
       {page === 'main' && (
         <div className={classes.mainContent}>
           <Button text={t('gameMenu.backToGame')} onClick={close} className={classes.button} />

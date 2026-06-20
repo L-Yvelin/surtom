@@ -8,7 +8,7 @@ import useGameStore from '../../../stores/useGameStore';
 import useUIStore from '../../../stores/useUIStore';
 import useTheme from '../../../hooks/useTheme';
 import { Theme } from '../../../theme/theme';
-import { GAME_MENU_TOAST_ID } from '../../../ui/GameMenu/GameMenu';
+import { UI } from '../../../ui/ids';
 import { useTexture } from '../../../stores/useResourcePackStore';
 import Button from '../../../ui/Button/Button';
 
@@ -45,7 +45,7 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
             ref={menuButtonRef}
             shouldMarquee={false}
             text={t('tools.menuTitle')}
-            onClick={() => toggle(GAME_MENU_TOAST_ID)}
+            onClick={() => toggle(UI.GAME_MENU)}
             aria-label={t('tools.menuAlt')}
           />
         </Tooltip>
@@ -53,7 +53,7 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
           <button
             className={classNames(classes.tool, classes.voirTab)}
             data-user-count={nbUsers}
-            onClick={() => toggle('tab')}
+            onClick={() => toggle(UI.TAB)}
             ref={tabButtonRef}
           >
             <img src={tabPlayers} alt={t('tools.playersAlt')} className={classes.toolImage} />
@@ -62,7 +62,7 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
       </div>
       <div className={classNames(classes.tools, classes.rightTools)}>
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.chatTitle')} children={t('tools.chatHint')} />}>
-          <button className={classNames(classes.tool, classes.chatButton)} ref={chatButtonRef} onClick={() => toggle('chat')}>
+          <button className={classNames(classes.tool, classes.chatButton)} ref={chatButtonRef} onClick={() => toggle(UI.CHAT)}>
             <div id="chat-notification-circle"></div>
             <div className={classes.chatIconClip}>
               <img src={tabChat} alt={t('tools.chatAlt')} className={classNames(classes.toolImage, classes.chatIcon)} />

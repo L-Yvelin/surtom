@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import useUIStore, { useVisibility } from '../../../stores/useUIStore';
 import useInputStore from '../../../stores/useInputStore';
 import useChatStore from '../../../stores/useChatStore';
-import { GAME_MENU_TOAST_ID } from '../../../ui/GameMenu/GameMenu';
+import { UI } from '../../../ui/ids';
 
 export function handleEscape(closeAll: () => void): void {
   const top = useInputStore.getState().top();
@@ -16,7 +16,7 @@ export function handleEscape(closeAll: () => void): void {
 const useShortcuts = () => {
   const setVisibility = useUIStore((s) => s.setVisibility);
   const toggle = useUIStore((s) => s.toggle);
-  const showChat = useVisibility('chat');
+  const showChat = useVisibility(UI.CHAT);
   const focusInput = useChatStore((s) => s.focusInput);
   const showChatRef = useRef(showChat);
 
@@ -28,21 +28,21 @@ const useShortcuts = () => {
     switch (event.key) {
       case 'Tab':
         event.preventDefault();
-        setVisibility('tab', true);
+        setVisibility(UI.TAB, true);
         break;
       case 'Escape':
-        handleEscape(() => toggle(GAME_MENU_TOAST_ID));
+        handleEscape(() => toggle(UI.GAME_MENU));
         break;
       case '/':
         if (!showChatRef.current) {
-          setVisibility('chat', true);
+          setVisibility(UI.CHAT, true);
           event.preventDefault();
           focusInput('/');
         }
         break;
       case 't':
         if (!showChatRef.current) {
-          setVisibility('chat', true);
+          setVisibility(UI.CHAT, true);
           event.preventDefault();
         }
         break;
@@ -52,7 +52,7 @@ const useShortcuts = () => {
   const handleKeyUp = (event: KeyboardEvent) => {
     if (event.key === 'Tab') {
       event.preventDefault();
-      setVisibility('tab', false);
+      setVisibility(UI.TAB, false);
     }
   };
 
