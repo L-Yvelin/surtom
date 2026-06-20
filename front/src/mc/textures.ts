@@ -102,7 +102,7 @@ async function computeAvgColor(url: string): Promise<[number, number, number]> {
   });
 }
 
-export async function applyDerivedColors(overrides: TextureOverrides): Promise<void> {
+async function applyDerivedColors(overrides: TextureOverrides): Promise<void> {
   const [correct, misplaced] = await Promise.all([
     computeAvgColor(resolveTexture('block/diamond_block.png', overrides)),
     computeAvgColor(resolveTexture('block/gold_block.png', overrides)),
@@ -123,4 +123,6 @@ export function applyTextures(overrides: TextureOverrides): void {
 
   const favicon = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
   if (favicon) favicon.href = resolveTexture(FAVICON_TEXTURE, overrides);
+
+  void applyDerivedColors(overrides);
 }
