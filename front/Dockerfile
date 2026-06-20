@@ -7,6 +7,12 @@ COPY front/package*.json ./front/
 
 RUN npm ci
 
+COPY front/scripts/fetch-mc-assets.mjs ./front/scripts/
+
+WORKDIR /app/front
+RUN npm run mc:assets
+
+WORKDIR /app
 COPY interfaces/ ./interfaces/
 COPY front/ ./front/
 
