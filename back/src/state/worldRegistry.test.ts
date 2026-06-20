@@ -94,11 +94,11 @@ describe('worldRegistry', () => {
     const ok = await w.toggleMessageDeleted(1, { ...PRIVATE_USER, moderatorLevel: 2 });
     expect(ok).toBe(true);
     const chat = await w.getChat(DEFAULT_CHAT_OPTS);
-    expect(chat[0].content.deleted).toBe(2);
+    expect((chat[0] as Server.ChatMessage.Text).content.deleted).toBe(2);
 
     await w.toggleMessageDeleted(1, { ...PRIVATE_USER, moderatorLevel: 2 });
     const chat2 = await w.getChat(DEFAULT_CHAT_OPTS);
-    expect(chat2[0].content.deleted).toBe(0);
+    expect((chat2[0] as Server.ChatMessage.Text).content.deleted).toBe(0);
   });
 
   it('removes an ephemeral world via removeEphemeral', () => {

@@ -93,7 +93,7 @@ describe('handleDeleteMessage', () => {
 
     expect(toggleMessage).not.toHaveBeenCalled();
     const chat = await w.getChat({ includeDeleted: false, max: 200, showHelp: false });
-    expect(chat[0].content.deleted).toBe(2);
+    expect((chat[0] as Server.ChatMessage.Text).content.deleted).toBe(2);
     expect(broadcastToWorld).toHaveBeenCalledWith(EPHEM_ID, expect.objectContaining({ type: Server.MessageType.DELETE_MESSAGE }));
   });
 

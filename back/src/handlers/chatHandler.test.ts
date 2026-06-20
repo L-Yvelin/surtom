@@ -130,7 +130,7 @@ describe('handleChatMessage (CHAT_MESSAGE) — ephemeral in-memory world', () =>
     const w = worldRegistry.get(EPHEM_ID)!;
     const chat = await w.getChat(DEFAULT_CHAT_OPTS);
     expect(chat).toHaveLength(1);
-    expect(chat[0].content.deleted).toBe(0);
+    expect((chat[0] as Server.ChatMessage.Text).content.deleted).toBe(0);
 
     expect(broadcastToWorld).toHaveBeenCalledTimes(1);
     const [worldId] = (broadcastToWorld as jest.Mock).mock.calls[0];

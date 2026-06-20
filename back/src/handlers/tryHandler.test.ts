@@ -112,10 +112,16 @@ describe('handleTryMessage', () => {
     expect(sendError).toHaveBeenCalledWith(fakeWs, "Vous avez déjà trouvé le mot aujourd'hui !");
   });
 
-  it('records a winning attempt, sends success and pushes XP', async () => {
+  it('records a winning attempt, sends GAME_FINISHED and pushes XP', async () => {
     await handleTryMessage(buildUser(), 'grass');
     expect(updateTry).toHaveBeenCalledWith(7, 1, [['G', 'R', 'A', 'S', 'S']], true);
-    expect(sendSuccess).toHaveBeenCalledWith(fakeWs, 'Bravo, vous avez trouvé le mot !');
+    expect(sendToUser).toHaveBeenCalledWith(
+      fakeWs,
+      expect.objectContaining({
+        type: Server.MessageType.MESSAGE,
+        content: expect.objectContaining({ type: Server.MessageType.GAME_FINISHED }),
+      }),
+    );
     expect(sendToUser).toHaveBeenCalledWith(fakeWs, { type: Server.MessageType.XP, content: 123 });
   });
 
@@ -153,7 +159,13 @@ describe('handleTryMessage — ephemeral in-memory world', () => {
     const w = worldRegistry.get(EPHEM_ID)!;
     const tries = await w.getTries('alice');
     expect(tries.win).toBe(true);
-    expect(sendSuccess).toHaveBeenCalledWith(fakeWs, 'Bravo, vous avez trouvé le mot !');
+    expect(sendToUser).toHaveBeenCalledWith(
+      fakeWs,
+      expect.objectContaining({
+        type: Server.MessageType.MESSAGE,
+        content: expect.objectContaining({ type: Server.MessageType.GAME_FINISHED }),
+      }),
+    );
   });
 
   it('rejects wrong-length attempts in the in-memory world', async () => {

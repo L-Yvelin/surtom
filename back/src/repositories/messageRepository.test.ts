@@ -44,10 +44,9 @@ beforeEach(() => {
 });
 
 describe('getHelpMessage', () => {
-  it('returns an ENHANCED System message', () => {
+  it('returns a HELP message', () => {
     const help = getHelpMessage();
-    expect(help.type).toBe(Server.MessageType.ENHANCED);
-    expect(help.content.user.name).toBe('System');
+    expect(help.type).toBe(Server.MessageType.HELP);
   });
 });
 
@@ -58,13 +57,13 @@ describe('getMessages', () => {
       buildJoinRow({ id: 1, timestamp: new Date('2024-01-01T00:00:00.000Z') }),
     ]);
     const msgs = await getMessages();
-    expect(msgs.map((m) => m.content.id)).toEqual(['1', '2']);
+    expect(msgs.map((m) => (m.content as Server.ChatMessage.Content.BaseMessageContent).id)).toEqual(['1', '2']);
   });
 
   it('prepends the help message when showHelp=true (becomes last after reverse)', async () => {
     mock.enqueue([buildJoinRow()]);
     const msgs = await getMessages('fr', false, 200, true);
-    expect(msgs[msgs.length - 1].content.user.name).toBe('System');
+    expect(msgs[msgs.length - 1].type).toBe(Server.MessageType.HELP);
   });
 
   it('threads worldId without throwing', async () => {
