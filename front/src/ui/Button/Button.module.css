@@ -12,10 +12,10 @@
   aspect-ratio: 10;
 
   border-image-source: var(--mc-button);
-  border-image-slice: 2 fill;
+  border-image-slice: 10% 1% fill;
   --button-border: calc(var(--button-height) * 0.1);
   border-image-width: var(--button-border);
-  border-image-repeat: initial;
+  border-image-repeat: stretch;
 }
 
 .square {
@@ -38,7 +38,7 @@
 .disabled {
   cursor: not-allowed;
   color: #a0a0a0;
-  text-shadow: 0.25cqh 0.25cqh 0 rgba(0, 0, 0, 0.3);
+  text-shadow: var(--button-text-shadow-size) var(--button-text-shadow-size) 0 rgba(0, 0, 0, 0.3);
 }
 
 .disabled,
