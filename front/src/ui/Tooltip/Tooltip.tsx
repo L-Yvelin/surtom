@@ -9,11 +9,23 @@ type Props = React.HTMLAttributes<HTMLSpanElement> & {
   offset?: number;
   anchor?: Anchor;
   activeOnMobile?: boolean;
+  as?: React.ElementType;
 };
 
-function Tooltip({ children, tooltipContent, offset = 10, anchor = Anchor.TOP_LEFT, activeOnMobile = false, className }: Props) {
+function Tooltip({
+  children,
+  tooltipContent,
+  offset = 10,
+  anchor = Anchor.TOP_LEFT,
+  activeOnMobile = false,
+  className,
+  as = 'span',
+  ...props
+}: Props) {
   const { setVisible, setContent, setPosition, tooltipRef } = useTooltip();
   const [pendingCoords, setPendingCoords] = useState<{ x: number; y: number } | null>(null);
+
+  const As = as;
 
   useLayoutEffect(() => {
     if (!pendingCoords || !tooltipRef.current) return;
@@ -48,20 +60,21 @@ function Tooltip({ children, tooltipContent, offset = 10, anchor = Anchor.TOP_LE
   if (!isDesktop && !activeOnMobile) return <>{children}</>;
 
   return (
-    <span
-      onMouseEnter={(e) => {
+    <As
+      onMouseEnter={(e: React.MouseEvent<HTMLSpanElement>) => {
         if (isDesktop) {
           setContent(tooltipContent);
           setPendingCoords({ x: e.clientX, y: e.clientY });
         }
       }}
       onMouseLeave={() => isDesktop && setVisible(false)}
-      onMouseMove={(e) => isDesktop && updatePosition(e.clientX, e.clientY)}
-      onClick={(e) => !isDesktop && activeOnMobile && handleClick(e)}
+      onMouseMove={(e: React.MouseEvent<HTMLSpanElement>) => isDesktop && updatePosition(e.clientX, e.clientY)}
+      onClick={(e: React.MouseEvent<HTMLSpanElement>) => !isDesktop && activeOnMobile && handleClick(e)}
       className={className}
+      {...props}
     >
       {children}
-    </span>
+    </As>
   );
 }
 
