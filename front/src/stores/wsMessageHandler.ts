@@ -6,7 +6,7 @@ import { useChatStore } from './useChatStore';
 import { useCursorsStore } from './useCursorsStore';
 import { useWorldsStore } from './useWorldsStore';
 import { useWebSocketStore } from './useWebSocketStore';
-import { useUIStore } from './useUIStore';
+import useUIStore from './useUIStore';
 import { getValidatedWords, isGameFinished } from '../features/Game/utils/gameLogic';
 import { UI } from '../ui/ids';
 import i18n from '../i18n';
