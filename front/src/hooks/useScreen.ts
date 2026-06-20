@@ -2,9 +2,10 @@ import { useRef } from 'react';
 import useClickOutside from './useClickOutside';
 import useUIStore, { useVisibility } from '../stores/useUIStore';
 import useInputStore, { useModalScope } from '../stores/useInputStore';
+import type { UIId } from '../ui/ids';
 
-const useToast = (id: string, toastButtonRef?: React.RefObject<HTMLElement | null>, onEscape?: () => void) => {
-  const toastRef = useRef<HTMLDivElement>(null);
+const useScreen = (id: UIId, anchorRef?: React.RefObject<HTMLElement | null>, onEscape?: () => void) => {
+  const screenRef = useRef<HTMLDivElement>(null);
   const visible = useVisibility(id);
   const setVisibility = useUIStore((s) => s.setVisibility);
 
@@ -15,10 +16,10 @@ const useToast = (id: string, toastButtonRef?: React.RefObject<HTMLElement | nul
     close();
   };
 
-  useClickOutside(toastRef, closeIfTop, toastButtonRef ? [toastButtonRef] : []);
+  useClickOutside(screenRef, closeIfTop, anchorRef ? [anchorRef] : []);
   useModalScope(id, visible, onEscape ?? close);
 
-  return { toastRef, visible };
+  return { screenRef, visible };
 };
 
-export default useToast;
+export default useScreen;

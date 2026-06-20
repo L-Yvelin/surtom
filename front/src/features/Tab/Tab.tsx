@@ -3,7 +3,7 @@ import classes from './Tab.module.css';
 import TabItem from './TabItem/TabItem';
 import { JSX } from 'react';
 import useGameStore from '../../stores/useGameStore';
-import useToast from '../../hooks/useToast';
+import useScreen from '../../hooks/useScreen';
 
 interface TabProps {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
@@ -11,10 +11,10 @@ interface TabProps {
 
 function Tab({ tabButtonRef }: TabProps): JSX.Element {
   const playerList = useGameStore((s) => s.playerList);
-  const { toastRef, visible } = useToast('tab', tabButtonRef);
+  const { screenRef, visible } = useScreen('tab', tabButtonRef);
 
   return (
-    <div className={classNames(classes.tab, { [classes.hidden]: !visible })} ref={toastRef}>
+    <div className={classNames(classes.tab, { [classes.hidden]: !visible })} ref={screenRef}>
       {playerList.map((user) => (
         <div key={user.name}>
           <TabItem user={user} />

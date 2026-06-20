@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import ChatInput from './ChatInput/ChatInput';
 import MessagesBox from './MessagesBox/Messages';
 import { Server } from '@surtom/interfaces';
-import useToast from '../../hooks/useToast';
+import useScreen from '../../hooks/useScreen';
 import useChatStore from '../../stores/useChatStore';
 import arrowImage from '../../assets/images/ui/arrow.png';
 import Button from '../../ui/Button/Button';
@@ -38,12 +38,12 @@ interface ChatProps {
 function Chat({ chatButtonRef }: ChatProps): JSX.Element {
   const { t } = useTranslation();
   const messages = useChatStore((s) => s.messages);
-  const { toastRef, visible } = useToast('chat', chatButtonRef);
+  const { screenRef, visible } = useScreen('chat', chatButtonRef);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const scrollToBottom = useChatStore((state) => state.scrollToBottom);
 
   return (
-    <div className={classNames(classes.chat, { [classes.hidden]: !visible })} ref={toastRef}>
+    <div className={classNames(classes.chat, { [classes.hidden]: !visible })} ref={screenRef}>
       <div className={classes.messagesWrapper}>
         <MessagesBox messages={messages} onCloseToBottom={setIsNearBottom} />
         <div className={classes.scrollToBottom}>
