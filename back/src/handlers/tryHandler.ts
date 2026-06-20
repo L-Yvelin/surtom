@@ -1,9 +1,8 @@
-import { Server } from '@surtom/interfaces';
+import { Server, MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 import FullUser from '../models/FullUser.js';
 import { getPlayerXp } from '../repositories/xpRepository.js';
 import { worldRegistry } from '../state/worldRegistry.js';
 import { sendError, sendSuccess, sendToUser } from '../ws/send.js';
-import { MAX_TRIES_PER_GAME } from '../config/constants.js';
 
 export async function handleTryMessage(user: FullUser, content: string): Promise<void> {
   try {

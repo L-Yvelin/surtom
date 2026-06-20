@@ -12,7 +12,8 @@ import { getRandomFunnyName } from '../utils/randomName.js';
 import { getPlayerBySessionHash } from '../repositories/playerRepository.js';
 import { getPlayerXp } from '../repositories/xpRepository.js';
 import { updateUsersListForWorld } from '../handlers/userListHandler.js';
-import { MAX_MESSAGES_LOADED, MAX_TRIES_PER_GAME, PING_INTERVAL_MS } from '../config/constants.js';
+import { MAX_MESSAGES_LOADED, PING_INTERVAL_MS } from '../config/constants.js';
+import { MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 
 async function buildPrivateUser(sessionHash: string | undefined, usesMobileDevice: boolean): Promise<Server.PrivateUser> {
   const player = sessionHash ? await getPlayerBySessionHash(sessionHash) : undefined;

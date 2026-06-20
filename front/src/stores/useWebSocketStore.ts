@@ -52,13 +52,13 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
     const host = import.meta.env.VITE_WEBSOCKET_HOST;
     const port = import.meta.env.VITE_WEBSOCKET_PORT;
     const path = import.meta.env.VITE_WEBSOCKET_PATH ?? '';
+    if (!protocol || !host) {
+      console.error('WebSocket URL is not defined: missing VITE_WEBSOCKET_PROTOCOL or VITE_WEBSOCKET_HOST');
+      return;
+    }
     const defaultPort = protocol === 'wss' ? '443' : '80';
     const portSuffix = port && port !== defaultPort ? `:${port}` : '';
     const url = `${protocol}://${host}${portSuffix}${path}`;
-    if (!url) {
-      console.error('WebSocket URL is not defined!');
-      return;
-    }
 
     setMobileDevice(isMobile);
     set({ isConnecting: true });
@@ -74,7 +74,13 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
     };
 
     socket.onmessage = (event) => {
-      const data: Server.Message = JSON.parse(event.data);
+      let data: Server.Message;
+      try {
+        data = JSON.parse(event.data);
+      } catch {
+        console.warn('Received malformed WebSocket message:', event.data);
+        return;
+      }
       if (!validateServerMessage(data)) {
         console.warn('Received invalid server message:', data);
         return;

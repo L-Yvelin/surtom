@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Server } from '@surtom/interfaces';
 import { defaultPlayer } from './usePlayerStore';
 import { isSavedChatMessage } from '../features/Chat/utils/messageFormatting';
+import i18n from '../i18n';
 
 interface ChatStore {
   messages: Server.ChatMessage.Type[];
@@ -23,7 +24,7 @@ const defaultMessage: Server.ChatMessage.SavedType = {
   content: {
     id: '1',
     user: defaultPlayer,
-    text: 'En cours de chargement',
+    text: i18n.t('common.loading'),
     timestamp: new Date().toISOString(),
     deleted: 0,
   },

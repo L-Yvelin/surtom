@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import i18n from '../../../i18n';
 import { Achievement } from '../../AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../../AchievementsStack/Achievement/utils';
-import { LetterState } from '@surtom/interfaces';
+import { LetterState, MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 import { isGuessValid, validateWord, areWinningColors, isGameFinished } from '../utils/gameLogic';
 import useGameStore from '../../../stores/useGameStore';
 import useUIStore from '../../../stores/useUIStore';
@@ -70,7 +70,7 @@ const useGameLogic = () => {
 
       if (areWinningColors(guessColors)) {
         handleWin();
-      } else if (tries.length === 5) {
+      } else if (tries.length === MAX_TRIES_PER_GAME - 1) {
         handleLoss();
       } else {
         resetLetters();
