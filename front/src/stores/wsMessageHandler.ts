@@ -50,15 +50,17 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
       if (data.content.type === Server.MessageType.GAME_FINISHED) {
         const { win } = data.content.content;
         game.setHasSharedScore(data.content.content.hasSharedScore);
-        game.setLetters([]);
-        useUIStore.getState().setVisibility(UI.CHAT, true);
-        game.addAchievement(
-          new Achievement(
-            i18n.t(win ? 'achievements.winTitle' : 'achievements.lossTitle'),
-            i18n.t(win ? 'achievements.winSubtitle' : 'achievements.lossSubtitle'),
-            AchievementIcon.BOOK,
-          ),
-        );
+        if (!game.wasFinishedOnLoad) {
+          game.setLetters([]);
+          useUIStore.getState().setVisibility(UI.CHAT, true);
+          game.addAchievement(
+            new Achievement(
+              i18n.t(win ? 'achievements.winTitle' : 'achievements.lossTitle'),
+              i18n.t(win ? 'achievements.winSubtitle' : 'achievements.lossSubtitle'),
+              AchievementIcon.BOOK,
+            ),
+          );
+        }
       }
       chat.addMessage(data.content);
       useChatStore.getState().scrollToBottom?.();
