@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { applyTextures, resolveTexture, type TextureKey, type TextureOverrides } from '../mc/textures';
+import { applyTextures, applyDerivedColors, resolveTexture, type TextureKey, type TextureOverrides } from '../mc/textures';
 import { parsePack, revokePack, type ParsedPack } from '../mc/resourcePack';
 import { deletePack, loadPacks, savePack } from '../mc/packStorage';
 
@@ -73,6 +73,7 @@ const useResourcePackStore = create<ResourcePackState>()((set, get) => {
   const apply = (packs: ResourcePack[], selectedIds: string[]): void => {
     const overrides = computeOverrides(packs, selectedIds);
     applyTextures(overrides);
+    applyDerivedColors(overrides);
     persistSelectedIds(selectedIds);
     set({ packs, selectedIds, overrides });
   };

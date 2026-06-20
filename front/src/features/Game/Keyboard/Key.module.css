@@ -1,45 +1,47 @@
 .key {
   all: unset;
-  font-size: calc(var(--keySize) - 3.5vmin);
+  position: relative;
+  clip-path: inset(0);
+  font-size: calc(var(--keySize) * 0.38);
   display: flex;
   align-items: center;
   justify-content: center;
   color: black;
   cursor: pointer;
   text-transform: uppercase;
-  background-color: #a8a8a8;
 
-  --border-size: 0.3vh;
-  border-top: var(--border-size) white solid;
-  border-left: var(--border-size) white solid;
-  border-bottom: var(--border-size) rgb(55 55 55 / 80%) solid;
-  border-right: var(--border-size) rgb(55 55 55 / 80%) solid;
+  border-style: solid;
+  border-width: calc(var(--keySize) * 0.135);
+  border-image-source: var(--mc-beacon-button);
+  border-image-slice: 13.7% fill;
+  border-image-repeat: stretch;
 }
 
 .key:not(.correct):not(.misplaced):not(.miss):hover {
-  background-color: #a1a1a1;
+  border-image-source: var(--mc-beacon-button-highlighted);
 }
 
 .key:active,
 .key.pressed {
-  border-bottom: var(--border-size) rgba(116, 116, 116, 0.8) solid;
-  border-right: var(--border-size) rgba(116, 116, 116, 0.8) solid;
-  border-top: var(--border-size) rgb(55 55 55 / 80%) solid;
-  border-left: var(--border-size) rgb(55 55 55 / 80%) solid;
+  border-image-source: var(--mc-beacon-button-selected);
 }
 
-.correct {
-  background-color: #70fbf0;
+.correct::after,
+.misplaced::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--keySize) * -0.135);
+  pointer-events: none;
 }
 
-.misplaced {
-  background-color: #ffd83e;
+.correct::after {
+  background: linear-gradient(to top, var(--mc-correct-glow, rgba(60, 140, 255, 0.5)) 0%, transparent 55%);
+}
+
+.misplaced::after {
+  background: linear-gradient(to top, var(--mc-misplaced-glow, rgba(255, 190, 20, 0.5)) 0%, transparent 55%);
 }
 
 .miss {
-  background-color: #868585;
-  border-bottom: var(--border-size) rgba(116, 116, 116, 0.8) solid;
-  border-right: var(--border-size) rgba(116, 116, 116, 0.8) solid;
-  border-top: var(--border-size) rgb(55 55 55 / 80%) solid;
-  border-left: var(--border-size) rgb(55 55 55 / 80%) solid;
+  border-image-source: var(--mc-beacon-button-selected);
 }
