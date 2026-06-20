@@ -7,16 +7,14 @@ import useGameStore from '../../stores/useGameStore';
 import useUIStore from '../../stores/useUIStore';
 import { UI } from '../../ui/ids';
 
-interface StatsProps {
-  onBack?: () => void;
+interface StatsContentProps {
+  onClose: () => void;
+  closeLabel?: string;
 }
 
-function Stats({ onBack }: StatsProps): JSX.Element {
+export function StatsContent({ onClose, closeLabel }: StatsContentProps): JSX.Element {
   const { t } = useTranslation();
   const scores = useGameStore((s) => s.scores);
-  const setVisibility = useUIStore((s) => s.setVisibility);
-
-  const close = onBack ?? (() => setVisibility(UI.STATS, false));
 
   const total = Object.values(scores).reduce((sum, count) => sum + count, 0);
 
@@ -28,7 +26,7 @@ function Stats({ onBack }: StatsProps): JSX.Element {
       .map((tries) => ({ label: t('stats.solvedIn', { count: tries }), value: scores[tries] })),
   ];
 
-  const content = (
+  return (
     <>
       <div className={classes.title}>{t('stats.title')}</div>
 
@@ -42,12 +40,18 @@ function Stats({ onBack }: StatsProps): JSX.Element {
         ))}
       </div>
 
-      <Button text={onBack ? t('common.back') : t('common.close')} onClick={close} />
+      <Button text={closeLabel ?? t('common.close')} onClick={onClose} />
     </>
   );
+}
 
-  if (onBack) return <>{content}</>;
-  return <Screen id={UI.STATS}>{content}</Screen>;
+function Stats(): JSX.Element {
+  const setVisibility = useUIStore((s) => s.setVisibility);
+  return (
+    <Screen id={UI.STATS}>
+      <StatsContent onClose={() => setVisibility(UI.STATS, false)} />
+    </Screen>
+  );
 }
 
 export default Stats;

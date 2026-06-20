@@ -6,8 +6,8 @@ import ButtonRow from '../ButtonRow/ButtonRow';
 import Screen from '../Screen/Screen';
 import useUIStore, { useVisibility } from '../../stores/useUIStore';
 import { useNavigate } from 'react-router-dom';
-import Stats from '../../features/Stats/Stats';
-import Settings from '../Settings/Settings';
+import { StatsContent } from '../../features/Stats/Stats';
+import { SettingsContent } from '../Settings/Settings';
 import { UI } from '../ids';
 
 type GameMenuPage = 'main' | 'stats' | 'settings';
@@ -48,8 +48,8 @@ function GameMenu({ menuButtonRef }: GameMenuProps): JSX.Element {
           <Button text={t('gameMenu.quit')} onClick={() => navigate('/')} className={classes.button} />
         </div>
       )}
-      {page === 'stats' && <Stats onBack={() => setPage('main')} />}
-      {page === 'settings' && <Settings onBack={() => setPage('main')} />}
+      {page === 'stats' && <StatsContent onClose={() => setPage('main')} closeLabel={t('common.back')} />}
+      {page === 'settings' && <SettingsContent onClose={() => setPage('main')} closeLabel={t('common.back')} />}
     </Screen>
   );
 }

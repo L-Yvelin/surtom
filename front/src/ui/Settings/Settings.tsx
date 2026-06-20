@@ -8,14 +8,14 @@ import { SUPPORTED_LOCALES, type Locale } from '../../i18n';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { UI } from '../ids';
 
-interface SettingsProps {
-  onBack?: () => void;
+interface SettingsContentProps {
+  onClose: () => void;
+  closeLabel?: string;
 }
 
-function Settings({ onBack }: SettingsProps): JSX.Element {
+export function SettingsContent({ onClose, closeLabel }: SettingsContentProps): JSX.Element {
   const { t, i18n } = useTranslation();
   const setVisibility = useUIStore((s) => s.setVisibility);
-  const close = onBack ?? ((): void => setVisibility(UI.SETTINGS, false));
   const cycleKeyboard = useSettingsStore((s) => s.cycleKeyboard);
   const cycleSound = useSettingsStore((s) => s.cycleSound);
   const keyboard = useSettingsStore((s) => s.keyboard);
@@ -30,7 +30,7 @@ function Settings({ onBack }: SettingsProps): JSX.Element {
     void i18n.changeLanguage(next);
   };
 
-  const content = (
+  return (
     <>
       <div className={classes.title}>{t('settings.title')}</div>
 
@@ -46,13 +46,19 @@ function Settings({ onBack }: SettingsProps): JSX.Element {
           <Button text={t('settings.resourcePacks')} onClick={() => setVisibility(UI.RESOURCE_PACKS, true)} className={classes.button} />
         </div>
 
-        <Button text={onBack ? t('common.back') : t('settings.done')} onClick={close} className={classes.button} />
+        <Button text={closeLabel ?? t('settings.done')} onClick={onClose} className={classes.button} />
       </div>
     </>
   );
+}
 
-  if (onBack) return <>{content}</>;
-  return <Screen id={UI.SETTINGS}>{content}</Screen>;
+function Settings(): JSX.Element {
+  const setVisibility = useUIStore((s) => s.setVisibility);
+  return (
+    <Screen id={UI.SETTINGS}>
+      <SettingsContent onClose={() => setVisibility(UI.SETTINGS, false)} />
+    </Screen>
+  );
 }
 
 export default Settings;
