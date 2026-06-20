@@ -58,7 +58,6 @@ export namespace Server {
     PRIVATE_MESSAGE = 'privateMessage',
     TEXT = 'text',
     ENHANCED = 'enhanced',
-    EVAL = 'eval',
     DAILY_WORDS = 'dailyWords',
     ATTEMPT = 'attempt',
     XP = 'xp',
@@ -96,7 +95,6 @@ export namespace Server {
     | { type: MessageType.STATS; content: Record<`${number}`, number> }
     | { type: MessageType.LOGIN; content: LoginMessage }
     | { type: MessageType.USER_LIST; content: User[] }
-    | { type: MessageType.EVAL; content: string }
     | {
         type: MessageType.DAILY_WORDS;
         content: { words: string[]; attempts: string[] };
@@ -162,7 +160,6 @@ export namespace Server {
 
       export interface EnhancedTextMessageContent extends TextMessageContent {
         color?: string;
-        onClickAction?: string;
       }
 
       export interface ScoreMessageContent extends BaseMessageContent {

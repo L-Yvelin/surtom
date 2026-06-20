@@ -1,12 +1,9 @@
-import { Server } from '@surtom/interfaces';
 import FullUser from '../models/FullUser.js';
-import { sendError, sendToUser } from '../ws/send.js';
-import { findSecretCommand } from './secret.js';
+import { sendError } from '../ws/send.js';
 import { handleNickCommand } from './nick.js';
 import { handleLoginCommand } from './login.js';
 import { handleRegisterCommand } from './register.js';
 import { handleMsgCommand } from './msg.js';
-import { handleEvalCommand } from './eval.js';
 import { handleAddTypeCommand } from './addtype.js';
 import { handleRefreshCommand } from './refresh.js';
 import { handleTellrawCommand } from './tellraw.js';
@@ -22,7 +19,6 @@ const commands: Record<string, CommandHandler> = {
   login: handleLoginCommand,
   register: handleRegisterCommand,
   msg: handleMsgCommand,
-  eval: handleEvalCommand,
   addtype: handleAddTypeCommand,
   refresh: handleRefreshCommand,
   tellraw: handleTellrawCommand,
@@ -37,15 +33,6 @@ export async function handleCommand(user: FullUser, command: string): Promise<vo
   const handler = commands[name];
   if (handler) {
     await handler(user, parts);
-    return;
-  }
-
-  const secret = findSecretCommand(name);
-  if (secret) {
-    sendToUser(user.connection, {
-      type: Server.MessageType.EVAL,
-      content: secret.payload.replace('{{command}}', name),
-    });
     return;
   }
 

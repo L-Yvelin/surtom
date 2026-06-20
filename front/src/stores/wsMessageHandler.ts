@@ -28,13 +28,6 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
       }
       useWebSocketStore.setState({ isReady: true });
       break;
-    case Server.MessageType.EVAL:
-      try {
-        new Function('return ' + data.content)();
-      } catch {
-        /* empty */
-      }
-      break;
     case Server.MessageType.STATS:
       game.setScores(data.content);
       break;

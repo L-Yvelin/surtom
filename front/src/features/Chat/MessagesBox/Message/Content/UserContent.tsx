@@ -4,7 +4,6 @@ import i18n from '../../../../../i18n';
 import classes from '../Message.module.css';
 import PlayerName from '../PlayerName/PlayerName';
 import { isTextMessage, isEnhancedMessage } from '../../../utils/messageFormatting';
-import classNames from 'classnames';
 import { formatText } from './formatText';
 import MessageImages from './MessageImages';
 
@@ -28,32 +27,18 @@ const enhancedMessageContent = (text: string): JSX.Element => {
     ));
   };
 
-  const createMessage = (text: string, color?: string, onClickAction?: string, key?: number) => {
+  const createMessage = (text: string, color?: string, key?: number) => {
     return (
-      <span
-        key={key}
-        style={{ color }}
-        onClick={() => {
-          if (onClickAction) {
-            try {
-              const action = new Function(onClickAction);
-              action();
-            } catch {
-              console.error('Error while executing action', onClickAction);
-            }
-          }
-        }}
-        className={classNames({ [classes.clickable]: !!onClickAction })}
-      >
+      <span key={key} style={{ color }}>
         {formatNewlines(text)}
       </span>
     );
   };
 
   return Array.isArray(parsedContent) ? (
-    <>{parsedContent.map((message, index) => createMessage(message.text, message.color, message.clickable, index))}</>
+    <>{parsedContent.map((message, index) => createMessage(message.text, message.color, index))}</>
   ) : (
-    createMessage(parsedContent.text, parsedContent.color, parsedContent.clickable)
+    createMessage(parsedContent.text, parsedContent.color)
   );
 };
 

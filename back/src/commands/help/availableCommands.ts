@@ -17,7 +17,6 @@ export function getAvailableCommands(isModerator = false): CommandDescriptions {
       '/tellraw cible? {"text":"","color"?:"","clickable"?:""}':
         "Envoyer un message personnalisé (sauvegardé en BDD si aucune cible n'est précisée)",
       '/addtype type': 'Ajouter un type de message à vos listeningTypes',
-      '/eval ¿¿¿ ¿¿¿¿': '¿¿¿¿',
     };
   }
 

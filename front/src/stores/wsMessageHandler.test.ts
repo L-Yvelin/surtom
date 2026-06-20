@@ -219,18 +219,6 @@ describe('CURSOR_POSITION', () => {
   });
 });
 
-describe('EVAL', () => {
-  test('does not throw on a syntactically valid payload', () => {
-    expect(() => handleServerMessage({ type: Server.MessageType.EVAL, content: '1 + 1' }, makeDeps())).not.toThrow();
-  });
-
-  test('swallows runtime errors from invalid payloads', () => {
-    expect(() =>
-      handleServerMessage({ type: Server.MessageType.EVAL, content: 'this is not valid javascript +' }, makeDeps()),
-    ).not.toThrow();
-  });
-});
-
 describe('unknown message type', () => {
   test('warns but does not throw', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
