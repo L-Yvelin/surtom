@@ -31,7 +31,7 @@ const useShortcuts = () => {
         setVisibility('tab', true);
         break;
       case 'Escape':
-        toggle(GAME_MENU_TOAST_ID);
+        handleEscape(() => toggle(GAME_MENU_TOAST_ID));
         break;
       case '/':
         if (!showChatRef.current) {

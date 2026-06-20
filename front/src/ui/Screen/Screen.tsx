@@ -10,11 +10,12 @@ interface ScreenProps {
   variant?: ScreenVariant;
   anchorRef?: React.RefObject<HTMLElement | null>;
   className?: string;
+  onEscape?: () => void;
   children: ReactNode;
 }
 
-function Screen({ id, variant = 'panel', anchorRef, className, children }: ScreenProps): JSX.Element {
-  const { toastRef, visible } = useToast(id, anchorRef);
+function Screen({ id, variant = 'panel', anchorRef, className, onEscape, children }: ScreenProps): JSX.Element {
+  const { toastRef, visible } = useToast(id, anchorRef, onEscape);
 
   return (
     <div ref={toastRef} className={classNames(classes.screen, classes[variant], className, { [classes.hidden]: !visible })}>

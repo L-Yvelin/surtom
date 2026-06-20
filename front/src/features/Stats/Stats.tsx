@@ -6,10 +6,16 @@ import Screen from '../../ui/Screen/Screen';
 import useGameStore from '../../stores/useGameStore';
 import useUIStore from '../../stores/useUIStore';
 
-function Stats(): JSX.Element {
+interface StatsProps {
+  onBack?: () => void;
+}
+
+function Stats({ onBack }: StatsProps): JSX.Element {
   const { t } = useTranslation();
   const scores = useGameStore((s) => s.scores);
   const setVisibility = useUIStore((s) => s.setVisibility);
+
+  const close = onBack ?? (() => setVisibility('stats', false));
 
   const total = Object.values(scores).reduce((sum, count) => sum + count, 0);
 
@@ -21,8 +27,8 @@ function Stats(): JSX.Element {
       .map((tries) => ({ label: t('stats.solvedIn', { count: tries }), value: scores[tries] })),
   ];
 
-  return (
-    <Screen id="stats">
+  const content = (
+    <>
       <div className={classes.title}>{t('stats.title')}</div>
 
       <div className={classes.list}>
@@ -35,9 +41,12 @@ function Stats(): JSX.Element {
         ))}
       </div>
 
-      <Button text={t('common.close')} onClick={() => setVisibility('stats', false)} />
-    </Screen>
+      <Button text={onBack ? t('common.back') : t('common.close')} onClick={close} />
+    </>
   );
+
+  if (onBack) return <>{content}</>;
+  return <Screen id="stats">{content}</Screen>;
 }
 
 export default Stats;

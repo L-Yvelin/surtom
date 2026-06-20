@@ -10,10 +10,14 @@ import { RESOURCE_PACKS_TOAST_ID } from '../ResourcePacks/ResourcePacks';
 
 export const SETTINGS_TOAST_ID = 'settings';
 
-function Settings(): JSX.Element {
+interface SettingsProps {
+  onBack?: () => void;
+}
+
+function Settings({ onBack }: SettingsProps): JSX.Element {
   const { t, i18n } = useTranslation();
   const setVisibility = useUIStore((s) => s.setVisibility);
-  const close = (): void => setVisibility(SETTINGS_TOAST_ID, false);
+  const close = onBack ?? ((): void => setVisibility(SETTINGS_TOAST_ID, false));
   const cycleKeyboard = useSettingsStore((s) => s.cycleKeyboard);
   const cycleSound = useSettingsStore((s) => s.cycleSound);
   const keyboard = useSettingsStore((s) => s.keyboard);
@@ -28,8 +32,8 @@ function Settings(): JSX.Element {
     void i18n.changeLanguage(next);
   };
 
-  return (
-    <Screen id={SETTINGS_TOAST_ID}>
+  const content = (
+    <>
       <div className={classes.title}>{t('settings.title')}</div>
 
       <div className={classes.mainContent}>
@@ -48,10 +52,13 @@ function Settings(): JSX.Element {
           />
         </div>
 
-        <Button text={t('settings.done')} onClick={close} className={classes.button} />
+        <Button text={onBack ? t('common.back') : t('settings.done')} onClick={close} className={classes.button} />
       </div>
-    </Screen>
+    </>
   );
+
+  if (onBack) return <>{content}</>;
+  return <Screen id={SETTINGS_TOAST_ID}>{content}</Screen>;
 }
 
 export default Settings;
