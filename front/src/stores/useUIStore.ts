@@ -1,16 +1,17 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import type { UIId } from '../ui/ids';
 
 interface UIState {
-  visibility: Record<string, boolean>;
-  setVisibility: (key: string, value: boolean) => void;
-  toggle: (key: string) => void;
-  closeAll: (except?: string[]) => void;
+  visibility: Partial<Record<UIId, boolean>>;
+  setVisibility: (key: UIId, value: boolean) => void;
+  toggle: (key: UIId) => void;
+  closeAll: (except?: UIId[]) => void;
   resetSession: () => void;
 }
 
 const initialSession = {
-  visibility: {} as Record<string, boolean>,
+  visibility: {} as Partial<Record<UIId, boolean>>,
 };
 
 const useUIStore = create<UIState>()(
@@ -26,7 +27,7 @@ const useUIStore = create<UIState>()(
       }),
     closeAll: (except = []) =>
       set((state) => {
-        for (const key of Object.keys(state.visibility)) {
+        for (const key of Object.keys(state.visibility) as UIId[]) {
           if (!except.includes(key)) state.visibility[key] = false;
         }
       }),
@@ -37,6 +38,6 @@ const useUIStore = create<UIState>()(
   })),
 );
 
-export const useVisibility = (key: string) => useUIStore((s) => !!s.visibility[key]);
+export const useVisibility = (key: UIId) => useUIStore((s) => !!s.visibility[key]);
 
 export default useUIStore;
