@@ -10,7 +10,6 @@
 .tools {
   display: flex;
   gap: 1vh;
-  overflow-y: hidden;
 }
 
 .leftTools {
