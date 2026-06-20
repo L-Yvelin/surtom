@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import useShortcuts from './useShortcuts';
 import useGameLogic from './useGameLogic';
-import useGameStore from '../../../stores/useGameStore';
+import { useGameStore } from '../../../stores/useGameStore';
 import { isGameFinished } from '../utils/gameLogic';
 import { useVisibility } from '../../../stores/useUIStore';
 import { UI } from '../../../ui/ids';
 import useInputStore from '../../../stores/useInputStore';
-import useChatStore from '../../../stores/useChatStore';
+import { useChatStore } from '../../../stores/useChatStore';
 import { dispatchKey } from './keyDispatcher';
 
 const useKeyPress = () => {
@@ -37,10 +37,12 @@ const useKeyPress = () => {
 
 export const useGlobalKeyPress = () => {
   const { handleKeyPress } = useKeyPress();
+  const handleKeyPressRef = useRef(handleKeyPress);
+  handleKeyPressRef.current = handleKeyPress;
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => handleKeyPress(e, 'down');
-    const handleKeyUp = (e: KeyboardEvent) => handleKeyPress(e, 'up');
+    const handleKeyDown = (e: KeyboardEvent) => handleKeyPressRef.current(e, 'down');
+    const handleKeyUp = (e: KeyboardEvent) => handleKeyPressRef.current(e, 'up');
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
@@ -49,7 +51,7 @@ export const useGlobalKeyPress = () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [handleKeyPress]);
+  }, []);
 };
 
 export default useKeyPress;

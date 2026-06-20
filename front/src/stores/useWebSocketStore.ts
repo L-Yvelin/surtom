@@ -99,18 +99,6 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
       set({ isConnected: false, isReady: false, isConnecting: false, ws: null });
       scheduleReconnect();
     };
-
-    // Add window event listeners for cleanup
-    window.addEventListener('beforeunload', () => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close();
-      }
-    });
-    window.addEventListener('unload', () => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close();
-      }
-    });
   };
 
   const disconnect = () => {
@@ -147,4 +135,8 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => {
     connect,
     disconnect,
   };
+});
+
+window.addEventListener('beforeunload', () => {
+  useWebSocketStore.getState().disconnect();
 });
