@@ -1,4 +1,4 @@
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
@@ -22,7 +22,7 @@ RUN npm run build
 WORKDIR /app/front
 RUN npm run build
 
-FROM node:22-alpine
+FROM node:24-alpine
 RUN npm install -g serve
 COPY --from=build /app/front/dist /app/dist
 WORKDIR /app

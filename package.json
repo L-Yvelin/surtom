@@ -24,6 +24,7 @@
     "concurrently": "^8.2.2",
     "husky": "^8.0.0",
     "prettier": "^3.6.1",
+    "pretty-quick": "^4.2.2",
     "secretlint": "^10.1.1"
   }
 }

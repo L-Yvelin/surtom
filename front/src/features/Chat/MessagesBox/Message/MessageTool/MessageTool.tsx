@@ -1,5 +1,7 @@
 import { JSX } from 'react';
 import classes from './MessageTool.module.css';
+import answerIcon from '../../../../../assets/images/ui/answer.svg';
+import deleteIcon from '../../../../../assets/images/ui/delete.svg';
 
 interface MessageProps {
   onDelete: () => void;
@@ -10,10 +12,10 @@ const MessageTool = ({ onDelete, onRespond }: MessageProps): JSX.Element => {
   return (
     <div className={classes.tool}>
       <button className={classes.toolButton} onClick={onRespond}>
-        <i className="fas fa-reply"></i>
+        <img src={answerIcon} alt="reply" />
       </button>
       <button className={classes.toolButton} onClick={onDelete}>
-        <i className="fas fa-trash"></i>
+        <img src={deleteIcon} alt="delete" />
       </button>
     </div>
   );
