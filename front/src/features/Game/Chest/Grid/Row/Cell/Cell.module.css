@@ -31,24 +31,21 @@
 }
 
 .correct {
-  color: #16617a;
+  color: color-mix(in srgb, var(--mc-correct-color, #16617a), black 60%);
   background-image: var(--mc-diamond-block);
   background-size: cover;
   image-rendering: pixelated;
-  /* background-color: #DD2E44; */
 }
 
 .misplaced {
-  color: #6e6e23;
+  color: color-mix(in srgb, var(--mc-misplaced-color, #6e6e23), black 60%);
   background-image: var(--mc-gold-block);
   background-size: cover;
   image-rendering: pixelated;
-  /* background-color:#FDCB58;
-	border-radius: 50%; */
 }
 
 .missed {
-  color: #313232;
+  color: color-mix(in srgb, #808080, black 60%);
   background-image: var(--mc-stone);
   background-size: cover;
   image-rendering: pixelated;

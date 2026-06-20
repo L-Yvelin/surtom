@@ -110,6 +110,8 @@ export async function applyDerivedColors(overrides: TextureOverrides): Promise<v
   const root = document.documentElement.style;
   root.setProperty('--mc-correct-glow', `rgba(${correct.join(',')}, 0.45)`);
   root.setProperty('--mc-misplaced-glow', `rgba(${misplaced.join(',')}, 0.45)`);
+  root.setProperty('--mc-correct-color', `rgb(${correct.join(',')})`);
+  root.setProperty('--mc-misplaced-color', `rgb(${misplaced.join(',')})`);
 }
 
 export function applyTextures(overrides: TextureOverrides): void {
