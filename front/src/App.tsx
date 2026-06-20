@@ -15,6 +15,7 @@ import Quotidien from './routes/Quotidien/Quotidien';
 import Settings from './ui/Settings/Settings';
 import ResourcePacks from './ui/ResourcePacks/ResourcePacks';
 import Stats from './features/Stats/Stats';
+import ErrorBoundary from './ui/ErrorBoundary/ErrorBoundary';
 
 const fontFile = new FontFace('Twemoji', `url(${twemoji})`, {
   unicodeRange:
@@ -49,20 +50,22 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
   return (
     <div id="root-container" className={classNames({ dark: theme === Theme.DARK })}>
       <TooltipProvider>
-        <Header theme={theme} />
-        <Routes>
-          <Route path="/" element={<MainMenu />} />
-          <Route path="/quotidien" element={<WorldSelection />} />
-          <Route path="/quotidien/:lang" element={<Quotidien />} />
-          <Route path="/quotidien/:lang/c/:encoded" element={<Quotidien />} />
-          <Route path="/fr" element={<Navigate to="/quotidien/fr" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <ErrorBoundary>
+          <Header theme={theme} />
+          <Routes>
+            <Route path="/" element={<MainMenu />} />
+            <Route path="/quotidien" element={<WorldSelection />} />
+            <Route path="/quotidien/:lang" element={<Quotidien />} />
+            <Route path="/quotidien/:lang/c/:encoded" element={<Quotidien />} />
+            <Route path="/fr" element={<Navigate to="/quotidien/fr" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
 
-        <Settings />
-        <Stats />
-        <ResourcePacks />
-        <WebSocketPingHandler />
+          <Settings />
+          <Stats />
+          <ResourcePacks />
+          <WebSocketPingHandler />
+        </ErrorBoundary>
       </TooltipProvider>
     </div>
   );
