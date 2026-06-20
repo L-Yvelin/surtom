@@ -2,7 +2,7 @@ import React from 'react';
 import classes from './AchievementsStack.module.css';
 import AchievementCard from './Achievement/Achievement';
 import SlideInOut from './SlideInOut/SlideInOut';
-import useGameStore from '../../stores/useGameStore';
+import { useGameStore } from '../../stores/useGameStore';
 
 interface AchievementsStackProps {
   lifeTime: number;

@@ -2,7 +2,7 @@ import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Achievement.module.css';
 import { AchievementIcon, MC_TEXTURE_PREFIX } from './utils';
-import useResourcePackStore from '../../../stores/useResourcePackStore';
+import { useResourcePackStore } from '../../../stores/useResourcePackStore';
 import { resolveTexture } from '../../../mc/textures';
 
 export interface AchievementProps {

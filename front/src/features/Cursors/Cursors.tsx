@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import classes from './Cursors.module.css';
 import PlayerCursor from './PlayerCursor/PlayerCursor';
-import useCursorsStore from '../../stores/useCursorsStore';
-import useGameStore from '../../stores/useGameStore';
+import { useCursorsStore } from '../../stores/useCursorsStore';
+import { useGameStore } from '../../stores/useGameStore';
 
 type CursorsProps = React.HTMLAttributes<HTMLDivElement>;
 

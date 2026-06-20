@@ -1,5 +1,5 @@
 import { Server } from '@surtom/interfaces';
-import useGameStore from '../../../stores/useGameStore';
+import { useGameStore } from '../../../stores/useGameStore';
 import discordEmojis from '../../../assets/discord-emojis.json';
 
 export type Suggestion = {

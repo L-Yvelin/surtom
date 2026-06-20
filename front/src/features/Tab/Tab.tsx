@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import classes from './Tab.module.css';
 import TabItem from './TabItem/TabItem';
 import { JSX } from 'react';
-import useGameStore from '../../stores/useGameStore';
+import { useGameStore } from '../../stores/useGameStore';
 import useScreen from '../../hooks/useScreen';
 
 interface TabProps {

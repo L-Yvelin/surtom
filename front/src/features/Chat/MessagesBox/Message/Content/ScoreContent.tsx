@@ -6,7 +6,7 @@ import { getValidatedWords, isGameFinished } from '../../../../Game/utils/gameLo
 import PlayerName from '../PlayerName/PlayerName';
 import Tooltip from '../../../../../ui/Tooltip/Tooltip';
 import Grid from '../../../../Game/Chest/Grid/Grid';
-import useGameStore from '../../../../../stores/useGameStore';
+import { useGameStore } from '../../../../../stores/useGameStore';
 
 function ScoreContent({ message }: { message: Server.ChatMessage.Score }): JSX.Element {
   const { t } = useTranslation();

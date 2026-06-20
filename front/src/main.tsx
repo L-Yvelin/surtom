@@ -3,7 +3,7 @@ import './index.css';
 import './i18n';
 import Root from './Root';
 import { applyTextures } from './mc/textures';
-import useResourcePackStore from './stores/useResourcePackStore';
+import { useResourcePackStore } from './stores/useResourcePackStore';
 
 const favicon = document.createElement('link');
 favicon.rel = 'icon';

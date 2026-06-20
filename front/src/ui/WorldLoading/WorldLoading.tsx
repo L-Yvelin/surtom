@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { useBlockInput } from '../../stores/useInputStore';
 import { UI } from '../ids';
-import useGameStore from '../../stores/useGameStore';
-import useResourcePackStore from '../../stores/useResourcePackStore';
+import { useGameStore } from '../../stores/useGameStore';
+import { useResourcePackStore } from '../../stores/useResourcePackStore';
 import { COSMETIC_MS, isWorldReady } from './utils';
 import classes from './WorldLoading.module.css';
 

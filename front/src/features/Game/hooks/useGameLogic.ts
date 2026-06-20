@@ -4,7 +4,7 @@ import { Achievement } from '../../AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../../AchievementsStack/Achievement/utils';
 import { LetterState, MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 import { isGuessValid, validateWord, areWinningColors, isGameFinished } from '../utils/gameLogic';
-import useGameStore from '../../../stores/useGameStore';
+import { useGameStore } from '../../../stores/useGameStore';
 import useUIStore from '../../../stores/useUIStore';
 import { UI } from '../../../ui/ids';
 import { useWebSocketStore } from '../../../stores/useWebSocketStore';

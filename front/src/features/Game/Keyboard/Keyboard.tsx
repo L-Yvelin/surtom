@@ -1,7 +1,7 @@
 import { JSX, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import classes from './Keyboard.module.css';
-import useGameStore from '../../../stores/useGameStore';
+import { useGameStore } from '../../../stores/useGameStore';
 import { getKeyboardClass, getKeyboardLayout, KeyboardLayouts } from './utils';
 import { LetterState } from '@surtom/interfaces';
 import Key from './Key';

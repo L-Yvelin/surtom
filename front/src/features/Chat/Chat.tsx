@@ -6,7 +6,7 @@ import ChatInput from './ChatInput/ChatInput';
 import MessagesBox from './MessagesBox/Messages';
 import { Server } from '@surtom/interfaces';
 import useScreen from '../../hooks/useScreen';
-import useChatStore from '../../stores/useChatStore';
+import { useChatStore } from '../../stores/useChatStore';
 import arrowImage from '../../assets/images/ui/arrow.png';
 import Button from '../../ui/Button/Button';
 

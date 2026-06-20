@@ -69,7 +69,7 @@ function createId(): string {
 
 let initPromise: Promise<void> | null = null;
 
-const useResourcePackStore = create<ResourcePackState>()((set, get) => {
+export const useResourcePackStore = create<ResourcePackState>()((set, get) => {
   const apply = (packs: ResourcePack[], selectedIds: string[]): void => {
     const overrides = computeOverrides(packs, selectedIds);
     applyTextures(overrides);
@@ -150,5 +150,3 @@ const useResourcePackStore = create<ResourcePackState>()((set, get) => {
 export function useTexture(path: TextureKey): string {
   return useResourcePackStore((s) => resolveTexture(path, s.overrides));
 }
-
-export default useResourcePackStore;

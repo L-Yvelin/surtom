@@ -5,7 +5,7 @@ import classes from './ResourcePacks.module.css';
 import Button from '../Button/Button';
 import Screen from '../Screen/Screen';
 import useUIStore from '../../stores/useUIStore';
-import useResourcePackStore, { type ResourcePack } from '../../stores/useResourcePackStore';
+import { useResourcePackStore, type ResourcePack } from '../../stores/useResourcePackStore';
 import { TEXTURES } from '../../mc/textures';
 
 import { UI } from '../ids';

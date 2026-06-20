@@ -4,7 +4,7 @@ import classes from './Tools.module.css';
 import MinecraftTooltip from '../../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
 import Tooltip from '../../../ui/Tooltip/Tooltip';
 import classNames from 'classnames';
-import useGameStore from '../../../stores/useGameStore';
+import { useGameStore } from '../../../stores/useGameStore';
 import useUIStore from '../../../stores/useUIStore';
 import useTheme from '../../../hooks/useTheme';
 import { Theme } from '../../../theme/theme';

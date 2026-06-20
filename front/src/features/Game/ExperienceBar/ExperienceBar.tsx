@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import classes from './ExperienceBar.module.css';
 import { useLevelAnimation } from './useLevelAnimation';
 import { useTexture } from '../../../stores/useResourcePackStore';
-import useGameStore from '../../../stores/useGameStore';
+import { useGameStore } from '../../../stores/useGameStore';
 import Tooltip from '../../../ui/Tooltip/Tooltip';
 import MinecraftTooltip from '../../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
 import { Anchor } from '../../../ui/Tooltip/utils';

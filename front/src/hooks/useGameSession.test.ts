@@ -1,8 +1,8 @@
 import { LetterState, Server, Word } from '@surtom/interfaces';
-import useGameStore from '../stores/useGameStore';
+import { useGameStore } from '../stores/useGameStore';
 import usePlayerStore, { defaultPlayer } from '../stores/usePlayerStore';
-import useChatStore from '../stores/useChatStore';
-import useCursorsStore from '../stores/useCursorsStore';
+import { useChatStore } from '../stores/useChatStore';
+import { useCursorsStore } from '../stores/useCursorsStore';
 import useUIStore from '../stores/useUIStore';
 import useInputStore from '../stores/useInputStore';
 import { resetGameSession, resetGameWorld } from './useGameSession';

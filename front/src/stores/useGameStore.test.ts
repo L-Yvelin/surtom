@@ -1,5 +1,5 @@
 import { LetterState, Server, Word } from '@surtom/interfaces';
-import useGameStore from './useGameStore';
+import { useGameStore } from './useGameStore';
 import { defaultPlayer } from './usePlayerStore';
 
 const makeUser = (overrides: Partial<Server.User>): Server.User => ({

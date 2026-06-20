@@ -51,7 +51,7 @@ const initialWorld = {
   hasSharedScore: false,
 };
 
-const useGameStore = create<GameState>((set) => ({
+export const useGameStore = create<GameState>((set) => ({
   ...initialWorld,
   ...initialSession,
   setSolution: (solution) => set(() => ({ solution })),
@@ -81,5 +81,3 @@ const useGameStore = create<GameState>((set) => ({
   resetSession: () => set(initialSession),
   resetWorld: () => set(initialWorld),
 }));
-
-export default useGameStore;

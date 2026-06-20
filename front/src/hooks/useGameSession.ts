@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import useChatStore from '../stores/useChatStore';
-import useCursorsStore from '../stores/useCursorsStore';
-import useGameStore from '../stores/useGameStore';
+import { useChatStore } from '../stores/useChatStore';
+import { useCursorsStore } from '../stores/useCursorsStore';
+import { useGameStore } from '../stores/useGameStore';
 import useInputStore from '../stores/useInputStore';
 import useUIStore from '../stores/useUIStore';
 

@@ -17,10 +17,10 @@ jest.mock('./useWebSocketStore', () => ({
   },
 }));
 
-import useGameStore from './useGameStore';
+import { useGameStore } from './useGameStore';
 import usePlayerStore, { defaultPlayer } from './usePlayerStore';
-import useChatStore from './useChatStore';
-import useCursorsStore from './useCursorsStore';
+import { useChatStore } from './useChatStore';
+import { useCursorsStore } from './useCursorsStore';
 import { handleServerMessage, MessageHandlerDeps } from './wsMessageHandler';
 
 const makeDeps = (): MessageHandlerDeps & { setLastMessageTimestamp: jest.Mock } => ({

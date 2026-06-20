@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import classes from './Stats.module.css';
 import Button from '../../ui/Button/Button';
 import Screen from '../../ui/Screen/Screen';
-import useGameStore from '../../stores/useGameStore';
+import { useGameStore } from '../../stores/useGameStore';
 import useUIStore from '../../stores/useUIStore';
 import { UI } from '../../ui/ids';
 

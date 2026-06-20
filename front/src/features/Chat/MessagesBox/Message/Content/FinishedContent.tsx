@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { Server, Client, LetterState } from '@surtom/interfaces';
 import { getLetterColor } from '../../../../Game/Chest/Grid/types';
-import useGameStore from '../../../../../stores/useGameStore';
+import { useGameStore } from '../../../../../stores/useGameStore';
 import { useWebSocketStore } from '../../../../../stores/useWebSocketStore';
 import classes from './FinishedContent.module.css';
 

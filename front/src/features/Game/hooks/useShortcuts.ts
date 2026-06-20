@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import useUIStore, { useVisibility } from '../../../stores/useUIStore';
 import useInputStore from '../../../stores/useInputStore';
-import useChatStore from '../../../stores/useChatStore';
+import { useChatStore } from '../../../stores/useChatStore';
 import { UI } from '../../../ui/ids';
 
 export function handleEscape(closeAll: () => void): void {

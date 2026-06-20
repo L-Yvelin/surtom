@@ -1,6 +1,6 @@
 import { Server } from '@surtom/interfaces';
 import { defaultPlayer } from './usePlayerStore';
-import useChatStore from './useChatStore';
+import { useChatStore } from './useChatStore';
 
 const makeText = (id: string, text = `m-${id}`): Server.ChatMessage.Text => ({
   type: Server.MessageType.TEXT,

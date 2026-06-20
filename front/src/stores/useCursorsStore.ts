@@ -13,7 +13,7 @@ const initialWorld = {
   cursors: [] as Server.CursorPositionMessage[],
 };
 
-const useCursorsStore = create<CursorsStore>((set) => ({
+export const useCursorsStore = create<CursorsStore>((set) => ({
   ...initialWorld,
   setCursors: (cursors) => set({ cursors }),
   addOrUpdateCursor: (cursor) =>
@@ -32,5 +32,3 @@ const useCursorsStore = create<CursorsStore>((set) => ({
     })),
   resetWorld: () => set(initialWorld),
 }));
-
-export default useCursorsStore;

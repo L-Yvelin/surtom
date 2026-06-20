@@ -2,7 +2,7 @@ import { JSX, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Chest.module.css';
 import Grid from './Grid/Grid';
-import useGameStore from '../../../stores/useGameStore';
+import { useGameStore } from '../../../stores/useGameStore';
 import { isGameFinished } from '../utils/gameLogic';
 import EyeOpen from '../../../assets/images/ui/eye_open.svg?react';
 import EyeClosed from '../../../assets/images/ui/eye_closed.svg?react';

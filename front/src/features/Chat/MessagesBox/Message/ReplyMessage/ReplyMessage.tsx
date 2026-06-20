@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { isSavedChatMessage, isTextMessage } from '../../../utils/messageFormatting';
 import { SimpleMessage } from '../../../ChatInput/ChatInput';
 import classes from './ReplyMessage.module.css';
-import useChatStore from '../../../../../stores/useChatStore';
+import { useChatStore } from '../../../../../stores/useChatStore';
 
 interface ReplyMessageProps {
   message: Server.ChatMessage.Type;

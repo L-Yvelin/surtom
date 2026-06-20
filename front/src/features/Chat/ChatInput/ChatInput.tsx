@@ -1,7 +1,7 @@
 import { JSX, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './ChatInput.module.css';
-import useChatStore from '../../../stores/useChatStore';
+import { useChatStore } from '../../../stores/useChatStore';
 import classNames from 'classnames';
 import { Server, Client } from '@surtom/interfaces';
 import { isSavedChatMessage, isScoreMessage, isTextMessage } from '../utils/messageFormatting';

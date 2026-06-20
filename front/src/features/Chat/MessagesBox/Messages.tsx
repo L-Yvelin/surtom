@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Server } from '@surtom/interfaces';
 import Message from './Message/Message';
 import classes from './Messages.module.css';
-import useChatStore from '../../../stores/useChatStore';
+import { useChatStore } from '../../../stores/useChatStore';
 
 interface MessagesBoxProps {
   messages: Server.ChatMessage.Type[];

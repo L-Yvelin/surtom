@@ -1,9 +1,9 @@
 import { Server } from '@surtom/interfaces';
 import Cookies from 'js-cookie';
-import useGameStore from './useGameStore';
+import { useGameStore } from './useGameStore';
 import usePlayerStore from './usePlayerStore';
-import useChatStore from './useChatStore';
-import useCursorsStore from './useCursorsStore';
+import { useChatStore } from './useChatStore';
+import { useCursorsStore } from './useCursorsStore';
 import { useWorldsStore } from './useWorldsStore';
 import { useWebSocketStore } from './useWebSocketStore';
 import { getValidatedWords, isGameFinished } from '../features/Game/utils/gameLogic';

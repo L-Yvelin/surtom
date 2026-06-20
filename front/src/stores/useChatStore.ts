@@ -39,7 +39,7 @@ const initialWorld = {
   ...initialSession,
 };
 
-const useChatStore = create<ChatStore>((set) => ({
+export const useChatStore = create<ChatStore>((set) => ({
   ...initialWorld,
   setMessages: (messages) => set({ messages }),
   setAnsweringTo: (id) => set({ answeringTo: id }),
@@ -55,5 +55,3 @@ const useChatStore = create<ChatStore>((set) => ({
   resetSession: () => set(initialSession),
   resetWorld: () => set(initialWorld),
 }));
-
-export default useChatStore;

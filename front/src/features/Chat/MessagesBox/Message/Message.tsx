@@ -5,7 +5,7 @@ import { Server, Client } from '@surtom/interfaces';
 import MessageTool from './MessageTool/MessageTool';
 import classNames from 'classnames';
 import SwipeActions from '../../../../ui/SwipeActions/SwipeActions';
-import useChatStore from '../../../../stores/useChatStore';
+import { useChatStore } from '../../../../stores/useChatStore';
 import CustomContextMenu from '../../../../ui/ContextMenu/ContextMenu';
 import MessageContextMenu from './MessageContextMenu/MessageContextMenu';
 import usePlayerStore from '../../../../stores/usePlayerStore';
