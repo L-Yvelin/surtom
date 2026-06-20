@@ -14,7 +14,6 @@ import WorldSelection from './routes/WorldSelection/WorldSelection';
 import Quotidien from './routes/Quotidien/Quotidien';
 import Settings from './ui/Settings/Settings';
 import ResourcePacks from './ui/ResourcePacks/ResourcePacks';
-import useResourcePackStore from './stores/useResourcePackStore';
 import Stats from './features/Stats/Stats';
 
 const fontFile = new FontFace('Twemoji', `url(${twemoji})`, {
@@ -39,10 +38,6 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
 
   useEffect(() => {
     useWebSocketStore.getState().connect();
-  }, []);
-
-  useEffect(() => {
-    void useResourcePackStore.getState().init();
   }, []);
 
   use(twemojiPromise);

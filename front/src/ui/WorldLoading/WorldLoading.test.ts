@@ -1,20 +1,24 @@
 import { isWorldReady } from './utils';
 
 describe('isWorldReady', () => {
-  test('false while cosmetic timer is still running, regardless of solution', () => {
-    expect(isWorldReady(false, undefined)).toBe(false);
-    expect(isWorldReady(false, 'CHIEN')).toBe(false);
+  test('false while cosmetic timer is still running, regardless of solution or packs', () => {
+    expect(isWorldReady(false, undefined, false)).toBe(false);
+    expect(isWorldReady(false, 'CHIEN', true)).toBe(false);
   });
 
   test('false after cosmetic timer if no solution yet (slow WS connect)', () => {
-    expect(isWorldReady(true, undefined)).toBe(false);
+    expect(isWorldReady(true, undefined, true)).toBe(false);
   });
 
-  test('true only when both cosmetic timer is done AND solution has arrived', () => {
-    expect(isWorldReady(true, 'CHIEN')).toBe(true);
+  test('false after cosmetic timer and solution if packs not ready yet', () => {
+    expect(isWorldReady(true, 'CHIEN', false)).toBe(false);
+  });
+
+  test('true only when cosmetic timer done, solution arrived, and packs ready', () => {
+    expect(isWorldReady(true, 'CHIEN', true)).toBe(true);
   });
 
   test('an empty-string solution does not count as ready (defensive against bad server payload)', () => {
-    expect(isWorldReady(true, '')).toBe(false);
+    expect(isWorldReady(true, '', true)).toBe(false);
   });
 });

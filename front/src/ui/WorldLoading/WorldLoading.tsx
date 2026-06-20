@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { useBlockInput } from '../../stores/useInputStore';
 import { UI } from '../ids';
 import useGameStore from '../../stores/useGameStore';
+import useResourcePackStore from '../../stores/useResourcePackStore';
 import { COSMETIC_MS, isWorldReady } from './utils';
 import classes from './WorldLoading.module.css';
 
@@ -11,7 +12,8 @@ function WorldLoading(): JSX.Element {
   const { t } = useTranslation();
   const [cosmeticDone, setCosmeticDone] = useState(false);
   const solution = useGameStore((s) => s.solution);
-  const ready = isWorldReady(cosmeticDone, solution);
+  const packsReady = useResourcePackStore((s) => s.ready);
+  const ready = isWorldReady(cosmeticDone, solution, packsReady);
 
   useBlockInput(UI.WORLD_LOADING, !ready);
 
