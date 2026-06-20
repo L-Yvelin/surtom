@@ -6,7 +6,12 @@ import { useChatStore } from './useChatStore';
 import { useCursorsStore } from './useCursorsStore';
 import { useWorldsStore } from './useWorldsStore';
 import { useWebSocketStore } from './useWebSocketStore';
+import { useUIStore } from './useUIStore';
 import { getValidatedWords, isGameFinished } from '../features/Game/utils/gameLogic';
+import { UI } from '../ui/ids';
+import i18n from '../i18n';
+import { Achievement } from '../features/AchievementsStack/Achievement/Achievement';
+import { AchievementIcon } from '../features/AchievementsStack/Achievement/utils';
 
 const COOKIE_SESSION_HASH = 'modHash';
 
@@ -43,7 +48,17 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
       break;
     case Server.MessageType.MESSAGE:
       if (data.content.type === Server.MessageType.GAME_FINISHED) {
+        const { win } = data.content.content;
         game.setHasSharedScore(data.content.content.hasSharedScore);
+        game.setLetters([]);
+        useUIStore.getState().setVisibility(UI.CHAT, true);
+        game.addAchievement(
+          new Achievement(
+            i18n.t(win ? 'achievements.winTitle' : 'achievements.lossTitle'),
+            i18n.t(win ? 'achievements.winSubtitle' : 'achievements.lossSubtitle'),
+            AchievementIcon.BOOK,
+          ),
+        );
       }
       chat.addMessage(data.content);
       useChatStore.getState().scrollToBottom?.();
@@ -57,7 +72,7 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
         solution,
       );
       game.setTries(validatedTries);
-      if (isGameFinished(validatedTries)) {
+      if (!game.hasLoaded && isGameFinished(validatedTries)) {
         game.setShowProgression(false);
         game.setWasFinishedOnLoad(true);
       }

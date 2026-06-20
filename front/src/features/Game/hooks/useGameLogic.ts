@@ -2,25 +2,21 @@ import { useEffect, useRef } from 'react';
 import i18n from '../../../i18n';
 import { Achievement } from '../../AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../../AchievementsStack/Achievement/utils';
-import { LetterState, MAX_TRIES_PER_GAME } from '@surtom/interfaces';
-import { isGuessValid, validateWord, areWinningColors, isGameFinished } from '../utils/gameLogic';
+import { LetterState } from '@surtom/interfaces';
+import { isGuessValid, validateWord, isGameFinished } from '../utils/gameLogic';
 import { useGameStore } from '../../../stores/useGameStore';
-import useUIStore from '../../../stores/useUIStore';
-import { UI } from '../../../ui/ids';
 import { useWebSocketStore } from '../../../stores/useWebSocketStore';
 import { Client } from '@surtom/interfaces';
 
 const useGameLogic = () => {
   const letters = useGameStore((s) => s.letters);
   const setLetters = useGameStore((s) => s.setLetters);
-  const tries = useGameStore((s) => s.tries);
   const addTry = useGameStore((s) => s.addTry);
   const solution = useGameStore((s) => s.solution);
   const addAchievement = useGameStore((s) => s.addAchievement);
   const validWords = useGameStore((s) => s.validWords);
   const gameFinished = useGameStore((s) => isGameFinished(s.tries));
 
-  const setVisibility = useUIStore((s) => s.setVisibility);
   const skipFirstLetter = useRef(true);
   const sendMessage = useWebSocketStore((s) => s.sendMessage);
 
@@ -67,31 +63,12 @@ const useGameLogic = () => {
       const guessColors = validateWord(guess, solution);
       const newTry = letters.map((l, i) => ({ ...l, state: guessColors[i] }));
       addTry(newTry);
-
-      if (areWinningColors(guessColors)) {
-        handleWin();
-      } else if (tries.length === MAX_TRIES_PER_GAME - 1) {
-        handleLoss();
-      } else {
-        resetLetters();
-      }
+      resetLetters();
     } else {
       addAchievement(
         new Achievement(i18n.t('achievements.invalidWordTitle'), i18n.t('achievements.invalidWordSubtitle'), AchievementIcon.BOOK),
       );
     }
-  };
-
-  const handleWin = () => {
-    setLetters([]);
-    setVisibility(UI.CHAT, true);
-    addAchievement(new Achievement(i18n.t('achievements.winTitle'), i18n.t('achievements.winSubtitle'), AchievementIcon.BOOK));
-  };
-
-  const handleLoss = () => {
-    setLetters([]);
-    setVisibility(UI.CHAT, true);
-    addAchievement(new Achievement(i18n.t('achievements.lossTitle'), i18n.t('achievements.lossSubtitle'), AchievementIcon.BOOK));
   };
 
   const resetLetters = () => {

@@ -1,8 +1,45 @@
 import { Server, MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 import FullUser from '../models/FullUser.js';
 import { getPlayerXp } from '../repositories/xpRepository.js';
-import { worldRegistry } from '../state/worldRegistry.js';
-import { sendError, sendSuccess, sendToUser } from '../ws/send.js';
+import { worldRegistry, World } from '../state/worldRegistry.js';
+import { sendError, sendToUser } from '../ws/send.js';
+import store from '../state/store.js';
+
+async function broadcastDailyWords(playerName: string, worldId: string, world: World): Promise<void> {
+  const game = await world.getGameState();
+  if (!game.solution) return;
+
+  const tries = await world.getTries(playerName);
+  const isGameOver = tries.win || tries.attempts.length >= MAX_TRIES_PER_GAME;
+  const hasSharedScore = isGameOver ? await world.hasSharedScore(playerName) : false;
+
+  const connections = Object.values(store.getState().users).filter((u) => u.privateUser.name === playerName && u.worldId === worldId);
+
+  for (const conn of connections) {
+    sendToUser(conn.connection, {
+      type: Server.MessageType.DAILY_WORDS,
+      content: {
+        words: game.validWords,
+        attempts: tries.attempts.map((letters) => letters.join('')),
+      },
+    });
+
+    if (isGameOver) {
+      sendToUser(conn.connection, {
+        type: Server.MessageType.MESSAGE,
+        content: {
+          type: Server.MessageType.GAME_FINISHED,
+          content: {
+            win: tries.win,
+            attempts: tries.attempts,
+            hasSharedScore,
+            timestamp: new Date().toISOString(),
+          },
+        },
+      });
+    }
+  }
+}
 
 export async function handleTryMessage(user: FullUser, content: string): Promise<void> {
   try {
@@ -42,31 +79,17 @@ export async function handleTryMessage(user: FullUser, content: string): Promise
     const isWin = attempt.toUpperCase() === solution;
     await world.recordTry(user.privateUser.name, attemptLetters, isWin);
 
+    await broadcastDailyWords(user.privateUser.name, user.worldId, world);
+
     const isGameOver = isWin || attempts.length + 1 >= MAX_TRIES_PER_GAME;
-
-    if (!isGameOver) {
-      sendSuccess(user.connection, 'Tentative enregistrée !');
-    } else {
-      sendToUser(user.connection, {
-        type: Server.MessageType.MESSAGE,
-        content: {
-          type: Server.MessageType.GAME_FINISHED,
-          content: {
-            win: isWin,
-            attempts: [...attempts, attemptLetters],
-            hasSharedScore: false,
-            timestamp: new Date().toISOString(),
-          },
-        },
-      });
-    }
-
     if (world.persistent && isGameOver) {
       const xp = await getPlayerXp(user.privateUser.name);
-      sendToUser(user.connection, {
-        type: Server.MessageType.XP,
-        content: xp,
-      });
+      const connections = Object.values(store.getState().users).filter(
+        (u) => u.privateUser.name === user.privateUser.name && u.worldId === user.worldId,
+      );
+      for (const conn of connections) {
+        sendToUser(conn.connection, { type: Server.MessageType.XP, content: xp });
+      }
     }
   } catch (err) {
     sendError(user.connection, (err as Error).message);
