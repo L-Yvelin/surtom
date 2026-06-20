@@ -10,6 +10,7 @@
 .tools {
   display: flex;
   gap: 1vh;
+  overflow-y: hidden;
 }
 
 .leftTools {
@@ -46,8 +47,8 @@
 }
 
 .chatIcon {
-  clip-path: inset(10px 10px 10px 10px);
-  scale: 150%;
+  clip-path: inset(15%);
+  transform: scale(calc(1 / 0.7));
 }
 
 .chatButton {
