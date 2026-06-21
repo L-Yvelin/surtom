@@ -6,10 +6,12 @@ import { setWebSocketServer } from './ws/broadcast.js';
 import { subscribe } from './state/eventBus.js';
 import { updateUsersList } from './handlers/userListHandler.js';
 import { worldRegistry } from './state/worldRegistry.js';
+import { runMigrations } from './db/migrate.js';
 
 console.log('SERVER STARTING...');
 
 async function start(): Promise<void> {
+  await runMigrations();
   await worldRegistry.init();
   console.log(`Loaded ${worldRegistry.list().length} persistent world(s) from DB`);
 
