@@ -109,7 +109,8 @@ function ChatInput({ onSend, onImagePaste, display }: ChatInputProps): JSX.Eleme
       }
       setImageData(result);
       onImagePaste(result);
-    } catch {
+    } catch (e: unknown) {
+      console.error(e);
       notifyImageError(t('achievements.imageErrorSubtitle'));
     }
   }
