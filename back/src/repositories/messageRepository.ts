@@ -4,6 +4,7 @@ import { db } from '../db/client.js';
 import { message, player, scoreContent, textContent, wordHistory } from '../db/schema.js';
 import { getPlayerByName } from './playerRepository.js';
 import { getTodaysWord } from './wordRepository.js';
+import { canToggleDeletion } from '../utils/messagePermissions.js';
 
 interface MessageJoinRow {
   id: number;
@@ -211,15 +212,15 @@ export async function saveMessage(user: Server.PrivateUser, msg: Client.ChatMess
   }
 }
 
-export async function toggleMessage(messageId: number, user: Server.PrivateUser): Promise<boolean> {
+export async function toggleMessage(messageId: number, user: Server.PrivateUser): Promise<number | null> {
   const existing = await getMessageById(messageId);
-  if (!existing) return false;
+  if (!existing) return null;
 
-  if (user.moderatorLevel < existing.content.deleted && existing.content.user.name === user.name) return false;
+  if (!canToggleDeletion(user, existing.content.user, existing.content.deleted)) return null;
 
-  const newDeletedStatus = existing.content.deleted ? 0 : user.moderatorLevel;
+  const newDeletedStatus = existing.content.deleted ? 0 : user.moderatorLevel || 1;
 
   const updateResult = await db.update(message).set({ deleted: newDeletedStatus }).where(eq(message.id, messageId));
   const affected = (updateResult as unknown as [{ affectedRows: number }, unknown])[0].affectedRows;
-  return affected > 0;
+  return affected > 0 ? newDeletedStatus : null;
 }

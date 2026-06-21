@@ -83,7 +83,7 @@ export namespace Server {
   }
 
   export type Message =
-    | { type: MessageType.DELETE_MESSAGE; content: number }
+    | { type: MessageType.DELETE_MESSAGE; content: { id: number; deleted: number } }
     | { type: MessageType.GET_MESSAGES; content: ChatMessage.Type[] }
     | { type: MessageType.IS_TYPING; content: string }
     | { type: MessageType.LAST_TIME_MESSAGE; content: string }

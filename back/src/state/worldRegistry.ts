@@ -14,7 +14,7 @@ export interface World {
   getGameState(): Promise<GameState>;
   getChat(opts: ChatFetchOptions): Promise<Server.ChatMessage.Type[]>;
   saveMessage(user: Server.PrivateUser, message: Client.ChatMessage, scoreSolution?: string): Promise<Server.Message>;
-  toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<boolean>;
+  toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<number | null>;
   getTries(playerName: string): Promise<{ attempts: string[][]; win: boolean }>;
   recordTry(playerName: string, attempt: string[], win: boolean): Promise<void>;
   hasSharedScore(playerName: string): Promise<boolean>;

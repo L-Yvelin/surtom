@@ -46,6 +46,16 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
       chat.setMessages(data.content);
       useChatStore.getState().scrollToBottom?.();
       break;
+    case Server.MessageType.DELETE_MESSAGE: {
+      const { id, deleted } = data.content;
+      const isModerator = player.player.moderatorLevel > 0;
+      if (deleted && !isModerator) {
+        chat.removeMessage(String(id));
+      } else {
+        chat.setMessageDeleted(String(id), deleted);
+      }
+      break;
+    }
     case Server.MessageType.MESSAGE:
       if (data.content.type === Server.MessageType.GAME_FINISHED) {
         const { win } = data.content.content;

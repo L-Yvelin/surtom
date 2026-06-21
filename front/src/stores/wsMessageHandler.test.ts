@@ -141,6 +141,41 @@ describe('GET_MESSAGES / MESSAGE', () => {
   });
 });
 
+describe('DELETE_MESSAGE', () => {
+  const makeText = (id: string): Server.ChatMessage.Text => ({
+    type: Server.MessageType.TEXT,
+    content: { ...baseMessageMeta, id, text: `m-${id}` },
+  });
+
+  test('removes the message for a non-moderator when it gets deleted', () => {
+    usePlayerStore.setState({ player: { ...baseUser, moderatorLevel: 0 } });
+    useChatStore.setState({ messages: [makeText('1'), makeText('2')] });
+    handleServerMessage({ type: Server.MessageType.DELETE_MESSAGE, content: { id: 2, deleted: 1 } }, makeDeps());
+    const ids = (useChatStore.getState().messages as Server.ChatMessage.Text[]).map((m) => m.content.id);
+    expect(ids).toStrictEqual(['1']);
+  });
+
+  test('greys (keeps) the message for a moderator when it gets deleted', () => {
+    usePlayerStore.setState({ player: { ...baseUser, moderatorLevel: 1 } });
+    useChatStore.setState({ messages: [makeText('1'), makeText('2')] });
+    handleServerMessage({ type: Server.MessageType.DELETE_MESSAGE, content: { id: 2, deleted: 1 } }, makeDeps());
+    const messages = useChatStore.getState().messages as Server.ChatMessage.Text[];
+    expect(messages).toHaveLength(2);
+    expect(messages.find((m) => m.content.id === '2')!.content.deleted).toBe(1);
+  });
+
+  test('restores (deleted=0) update the flag for everyone', () => {
+    usePlayerStore.setState({ player: { ...baseUser, moderatorLevel: 0 } });
+    const deleted = makeText('2');
+    deleted.content.deleted = 1;
+    useChatStore.setState({ messages: [makeText('1'), deleted] });
+    handleServerMessage({ type: Server.MessageType.DELETE_MESSAGE, content: { id: 2, deleted: 0 } }, makeDeps());
+    const messages = useChatStore.getState().messages as Server.ChatMessage.Text[];
+    expect(messages).toHaveLength(2);
+    expect(messages.find((m) => m.content.id === '2')!.content.deleted).toBe(0);
+  });
+});
+
 describe('DAILY_WORDS', () => {
   test('treats the last word as the solution', () => {
     handleServerMessage(

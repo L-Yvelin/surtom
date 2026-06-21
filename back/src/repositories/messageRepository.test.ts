@@ -170,7 +170,7 @@ describe('saveMessage (SCORE_TO_CHAT)', () => {
 });
 
 describe('toggleMessage', () => {
-  it('returns false when no message matches the id', async () => {
+  it('returns null when no message matches the id', async () => {
     mock.enqueue([]);
     const result = await toggleMessage(99, {
       name: 'a',
@@ -181,7 +181,35 @@ describe('toggleMessage', () => {
       isBanned: false,
       xp: 0,
     });
-    expect(result).toBe(false);
+    expect(result).toBeNull();
+  });
+
+  it('refuses to delete another user message without outranking its author', async () => {
+    mock.enqueue([buildJoinRow({ id: 1, username: 'alice', isAdmin: 0, deleted: 0 })]);
+    const result = await toggleMessage(1, {
+      name: 'bob',
+      moderatorLevel: 0,
+      isLoggedIn: true,
+      isMobile: false,
+      words: [],
+      isBanned: false,
+      xp: 0,
+    });
+    expect(result).toBeNull();
+  });
+
+  it('lets a user delete their own message and returns the new deleted marker', async () => {
+    mock.enqueue([buildJoinRow({ id: 1, username: 'bob', isAdmin: 0, deleted: 0 })], [{ affectedRows: 1 }, []]);
+    const result = await toggleMessage(1, {
+      name: 'bob',
+      moderatorLevel: 0,
+      isLoggedIn: true,
+      isMobile: false,
+      words: [],
+      isBanned: false,
+      xp: 0,
+    });
+    expect(result).toBe(1);
   });
 
   it('refuses self-undelete when moderatorLevel is below the recorded delete level', async () => {
@@ -195,10 +223,10 @@ describe('toggleMessage', () => {
       isBanned: false,
       xp: 0,
     });
-    expect(result).toBe(false);
+    expect(result).toBeNull();
   });
 
-  it('marks a non-deleted message as deleted and returns true', async () => {
+  it('marks a non-deleted message as deleted and returns the deleter level', async () => {
     mock.enqueue([buildJoinRow({ deleted: 0 })], [{ affectedRows: 1 }, []]);
     const result = await toggleMessage(1, {
       name: 'mod',
@@ -209,10 +237,10 @@ describe('toggleMessage', () => {
       isBanned: false,
       xp: 0,
     });
-    expect(result).toBe(true);
+    expect(result).toBe(2);
   });
 
-  it('un-deletes a previously deleted message', async () => {
+  it('un-deletes a previously deleted message and returns 0', async () => {
     mock.enqueue([buildJoinRow({ deleted: 1 })], [{ affectedRows: 1 }, []]);
     const result = await toggleMessage(1, {
       name: 'mod',
@@ -223,6 +251,6 @@ describe('toggleMessage', () => {
       isBanned: false,
       xp: 0,
     });
-    expect(result).toBe(true);
+    expect(result).toBe(0);
   });
 });

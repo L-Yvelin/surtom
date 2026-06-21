@@ -91,12 +91,12 @@ describe('worldRegistry', () => {
   it('toggles deletion on an in-memory chat message', async () => {
     const w = spawnEphemeral();
     await w.saveMessage(PRIVATE_USER, TEXT_MSG);
-    const ok = await w.toggleMessageDeleted(1, { ...PRIVATE_USER, moderatorLevel: 2 });
-    expect(ok).toBe(true);
+    const ok = await w.toggleMessageDeleted(1, { ...PRIVATE_USER, name: 'mod', moderatorLevel: 2 });
+    expect(ok).toBe(2);
     const chat = await w.getChat(DEFAULT_CHAT_OPTS);
     expect((chat[0] as Server.ChatMessage.Text).content.deleted).toBe(2);
 
-    await w.toggleMessageDeleted(1, { ...PRIVATE_USER, moderatorLevel: 2 });
+    await w.toggleMessageDeleted(1, { ...PRIVATE_USER, name: 'mod', moderatorLevel: 2 });
     const chat2 = await w.getChat(DEFAULT_CHAT_OPTS);
     expect((chat2[0] as Server.ChatMessage.Text).content.deleted).toBe(0);
   });

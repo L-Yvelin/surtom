@@ -54,10 +54,11 @@ beforeEach(() => {
 });
 
 describe('handleDeleteMessage', () => {
-  it('does nothing when the user is not a moderator', async () => {
-    const user = buildUser(0);
+  it('forwards a non-moderator deletion (permission is enforced downstream)', async () => {
+    (toggleMessage as jest.Mock).mockResolvedValue(1);
+    const user = buildUser(0, 'fr');
     await handleDeleteMessage(user, 1);
-    expect(toggleMessage).not.toHaveBeenCalled();
+    expect(toggleMessage).toHaveBeenCalledWith(1, user.privateUser);
   });
 
   it('does nothing when the message id is NaN', async () => {
@@ -67,17 +68,31 @@ describe('handleDeleteMessage', () => {
   });
 
   it('broadcasts a DELETE_MESSAGE scoped to the user world and acks success', async () => {
-    (toggleMessage as jest.Mock).mockResolvedValue(true);
+    (toggleMessage as jest.Mock).mockResolvedValue(1);
     const user = buildUser(1, 'fr');
     await handleDeleteMessage(user, 42);
     expect(toggleMessage).toHaveBeenCalledWith(42, user.privateUser);
     expect(broadcastToWorld).toHaveBeenCalledWith('fr', {
       type: Server.MessageType.DELETE_MESSAGE,
-      content: 42,
+      content: { id: 42, deleted: 1 },
     });
     expect(sendToUser).toHaveBeenCalledWith(
       fakeWs,
       expect.objectContaining({ type: Server.MessageType.LOG, content: expect.stringContaining('Successfully') }),
+    );
+  });
+
+  it('broadcasts the restored state when toggling a message back on', async () => {
+    (toggleMessage as jest.Mock).mockResolvedValue(0);
+    const user = buildUser(1, 'fr');
+    await handleDeleteMessage(user, 42);
+    expect(broadcastToWorld).toHaveBeenCalledWith('fr', {
+      type: Server.MessageType.DELETE_MESSAGE,
+      content: { id: 42, deleted: 0 },
+    });
+    expect(sendToUser).toHaveBeenCalledWith(
+      fakeWs,
+      expect.objectContaining({ type: Server.MessageType.LOG, content: expect.stringContaining('restored') }),
     );
   });
 
@@ -97,8 +112,8 @@ describe('handleDeleteMessage', () => {
     expect(broadcastToWorld).toHaveBeenCalledWith(EPHEM_ID, expect.objectContaining({ type: Server.MessageType.DELETE_MESSAGE }));
   });
 
-  it('logs failure to the moderator when toggle returns false', async () => {
-    (toggleMessage as jest.Mock).mockResolvedValue(false);
+  it('logs failure to the user when the toggle is not permitted', async () => {
+    (toggleMessage as jest.Mock).mockResolvedValue(null);
     const user = buildUser(1);
     await handleDeleteMessage(user, 42);
     expect(broadcastToWorld).not.toHaveBeenCalled();

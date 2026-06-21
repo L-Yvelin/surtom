@@ -65,6 +65,22 @@ describe('messages', () => {
     expect(useChatStore.getState().messages).toStrictEqual(messages);
   });
 
+  test('setMessageDeleted updates the deleted flag on the matching message', () => {
+    useChatStore.setState({ messages: [makeText('a'), makeText('b')] });
+    useChatStore.getState().setMessageDeleted('b', 2);
+    const messages = useChatStore.getState().messages as Server.ChatMessage.Text[];
+    expect(messages.find((m) => m.content.id === 'a')!.content.deleted).toBe(0);
+    expect(messages.find((m) => m.content.id === 'b')!.content.deleted).toBe(2);
+  });
+
+  test('setMessageDeleted can restore a message (deleted back to 0)', () => {
+    const deletedMsg = makeText('a');
+    deletedMsg.content.deleted = 3;
+    useChatStore.setState({ messages: [deletedMsg] });
+    useChatStore.getState().setMessageDeleted('a', 0);
+    expect((useChatStore.getState().messages[0] as Server.ChatMessage.Text).content.deleted).toBe(0);
+  });
+
   test('setMessages replaces the message list wholesale', () => {
     useChatStore.setState({ messages: [makeText('keep')] });
     useChatStore.getState().setMessages([makeText('x'), makeText('y')]);

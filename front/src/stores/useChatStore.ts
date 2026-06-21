@@ -10,6 +10,7 @@ interface ChatStore {
   answeringTo: string | null;
   setAnsweringTo: (id: string | null) => void;
   removeMessage: (messageId: string) => void;
+  setMessageDeleted: (messageId: string, deleted: number) => void;
   addMessage: (message: Server.ChatMessage.Type) => void;
   scrollToBottom: () => void;
   setScrollToBottom: (fn: () => void) => void;
@@ -46,6 +47,12 @@ export const useChatStore = create<ChatStore>((set) => ({
   removeMessage: (messageId) =>
     set((state) => ({
       messages: state.messages?.filter((m) => !isSavedChatMessage(m) || m.content.id !== messageId) || [],
+    })),
+  setMessageDeleted: (messageId, deleted) =>
+    set((state) => ({
+      messages: (state.messages || []).map((m) =>
+        isSavedChatMessage(m) && m.content.id === messageId ? ({ ...m, content: { ...m.content, deleted } } as Server.ChatMessage.Type) : m,
+      ),
     })),
   addMessage: (message) => set((state) => ({ messages: [...(state.messages || []), message] })),
   scrollToBottom: () => {},

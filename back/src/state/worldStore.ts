@@ -4,6 +4,7 @@ import {
   saveMessage as repoSaveMessage,
   toggleMessage as repoToggleMessage,
 } from '../repositories/messageRepository.js';
+import { canToggleDeletion } from '../utils/messagePermissions.js';
 import { getOrCreateTodaysWord, getTodaysWordAndHistoryId, getValidWords } from '../repositories/wordRepository.js';
 import { getDailyScore } from '../repositories/scoreRepository.js';
 import { getPlayerByName } from '../repositories/playerRepository.js';
@@ -26,7 +27,7 @@ export interface WorldStore {
 
   getChat(opts: ChatFetchOptions): Promise<Server.ChatMessage.Type[]>;
   saveMessage(user: Server.PrivateUser, message: Client.ChatMessage, scoreSolution?: string): Promise<Server.Message>;
-  toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<boolean>;
+  toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<number | null>;
 
   getTries(playerName: string): Promise<{ attempts: string[][]; win: boolean }>;
   recordTry(playerName: string, attempt: string[], win: boolean): Promise<void>;
@@ -61,7 +62,7 @@ export class DbWorldStore implements WorldStore {
     return repoSaveMessage(user, message, this.worldId);
   }
 
-  async toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<boolean> {
+  async toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<number | null> {
     return repoToggleMessage(messageId, user);
   }
 
@@ -167,12 +168,12 @@ export class MemoryWorldStore implements WorldStore {
     return { type: Server.MessageType.MESSAGE, content: saved };
   }
 
-  async toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<boolean> {
+  async toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<number | null> {
     const target = this.chat.find((m) => m.content.id === String(messageId));
-    if (!target) return false;
-    if (user.moderatorLevel < target.content.deleted && target.content.user.name === user.name) return false;
-    target.content.deleted = target.content.deleted ? 0 : user.moderatorLevel;
-    return true;
+    if (!target) return null;
+    if (!canToggleDeletion(user, target.content.user, target.content.deleted)) return null;
+    target.content.deleted = target.content.deleted ? 0 : user.moderatorLevel || 1;
+    return target.content.deleted;
   }
 
   async getTries(playerName: string): Promise<{ attempts: string[][]; win: boolean }> {

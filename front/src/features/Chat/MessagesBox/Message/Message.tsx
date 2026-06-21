@@ -65,9 +65,11 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
     name: '',
     moderatorLevel: 0,
   };
+  let deleted = 0;
   if (isTextMessage(message) || isScoreMessage(message)) {
     id = message.content.id;
     user = message.content.user;
+    deleted = message.content.deleted;
   }
 
   const handleRespond = (id: string) => {
@@ -122,7 +124,7 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
       {isMobile ? (
         <SwipeActions direction="left" onSwipeOne={() => handleRespond(id)} onSwipeTwo={() => handleDelete(id)}>
           <div
-            className={classNames(classes.message, { [classes.mention]: isMention })}
+            className={classNames(classes.message, { [classes.mention]: isMention, [classes.deleted]: deleted })}
             id={id}
             data-replyId={isTextMessage(message) ? message.content.replyId : undefined}
           >
@@ -137,7 +139,7 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
         </SwipeActions>
       ) : (
         <div
-          className={classNames(classes.message, { [classes.mention]: isMention })}
+          className={classNames(classes.message, { [classes.mention]: isMention, [classes.deleted]: deleted })}
           id={id}
           data-replyId={isTextMessage(message) ? message.content.replyId : undefined}
         >
