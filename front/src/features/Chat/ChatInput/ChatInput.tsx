@@ -3,12 +3,17 @@ import { useTranslation } from 'react-i18next';
 import classes from './ChatInput.module.css';
 import { useChatStore } from '../../../stores/useChatStore';
 import classNames from 'classnames';
-import { Server, Client } from '@surtom/interfaces';
+import { Server, Client, MAX_IMAGE_BYTES } from '@surtom/interfaces';
 import { isSavedChatMessage, isScoreMessage, isTextMessage } from '../utils/messageFormatting';
 import { useWebSocketStore } from '../../../stores/useWebSocketStore';
 import useChatInputHistory from '../hooks/useChatInputHistory';
 import { useInputSuggestions, applySuggestion, Suggestion } from './useInputSuggestions';
 import SuggestionDropdown from './SuggestionDropdown';
+import { compressImageToLimit } from '../utils/imageCompression';
+import { useGameStore } from '../../../stores/useGameStore';
+import { Achievement } from '../../AchievementsStack/Achievement/Achievement';
+import { AchievementIcon } from '../../AchievementsStack/Achievement/utils';
+import { useTexture } from '../../../stores/useResourcePackStore';
 
 interface ChatInputProps {
   onSend: () => void;
@@ -31,10 +36,14 @@ export function SimpleMessage({ message }: { message: Server.ChatMessage.SavedTy
   );
 }
 
-function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
+function ChatInput({ onSend, onImagePaste, display }: ChatInputProps): JSX.Element {
   const { t } = useTranslation();
   const keyboardRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [input, setInputValue] = useState<string>('');
+  const [imageData, setImageData] = useState<string | null>(null);
+  const addAchievement = useGameStore((s) => s.addAchievement);
+  const attachImageIcon = useTexture('painting/meditative.png');
   const sendWebSocketMessage = useWebSocketStore((s) => s.sendMessage);
   const answeringTo = useChatStore((s) => s.answeringTo);
   const setAnsweringTo = useChatStore((s) => s.setAnsweringTo);
@@ -86,22 +95,69 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
     keyboardRef.current?.focus();
   }
 
-  function sendMessage() {
-    if (input.trim()) {
-      onSend();
-      sendWebSocketMessage({
-        type: Client.MessageType.CHAT_MESSAGE,
-        content: {
-          text: input.trim(),
-          imageData: undefined,
-          replyId: answeringTo ?? undefined,
-        },
-      });
-      setAnsweringTo(null);
-      pushHistory(input.trim());
-      setInputValue('');
-      focusInput();
+  function notifyImageError(subtitle: string) {
+    addAchievement(new Achievement(t('achievements.imageErrorTitle'), subtitle, AchievementIcon.QUESTION));
+  }
+
+  async function loadImageFile(file: File) {
+    if (!file.type.startsWith('image/')) return;
+    try {
+      const result = await compressImageToLimit(file, MAX_IMAGE_BYTES);
+      if (!result) {
+        notifyImageError(t('achievements.imageTooLargeSubtitle'));
+        return;
+      }
+      setImageData(result);
+      onImagePaste(result);
+    } catch {
+      notifyImageError(t('achievements.imageErrorSubtitle'));
     }
+  }
+
+  function handlePaste(event: React.ClipboardEvent<HTMLInputElement>) {
+    const items = event.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          event.preventDefault();
+          void loadImageFile(file);
+        }
+        return;
+      }
+    }
+  }
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) void loadImageFile(file);
+    event.target.value = '';
+  }
+
+  function clearImage() {
+    setImageData(null);
+    focusInput();
+  }
+
+  function sendMessage() {
+    const trimmed = input.trim();
+    if (!trimmed && !imageData) return;
+
+    onSend();
+    sendWebSocketMessage({
+      type: Client.MessageType.CHAT_MESSAGE,
+      content: {
+        text: trimmed,
+        imageData: imageData ?? undefined,
+        replyId: answeringTo ?? undefined,
+      },
+    });
+    setAnsweringTo(null);
+    if (trimmed) pushHistory(trimmed);
+    setInputValue('');
+    setImageData(null);
+    focusInput();
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -160,7 +216,27 @@ function ChatInput({ onSend, display }: ChatInputProps): JSX.Element {
             }
           })()}
       </div>
-      <input className={classes.input} type="text" ref={keyboardRef} value={input} onChange={handleChange} onKeyDown={handleKeyDown} />
+      {imageData && (
+        <div className={classes.imagePreview}>
+          <img src={imageData} alt={t('chat.imagePreviewAlt')} />
+          <button className={classes.removeImage} onClick={clearImage} aria-label={t('chat.removeImage')}>
+            ✕
+          </button>
+        </div>
+      )}
+      <input
+        className={classes.input}
+        type="text"
+        ref={keyboardRef}
+        value={input}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
+      />
+      <button className={classes.button} onClick={() => fileInputRef.current?.click()} aria-label={t('chat.attachImage')}>
+        <img className={classes.attachIcon} src={attachImageIcon} alt={t('chat.attachImage')} />
+      </button>
+      <input ref={fileInputRef} className={classes.hiddenInput} type="file" accept="image/*" onChange={handleFileChange} />
       {active && <SuggestionDropdown active={active} onSelect={selectSuggestion} selectedIndex={selectedIndex} />}
     </div>
   );

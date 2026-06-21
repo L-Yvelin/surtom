@@ -214,3 +214,5 @@ export type Word = Letter[];
 export type Tries = Word[];
 
 export const MAX_TRIES_PER_GAME = 6;
+
+export const MAX_IMAGE_BYTES = 110 * 1024;

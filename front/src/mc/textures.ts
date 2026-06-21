@@ -12,6 +12,7 @@ import redstoneLamp from '@mc/textures/block/redstone_lamp.png';
 import redstoneLampOn from '@mc/textures/block/redstone_lamp_on.png';
 import book from '@mc/textures/item/book.png';
 import stick from '@mc/textures/item/stick.png';
+import paintingMeditative from '@mc/textures/painting/meditative.png';
 import textField from '@mc/textures/gui/sprites/widget/text_field.png';
 import textFieldHighlighted from '@mc/textures/gui/sprites/widget/text_field_highlighted.png';
 import button from '@mc/textures/gui/sprites/widget/button.png';
@@ -45,6 +46,7 @@ export const TEXTURES = {
   'block/redstone_lamp_on.png': { default: redstoneLampOn },
   'item/book.png': { default: book },
   'item/stick.png': { default: stick },
+  'painting/meditative.png': { default: paintingMeditative },
   'gui/sprites/widget/text_field.png': { default: textField, cssVar: '--mc-text-field' },
   'gui/sprites/widget/text_field_highlighted.png': { default: textFieldHighlighted, cssVar: '--mc-text-field-highlighted' },
   'gui/sprites/widget/button.png': { default: button, cssVar: '--mc-button' },

@@ -85,6 +85,9 @@
     "scoreSimple_other": "{{name}}'s {{count}} tries.",
     "actionReply": "Reply",
     "actionDelete": "Delete",
+    "attachImage": "Attach an image",
+    "removeImage": "Remove image",
+    "imagePreviewAlt": "Image to send",
     "messageError": "Unable to generate message",
     "privateTag": "PM",
     "scrollToBottomAlt": "Scroll to bottom arrow",
@@ -116,7 +119,10 @@
     "lossTitle": "Defeat",
     "lossSubtitle": "You lost, but you can try again tomorrow!",
     "invalidWordTitle": "Achievement unlocked",
-    "invalidWordSubtitle": "Can't spell properly"
+    "invalidWordSubtitle": "Can't spell properly",
+    "imageErrorTitle": "Image not sent",
+    "imageTooLargeSubtitle": "Couldn't compress it under the size limit",
+    "imageErrorSubtitle": "This image couldn't be processed"
   },
   "settings": {
     "title": "Options",

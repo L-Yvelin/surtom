@@ -85,6 +85,9 @@
     "scoreSimple_other": "Les {{count}} essais de {{name}}.",
     "actionReply": "Répondre",
     "actionDelete": "Supprimer",
+    "attachImage": "Joindre une image",
+    "removeImage": "Retirer l'image",
+    "imagePreviewAlt": "Image à envoyer",
     "messageError": "Impossible de générer le message",
     "privateTag": "MP",
     "scrollToBottomAlt": "Flèche pour descendre",
@@ -116,7 +119,10 @@
     "lossTitle": "Perdu",
     "lossSubtitle": "Vous avez perdu, mais vous pouvez réessayer demain !",
     "invalidWordTitle": "Succès obtenu",
-    "invalidWordSubtitle": "Ne pas savoir écrire"
+    "invalidWordSubtitle": "Ne pas savoir écrire",
+    "imageErrorTitle": "Image non envoyée",
+    "imageTooLargeSubtitle": "Impossible de la compresser sous la limite de taille",
+    "imageErrorSubtitle": "Cette image n'a pas pu être traitée"
   },
   "settings": {
     "title": "Options",

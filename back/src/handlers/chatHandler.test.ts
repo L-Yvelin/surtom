@@ -116,6 +116,17 @@ describe('handleChatMessage (CHAT_MESSAGE) — default world', () => {
     expect(saveMessage).toHaveBeenCalled();
     expect(broadcastToWorld).toHaveBeenCalledWith('fr', buildSavedReply);
   });
+
+  it('persists an image-only message from a non-moderator (empty text)', async () => {
+    (saveMessage as jest.Mock).mockResolvedValue(buildSavedReply);
+    const message: Client.ChatMessage = {
+      type: Client.MessageType.CHAT_MESSAGE,
+      content: { text: '', imageData: 'data:image/jpeg;base64,abc' },
+    };
+    await handleChatMessage(buildUser(0, 'fr'), message);
+    expect(saveMessage).toHaveBeenCalled();
+    expect(broadcastToWorld).toHaveBeenCalledWith('fr', buildSavedReply);
+  });
 });
 
 describe('handleChatMessage (CHAT_MESSAGE) — ephemeral in-memory world', () => {

@@ -14,15 +14,17 @@ export async function handleChatMessage(user: FullUser, chatMessage: Client.Chat
     case Client.MessageType.SCORE_TO_CHAT:
       await handleScoreToChat(user, chatMessage);
       break;
-    case Client.MessageType.CHAT_MESSAGE:
-      if (
-        (!user.privateUser.moderatorLevel && !validateText(chatMessage.content.text.trim())) ||
-        (chatMessage.content.imageData && chatMessage.content.imageData.length > MAX_IMAGE_BYTES)
-      ) {
+    case Client.MessageType.CHAT_MESSAGE: {
+      const text = chatMessage.content.text.trim();
+      const hasImage = !!chatMessage.content.imageData;
+      const imageTooLarge = hasImage && chatMessage.content.imageData!.length > MAX_IMAGE_BYTES;
+      const textAllowed = !!user.privateUser.moderatorLevel || validateText(text) || (hasImage && text.length === 0);
+      if (!textAllowed || imageTooLarge) {
         return;
       }
       await broadcastChatMessage(user, chatMessage);
       break;
+    }
   }
 }
 

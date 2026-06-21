@@ -55,3 +55,43 @@
   display: flex;
   align-items: center;
 }
+
+.hiddenInput {
+  display: none;
+}
+
+.attachIcon {
+  height: 80%;
+  width: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.imagePreview {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5vh;
+  padding: 0.5vh;
+  background-color: rgba(81, 81, 81, 0.85);
+  border-radius: 0.5vh 0.5vh 0 0;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.imagePreview img {
+  height: 8vh;
+  max-width: 16vh;
+  object-fit: contain;
+}
+
+.removeImage {
+  all: unset;
+  color: white;
+  cursor: pointer;
+  padding: 0 0.5vh;
+  align-self: flex-start;
+  font-size: max(14px, 1.6vh);
+}
