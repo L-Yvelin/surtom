@@ -13,6 +13,7 @@ class FullUser {
   listeningTypes: string[];
   ip: string;
   worldId: string | null;
+  playerId: number | null;
 
   constructor(id: string, privateUser: Server.PrivateUser, connection: WS, ip: string = 'unknown', worldId: string | null = null) {
     this.id = id;
@@ -25,6 +26,7 @@ class FullUser {
     this.listeningTypes = [];
     this.ip = ip;
     this.worldId = worldId;
+    this.playerId = null;
   }
 }
 

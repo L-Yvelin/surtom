@@ -9,6 +9,7 @@ import { handleIsTyping } from '../handlers/typingHandler.js';
 import { handleJoinWorld } from '../handlers/joinWorldHandler.js';
 import { handleLeaveWorld } from '../handlers/leaveWorldHandler.js';
 import { handleListWorlds } from '../handlers/listWorldsHandler.js';
+import { handleMarkChatRead } from '../handlers/markReadHandler.js';
 import { dispatchCustomMessage } from './customType.js';
 import { RATE_LIMIT_FREE_MESSAGES, COOLDOWN_INITIAL_SECONDS } from '../config/constants.js';
 
@@ -16,6 +17,7 @@ const SILENT_MESSAGE_TYPES = new Set<Client.MessageType>([
   Client.MessageType.PING,
   Client.MessageType.IS_TYPING,
   Client.MessageType.CURSOR_POSITION,
+  Client.MessageType.MARK_CHAT_READ,
 ]);
 
 const RATE_EXEMPT_TYPES = new Set<Client.MessageType>([
@@ -24,6 +26,7 @@ const RATE_EXEMPT_TYPES = new Set<Client.MessageType>([
   Client.MessageType.JOIN_WORLD,
   Client.MessageType.LEAVE_WORLD,
   Client.MessageType.LIST_WORLDS,
+  Client.MessageType.MARK_CHAT_READ,
 ]);
 
 export function shouldLogMessage(type: Client.MessageType): boolean {
@@ -86,6 +89,9 @@ export async function handleMessage(user: FullUser, message: Client.Message): Pr
       break;
     case Client.MessageType.LIST_WORLDS:
       handleListWorlds(user);
+      break;
+    case Client.MessageType.MARK_CHAT_READ:
+      await handleMarkChatRead(user);
       break;
     default: {
       const unknown = message as { type: string; content: unknown };

@@ -22,6 +22,7 @@ import experienceBarBackground from '@mc/textures/gui/sprites/hud/experience_bar
 import experienceBarProgress from '@mc/textures/gui/sprites/hud/experience_bar_progress.png';
 import socialInteractions from '@mc/textures/gui/sprites/toast/social_interactions.png';
 import friends from '@mc/textures/gui/sprites/friends/friends.png';
+import notificationMore from '@mc/textures/gui/sprites/notification/more.png';
 import beaconButton from '@mc/textures/gui/sprites/container/beacon/button.png';
 import beaconButtonHighlighted from '@mc/textures/gui/sprites/container/beacon/button_highlighted.png';
 import beaconButtonSelected from '@mc/textures/gui/sprites/container/beacon/button_selected.png';
@@ -56,6 +57,7 @@ export const TEXTURES = {
   'gui/sprites/hud/experience_bar_progress.png': { default: experienceBarProgress },
   'gui/sprites/toast/social_interactions.png': { default: socialInteractions },
   'gui/sprites/friends/friends.png': { default: friends },
+  'gui/sprites/notification/more.png': { default: notificationMore },
   'gui/sprites/container/beacon/button.png': { default: beaconButton, cssVar: '--mc-beacon-button' },
   'gui/sprites/container/beacon/button_highlighted.png': { default: beaconButtonHighlighted, cssVar: '--mc-beacon-button-highlighted' },
   'gui/sprites/container/beacon/button_selected.png': { default: beaconButtonSelected, cssVar: '--mc-beacon-button-selected' },

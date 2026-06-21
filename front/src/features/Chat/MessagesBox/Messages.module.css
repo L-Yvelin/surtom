@@ -33,3 +33,20 @@
   height: 0.3vh;
   background-color: #727272;
 }
+
+.unread {
+  color: rgb(255, 90, 90);
+  display: flex;
+  gap: 1vh;
+  justify-content: space-around;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  padding: 0.4vh 1vh;
+}
+
+.unreadBar {
+  flex-grow: 1;
+  height: 0.3vh;
+  background-color: rgb(255, 90, 90);
+}

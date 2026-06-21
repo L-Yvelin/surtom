@@ -12,8 +12,13 @@ import { UI } from '../ui/ids';
 import i18n from '../i18n';
 import { Achievement } from '../features/AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../features/AchievementsStack/Achievement/utils';
+import { hasUnreadMessages, isOthersChatMessage } from '../features/Chat/utils/unread';
 
 const COOKIE_SESSION_HASH = 'modHash';
+
+function isChatVisible(): boolean {
+  return !!useUIStore.getState().visibility[UI.CHAT];
+}
 
 export interface MessageHandlerDeps {
   setLastMessageTimestamp: (ts: string) => void;
@@ -42,9 +47,13 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
     case Server.MessageType.LAST_TIME_MESSAGE:
       deps.setLastMessageTimestamp(data.content);
       break;
+    case Server.MessageType.CHAT_LAST_READ:
+      chat.setLastReadAt(data.content);
+      break;
     case Server.MessageType.GET_MESSAGES:
       chat.setMessages(data.content);
       useChatStore.getState().scrollToBottom?.();
+      chat.setHasUnread(!isChatVisible() && hasUnreadMessages(data.content, useChatStore.getState().lastReadAt, player.player.name));
       break;
     case Server.MessageType.DELETE_MESSAGE: {
       const { id, deleted } = data.content;
@@ -74,6 +83,9 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
       }
       chat.addMessage(data.content);
       useChatStore.getState().scrollToBottom?.();
+      if (!isChatVisible() && isOthersChatMessage(data.content, player.player.name)) {
+        chat.setHasUnread(true);
+      }
       break;
     case Server.MessageType.DAILY_WORDS: {
       const solution = data.content.words[data.content.words.length - 1];

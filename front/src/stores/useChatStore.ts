@@ -14,8 +14,14 @@ interface ChatStore {
   addMessage: (message: Server.ChatMessage.Type) => void;
   scrollToBottom: () => void;
   setScrollToBottom: (fn: () => void) => void;
+  scrollToFirstUnread: () => void;
+  setScrollToFirstUnread: (fn: () => void) => void;
   focusInput: (message?: string) => void;
   setFocusInput: (fn: () => void) => void;
+  lastReadAt: string | null;
+  setLastReadAt: (timestamp: string | null) => void;
+  hasUnread: boolean;
+  setHasUnread: (value: boolean) => void;
   resetSession: () => void;
   resetWorld: () => void;
 }
@@ -42,6 +48,8 @@ const initialWorld = {
 
 export const useChatStore = create<ChatStore>((set) => ({
   ...initialWorld,
+  lastReadAt: null,
+  hasUnread: false,
   setMessages: (messages) => set({ messages }),
   setAnsweringTo: (id) => set({ answeringTo: id }),
   removeMessage: (messageId) =>
@@ -57,8 +65,12 @@ export const useChatStore = create<ChatStore>((set) => ({
   addMessage: (message) => set((state) => ({ messages: [...(state.messages || []), message] })),
   scrollToBottom: () => {},
   setScrollToBottom: (fn) => set({ scrollToBottom: fn }),
+  scrollToFirstUnread: () => {},
+  setScrollToFirstUnread: (fn) => set({ scrollToFirstUnread: fn }),
   focusInput: () => {},
   setFocusInput: (fn) => set({ focusInput: fn }),
+  setLastReadAt: (timestamp) => set({ lastReadAt: timestamp }),
+  setHasUnread: (value) => set({ hasUnread: value }),
   resetSession: () => set(initialSession),
   resetWorld: () => set(initialWorld),
 }));

@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { db, pool } from '../src/db/client.js';
 import { dictionary, minecraftSolution, minecraftWord, player, world } from '../src/db/schema.js';
+import { funnyNames } from '../src/data/funnyNames.js';
 import type { MySqlTable } from 'drizzle-orm/mysql-core';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -16,36 +17,7 @@ const DEFAULT_WORLDS = [
   { id: 'en', displayName: 'English', language: 'en' },
 ];
 
-const SYSTEM_PLAYERS = [
-  'System',
-  'Surtomien',
-  'Cracotto',
-  'Marmeluche',
-  'Ziboulette',
-  'Bidulette',
-  'Farfelucho',
-  'Patacroute',
-  'Zozo',
-  'Frimousse',
-  'Zigzag',
-  'Turlututu',
-  'Bouboule',
-  'Cacahuete',
-  'ChocoBrioche',
-  'Roudoudou',
-  'Cornichon',
-  'Choupette',
-  'Bibop',
-  'Tornade',
-  'Cocorico',
-  'Biscotto',
-  'Frisottis',
-  'Barbapapa',
-  'Rigolito',
-  'Loufoquet',
-  'Gribouille',
-  'Papouille',
-];
+const SYSTEM_PLAYERS = ['System', ...funnyNames];
 
 function readLines(filePath: string): string[] {
   if (!fs.existsSync(filePath)) return [];

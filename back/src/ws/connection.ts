@@ -10,34 +10,44 @@ import { handleMessage, shouldLogMessage } from './dispatcher.js';
 import { generateRandomHash } from '../utils/crypto.js';
 import { getRandomFunnyName } from '../utils/randomName.js';
 import { getPlayerBySessionHash } from '../repositories/playerRepository.js';
+import { getChatLastRead } from '../repositories/chatReadRepository.js';
 import { getPlayerXp } from '../repositories/xpRepository.js';
 import { updateUsersListForWorld } from '../handlers/userListHandler.js';
 import { MAX_MESSAGES_LOADED, PING_INTERVAL_MS } from '../config/constants.js';
 import { MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 
-async function buildPrivateUser(sessionHash: string | undefined, usesMobileDevice: boolean): Promise<Server.PrivateUser> {
+async function buildPrivateUser(
+  sessionHash: string | undefined,
+  usesMobileDevice: boolean,
+): Promise<{ privateUser: Server.PrivateUser; playerId: number | null }> {
   const player = sessionHash ? await getPlayerBySessionHash(sessionHash) : undefined;
 
   if (player) {
     return {
-      name: player.username,
-      moderatorLevel: player.isAdmin,
-      isLoggedIn: true,
-      isMobile: usesMobileDevice,
-      words: [],
-      isBanned: !!player.isBanned,
-      xp: await getPlayerXp(player.username),
+      privateUser: {
+        name: player.username,
+        moderatorLevel: player.isAdmin,
+        isLoggedIn: true,
+        isMobile: usesMobileDevice,
+        words: [],
+        isBanned: !!player.isBanned,
+        xp: await getPlayerXp(player.username),
+      },
+      playerId: player.id,
     };
   }
 
   return {
-    name: getRandomFunnyName(),
-    moderatorLevel: 0,
-    isLoggedIn: false,
-    isMobile: usesMobileDevice,
-    words: [],
-    isBanned: false,
-    xp: 0,
+    privateUser: {
+      name: getRandomFunnyName(),
+      moderatorLevel: 0,
+      isLoggedIn: false,
+      isMobile: usesMobileDevice,
+      words: [],
+      isBanned: false,
+      xp: 0,
+    },
+    playerId: null,
   };
 }
 
@@ -69,6 +79,12 @@ async function sendChatForWorld(user: FullUser, world: World): Promise<void> {
         msg.type === Server.MessageType.SCORE ||
         msg.type === Server.MessageType.HELP,
     );
+
+    const lastReadAt = user.playerId !== null ? await getChatLastRead(user.playerId, world.id) : null;
+    sendToUser(user.connection, {
+      type: Server.MessageType.CHAT_LAST_READ,
+      content: lastReadAt ? lastReadAt.toISOString() : null,
+    });
 
     sendToUser(user.connection, {
       type: Server.MessageType.GET_MESSAGES,
@@ -145,8 +161,9 @@ export async function handleNewConnection(connection: WS, req: IncomingMessage):
     const sessionHash = cookies.modHash;
     const usesMobileDevice = cookies.mobileDevice === 'true';
 
-    const privateUser = await buildPrivateUser(sessionHash, usesMobileDevice);
+    const { privateUser, playerId } = await buildPrivateUser(sessionHash, usesMobileDevice);
     const user = new FullUser(generateRandomHash(), privateUser, connection, ip, null);
+    user.playerId = playerId;
 
     sendToUser(user.connection, {
       type: Server.MessageType.LOGIN,

@@ -10,6 +10,7 @@ export namespace Client {
     JOIN_WORLD = 'joinWorld',
     LEAVE_WORLD = 'leaveWorld',
     LIST_WORLDS = 'listWorlds',
+    MARK_CHAT_READ = 'markChatRead',
   }
 
   export type Message =
@@ -22,7 +23,8 @@ export namespace Client {
     | { type: MessageType.CURSOR_POSITION; content: { cursor: CursorPosition } }
     | { type: MessageType.JOIN_WORLD; content: { worldId: string } }
     | { type: MessageType.LEAVE_WORLD }
-    | { type: MessageType.LIST_WORLDS };
+    | { type: MessageType.LIST_WORLDS }
+    | { type: MessageType.MARK_CHAT_READ };
 
   export type ChatMessage =
     | { type: MessageType.CHAT_MESSAGE; content: TextChatMessageContent }
@@ -49,6 +51,7 @@ export namespace Server {
     USER_LIST = 'usersList',
     GET_MESSAGES = 'getMessages',
     LAST_TIME_MESSAGE = 'lastTimeMessage',
+    CHAT_LAST_READ = 'chatLastRead',
     DELETE_MESSAGE = 'deleteMessage',
     IS_TYPING = 'isTyping',
     PONG = 'pong',
@@ -87,6 +90,7 @@ export namespace Server {
     | { type: MessageType.GET_MESSAGES; content: ChatMessage.Type[] }
     | { type: MessageType.IS_TYPING; content: string }
     | { type: MessageType.LAST_TIME_MESSAGE; content: string }
+    | { type: MessageType.CHAT_LAST_READ; content: string | null }
     | { type: MessageType.LOG; content: string }
     | {
         type: MessageType.MESSAGE;

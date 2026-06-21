@@ -59,6 +59,7 @@
     "chatTitle": "Tchat en direct",
     "chatHint": "Discutez avec la communauté et partagez votre score",
     "chatAlt": "Icône tchat",
+    "chatUnreadAlt": "Nouveaux messages",
     "themeTitle": "Changeur de thème",
     "themeHint": "Personnalisez votre interface",
     "themeAlt": "Icône changement de thème"
@@ -85,6 +86,7 @@
     "scoreSimple_other": "Les {{count}} essais de {{name}}.",
     "actionReply": "Répondre",
     "actionDelete": "Supprimer",
+    "newMessages": "Nouveaux messages",
     "attachImage": "Joindre une image",
     "removeImage": "Retirer l'image",
     "imagePreviewAlt": "Image à envoyer",

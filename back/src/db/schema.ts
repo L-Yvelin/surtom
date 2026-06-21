@@ -113,6 +113,28 @@ export const message = mysqlTable(
   ],
 );
 
+export const chatRead = mysqlTable(
+  'ChatRead',
+  {
+    playerId: int('PlayerID').notNull(),
+    worldId: varchar('WorldID', { length: 32 }).notNull(),
+    lastReadAt: datetime('LastReadAt', { mode: 'date' }).notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.playerId, t.worldId] }),
+    foreignKey({
+      name: 'ChatRead_fk_Player',
+      columns: [t.playerId],
+      foreignColumns: [player.id],
+    }).onDelete('cascade'),
+    foreignKey({
+      name: 'ChatRead_fk_World',
+      columns: [t.worldId],
+      foreignColumns: [world.id],
+    }),
+  ],
+);
+
 export const textContent = mysqlTable(
   'TextContent',
   {

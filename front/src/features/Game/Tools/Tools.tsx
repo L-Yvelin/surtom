@@ -5,7 +5,8 @@ import MinecraftTooltip from '../../../ui/Tooltip/MinecraftTooltip/MinecraftTool
 import Tooltip from '../../../ui/Tooltip/Tooltip';
 import classNames from 'classnames';
 import { useGameStore } from '../../../stores/useGameStore';
-import useUIStore from '../../../stores/useUIStore';
+import useUIStore, { useVisibility } from '../../../stores/useUIStore';
+import { useChatStore } from '../../../stores/useChatStore';
 import useTheme from '../../../hooks/useTheme';
 import { Theme } from '../../../theme/theme';
 import { UI } from '../../../ui/ids';
@@ -27,6 +28,9 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
   const tabLampOn = useTexture('block/redstone_lamp_on.png');
   const tabChat = useTexture('gui/sprites/toast/social_interactions.png');
   const tabPlayers = useTexture('gui/sprites/friends/friends.png');
+  const notificationIcon = useTexture('gui/sprites/notification/more.png');
+  const hasUnread = useChatStore((s) => s.hasUnread);
+  const chatVisible = useVisibility(UI.CHAT);
 
   const nbUsers = playerList.length;
 
@@ -63,10 +67,12 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
       <div className={classNames(classes.tools, classes.rightTools)}>
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.chatTitle')} children={t('tools.chatHint')} />}>
           <button className={classNames(classes.tool, classes.chatButton)} ref={chatButtonRef} onClick={() => toggle(UI.CHAT)}>
-            <div id="chat-notification-circle"></div>
             <div className={classes.chatIconClip}>
               <img src={tabChat} alt={t('tools.chatAlt')} className={classNames(classes.toolImage, classes.chatIcon)} />
             </div>
+            {hasUnread && !chatVisible && (
+              <img src={notificationIcon} alt={t('tools.chatUnreadAlt')} className={classes.chatNotification} />
+            )}
           </button>
         </Tooltip>
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.themeTitle')} children={t('tools.themeHint')} />}>

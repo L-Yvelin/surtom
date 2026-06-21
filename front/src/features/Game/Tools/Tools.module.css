@@ -4,7 +4,6 @@
   padding: 0 1vh;
   max-width: 100%;
   gap: 1vh;
-  overflow: auto;
 }
 
 .tools {
@@ -80,18 +79,15 @@
   position: relative;
 }
 
-#chat-notification-circle {
-  display: none;
+.chatNotification {
   pointer-events: none;
   position: absolute;
-  top: 0;
-  right: 0;
-  content: '';
-  height: 0.5em;
-  width: 0.5em;
-  border-radius: 10%;
-  background-color: rgb(147, 0, 0);
-  border: solid red 0.2em;
+  top: -0.3vh;
+  right: -0.3vh;
+  height: 2vh;
+  width: 2vh;
+  object-fit: contain;
+  z-index: 1;
 }
 
 #toggle-chat.hidden {

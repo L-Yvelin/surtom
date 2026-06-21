@@ -4,6 +4,8 @@ import { Server } from '@surtom/interfaces';
 import Message from './Message/Message';
 import classes from './Messages.module.css';
 import { useChatStore } from '../../../stores/useChatStore';
+import usePlayerStore from '../../../stores/usePlayerStore';
+import { findFirstUnreadId } from '../utils/unread';
 
 interface MessagesBoxProps {
   messages: Server.ChatMessage.Type[];
@@ -13,9 +15,14 @@ interface MessagesBoxProps {
 const NEAR_BOTTOM_THRESHOLD = 150;
 
 function MessagesBox({ messages, onCloseToBottom }: MessagesBoxProps): JSX.Element {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const setScrollToBottom = useChatStore((state) => state.setScrollToBottom);
+  const setScrollToFirstUnread = useChatStore((state) => state.setScrollToFirstUnread);
+  const lastReadAt = useChatStore((state) => state.lastReadAt);
+  const selfName = usePlayerStore((state) => state.player.name);
+
+  const firstUnreadId = findFirstUnreadId(messages, lastReadAt, selfName);
 
   const dateFormatter = new Intl.DateTimeFormat(i18n.language, {
     weekday: 'long',
@@ -31,9 +38,22 @@ function MessagesBox({ messages, onCloseToBottom }: MessagesBoxProps): JSX.Eleme
     });
   };
 
+  const scrollToFirstUnread = () => {
+    const target = containerRef.current?.querySelector('[data-first-unread="true"]');
+    if (target) {
+      target.scrollIntoView({ behavior: 'instant', block: 'center' });
+    } else {
+      scrollToBottom();
+    }
+  };
+
   useEffect(() => {
     setScrollToBottom(scrollToBottom);
   }, [setScrollToBottom]);
+
+  useEffect(() => {
+    setScrollToFirstUnread(scrollToFirstUnread);
+  }, [setScrollToFirstUnread]);
 
   const handleScroll = () => {
     if (!onCloseToBottom || !containerRef.current) return;
@@ -71,11 +91,28 @@ function MessagesBox({ messages, onCloseToBottom }: MessagesBoxProps): JSX.Eleme
 
     if (dateSeparator) renderedMessages.push(dateSeparator);
 
+    const isFirstUnread = 'id' in msg.content && msg.content.id === firstUnreadId;
+
     renderedMessages.push(
-      <div key={id} data-key={id} {...('id' in msg.content && { 'data-id': msg.content.id })}>
+      <div
+        key={id}
+        data-key={id}
+        {...('id' in msg.content && { 'data-id': msg.content.id })}
+        {...(isFirstUnread && { 'data-first-unread': 'true' })}
+      >
         <Message message={msg} />
       </div>,
     );
+
+    if (isFirstUnread) {
+      renderedMessages.push(
+        <div key={`unread-${id}`} className={classes.unread}>
+          <span className={classes.unreadBar}></span>
+          {t('chat.newMessages')}
+          <span className={classes.unreadBar}></span>
+        </div>,
+      );
+    }
   }
 
   return (

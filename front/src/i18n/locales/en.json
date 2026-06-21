@@ -59,6 +59,7 @@
     "chatTitle": "Live chat",
     "chatHint": "Chat with the community and share your score",
     "chatAlt": "Chat icon",
+    "chatUnreadAlt": "New messages",
     "themeTitle": "Theme switcher",
     "themeHint": "Customize your interface",
     "themeAlt": "Theme switcher icon"
@@ -85,6 +86,7 @@
     "scoreSimple_other": "{{name}}'s {{count}} tries.",
     "actionReply": "Reply",
     "actionDelete": "Delete",
+    "newMessages": "New messages",
     "attachImage": "Attach an image",
     "removeImage": "Remove image",
     "imagePreviewAlt": "Image to send",

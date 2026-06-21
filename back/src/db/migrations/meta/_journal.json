@@ -8,6 +8,13 @@
       "when": 1778331212080,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1782069709874,
+      "tag": "0001_familiar_legion",
+      "breakpoints": true
     }
   ]
 }
