@@ -44,4 +44,5 @@
 
 .miss {
   border-image-source: var(--mc-beacon-button-selected);
+  filter: brightness(70%);
 }
