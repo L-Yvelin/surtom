@@ -59,7 +59,7 @@ function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
 
   const [realtimeLevel, setRealtimeLevel] = useState<number>(level);
   const levelIntegerPart = Math.floor(realtimeLevel);
-  const levelDecimalPart = String(Math.ceil(realtimeLevel * 100)).slice(-2);
+  const levelPercentage = Math.round((realtimeLevel - levelIntegerPart) * 100);
 
   const currentLevelRequiredXp = getRequiredXp(levelIntegerPart);
   const nextLevelRequiredXp = getRequiredXp(levelIntegerPart + 1);
@@ -88,7 +88,7 @@ function ExperienceBar({ xp }: ExperienceBarProps): JSX.Element {
             className={classes.progress}
             style={
               {
-                '--percentage': `${levelDecimalPart}%`,
+                '--percentage': `${levelPercentage}%`,
               } as React.CSSProperties
             }
           />
