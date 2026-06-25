@@ -44,6 +44,9 @@ export function SettingsContent({ onClose, closeLabel }: SettingsContentProps): 
             className={classes.button}
           />
           <Button text={t('settings.resourcePacks')} onClick={() => setVisibility(UI.RESOURCE_PACKS, true)} className={classes.button} />
+          <Button text={t('settings.controls')} onClick={() => setVisibility(UI.CONTROLS, true)} className={classes.button} />
+          {/* Invisble button so there is a pair number of buttons */}
+          <Button text={''} className={classes.hiddenButton} />
         </div>
 
         <Button text={closeLabel ?? t('settings.done')} onClick={onClose} className={classes.button} />

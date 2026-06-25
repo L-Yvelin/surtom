@@ -143,7 +143,17 @@
     "sound": "Sound",
     "soundOn": "On",
     "soundOff": "Off",
-    "resourcePacks": "Resource Packs..."
+    "resourcePacks": "Resource Packs...",
+    "controls": "Controls..."
+  },
+  "controls": {
+    "title": "Controls",
+    "openChat": "Open chat",
+    "openCommand": "Open command",
+    "playerList": "List players",
+    "pressKey": "Press a key...",
+    "reset": "Reset to defaults",
+    "done": "Done"
   },
   "resourcePacks": {
     "title": "Select Resource Packs",

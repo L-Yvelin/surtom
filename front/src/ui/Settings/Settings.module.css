@@ -27,3 +27,7 @@
 .button {
   flex-grow: 0;
 }
+
+.hiddenButton {
+  visibility: hidden;
+}

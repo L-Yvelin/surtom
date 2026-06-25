@@ -1,0 +1,56 @@
+.title {
+  font-size: 2.4vh;
+  letter-spacing: 0.05em;
+  margin-bottom: 4vh;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  gap: 1vh;
+  width: 100%;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  width: 100%;
+  max-width: calc(var(--button-height) * 16);
+  overflow-y: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2vh;
+  color: white;
+  font-size: 1.8vh;
+}
+
+.label {
+  flex: 1;
+  text-align: left;
+}
+
+.bindButton {
+  flex-grow: 0;
+  min-width: calc(var(--button-height) * 6);
+}
+
+.actions {
+  display: flex;
+  gap: 1vh;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.action {
+  flex-grow: 0;
+}

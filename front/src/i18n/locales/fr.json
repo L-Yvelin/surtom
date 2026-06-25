@@ -143,7 +143,17 @@
     "sound": "Son",
     "soundOn": "On",
     "soundOff": "Off",
-    "resourcePacks": "Packs de ressources..."
+    "resourcePacks": "Packs de ressources...",
+    "controls": "Contrôles..."
+  },
+  "controls": {
+    "title": "Contrôles",
+    "openChat": "Ouvrir le tchat",
+    "openCommand": "Ouvrir une commande",
+    "playerList": "Liste des joueurs",
+    "pressKey": "Appuyez sur une touche...",
+    "reset": "Réinitialiser",
+    "done": "Terminé"
   },
   "resourcePacks": {
     "title": "Choix des packs de ressources",

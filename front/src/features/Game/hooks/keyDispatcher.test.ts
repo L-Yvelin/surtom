@@ -1,7 +1,8 @@
 import { dispatchKey, isGameKey, KeyDispatchDeps } from './keyDispatcher';
 import type { InputScope } from '../../../stores/useInputStore';
 
-const ev = (key: string, opts: { altKey?: boolean } = {}): KeyboardEvent => ({ key, altKey: opts.altKey ?? false }) as KeyboardEvent;
+const ev = (key: string, opts: { altKey?: boolean; ctrlKey?: boolean; metaKey?: boolean } = {}): KeyboardEvent =>
+  ({ key, altKey: opts.altKey ?? false, ctrlKey: opts.ctrlKey ?? false, metaKey: opts.metaKey ?? false }) as KeyboardEvent;
 
 const makeDeps = (overrides: Partial<KeyDispatchDeps> = {}): KeyDispatchDeps => ({
   showChat: false,
@@ -74,11 +75,23 @@ describe('dispatchKey - empty stack (game scope)', () => {
     expect(deps.gameKeyDown).not.toHaveBeenCalled();
   });
 
-  test('alt+letter routes to shortcutsKeyDown', () => {
-    const deps = makeDeps();
-    dispatchKey(ev('a', { altKey: true }), 'down', null, deps);
-    expect(deps.shortcutsKeyDown).toHaveBeenCalledTimes(1);
-    expect(deps.gameKeyDown).not.toHaveBeenCalled();
+  test('modifier combos (ctrl/cmd/alt) are not caught by the app at all', () => {
+    const cases: Array<{ altKey?: boolean; ctrlKey?: boolean; metaKey?: boolean }> = [
+      { altKey: true },
+      { ctrlKey: true },
+      { metaKey: true },
+    ];
+    for (const modifiers of cases) {
+      for (const key of ['a', '/', 'Tab', 'Backspace', 'Enter']) {
+        const deps = makeDeps({ showChat: true });
+        dispatchKey(ev(key, modifiers), 'down', null, deps);
+        dispatchKey(ev(key, modifiers), 'up', null, deps);
+        expect(deps.focusInput).not.toHaveBeenCalled();
+        expect(deps.shortcutsKeyDown).not.toHaveBeenCalled();
+        expect(deps.shortcutsKeyUp).not.toHaveBeenCalled();
+        expect(deps.gameKeyDown).not.toHaveBeenCalled();
+      }
+    }
   });
 
   test('keyup routes to shortcutsKeyUp regardless of key', () => {

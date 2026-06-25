@@ -14,6 +14,7 @@ import WorldSelection from './routes/WorldSelection/WorldSelection';
 import Quotidien from './routes/Quotidien/Quotidien';
 import Settings from './ui/Settings/Settings';
 import ResourcePacks from './ui/ResourcePacks/ResourcePacks';
+import Controls from './ui/Controls/Controls';
 import Stats from './features/Stats/Stats';
 import ErrorBoundary from './ui/ErrorBoundary/ErrorBoundary';
 
@@ -64,6 +65,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
           <Settings />
           <Stats />
           <ResourcePacks />
+          <Controls />
           <WebSocketPingHandler />
         </ErrorBoundary>
       </TooltipProvider>

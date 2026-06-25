@@ -32,13 +32,7 @@ const useGameLogic = () => {
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!solution) return;
     if (event.key === 'Backspace') {
-      if (event.ctrlKey || event.metaKey) {
-        setLetters(letters.slice(0, 1));
-      } else {
-        setLetters(letters.length > 1 ? letters.slice(0, -1) : letters);
-      }
-    } else if (event.metaKey || event.ctrlKey) {
-      return;
+      setLetters(letters.length > 1 ? letters.slice(0, -1) : letters);
     } else if (/^[a-zA-Z]$/.test(event.key)) {
       if (event.key.toUpperCase() === solution[0] && letters.length === 1 && skipFirstLetter.current) {
         skipFirstLetter.current = false;

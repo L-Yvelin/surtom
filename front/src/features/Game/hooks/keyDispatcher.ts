@@ -13,13 +13,14 @@ export const isGameKey = (event: KeyboardEvent): boolean => ['Enter', 'Backspace
 
 export function dispatchKey(event: KeyboardEvent, state: 'up' | 'down', topScope: InputScope | null, deps: KeyDispatchDeps): void {
   if (topScope?.policy === 'block-all') return;
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
 
   const modalOpen = topScope?.policy === 'modal';
 
   if (state === 'down') {
     if (deps.showChat && isGameKey(event)) {
       deps.focusInput();
-    } else if (!isGameKey(event) || deps.gameFinished || event.altKey) {
+    } else if (!isGameKey(event) || deps.gameFinished) {
       deps.shortcutsKeyDown(event);
     } else if (!modalOpen && !deps.gameFinished) {
       deps.gameKeyDown(event);
