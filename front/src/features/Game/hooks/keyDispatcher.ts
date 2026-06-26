@@ -13,7 +13,8 @@ export const isGameKey = (event: KeyboardEvent): boolean => ['Enter', 'Backspace
 
 export function dispatchKey(event: KeyboardEvent, state: 'up' | 'down', topScope: InputScope | null, deps: KeyDispatchDeps): void {
   if (topScope?.policy === 'block-all') return;
-  if (event.ctrlKey || event.metaKey || event.altKey) return;
+  const isDeleteWord = (event.ctrlKey || event.altKey || event.metaKey) && event.key === 'Backspace';
+  if (!isDeleteWord && (event.ctrlKey || event.metaKey || event.altKey)) return;
 
   const modalOpen = topScope?.policy === 'modal';
 
