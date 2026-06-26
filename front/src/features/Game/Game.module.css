@@ -18,8 +18,8 @@
   left: anchor(center);
   top: anchor(center);
   translate: -50% -50%;
-  width: 100dvh;
-  height: 100dvh;
+  width: 100vmin;
+  height: 100vmin;
   pointer-events: none;
   z-index: 1;
   backdrop-filter: brightness(1.7);
