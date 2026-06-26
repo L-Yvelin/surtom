@@ -4,11 +4,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--mc-dirt);
-  background-repeat: no-repeat, repeat;
-  background-size:
-    100% 100%,
-    17dvmin 17dvmin;
+  background-image: var(--mc-dirt);
+  background-repeat: repeat;
+  background-size: 17dvmin 17dvmin;
   image-rendering: pixelated;
   z-index: var(--z-route-overlay);
   display: flex;
@@ -22,7 +20,12 @@
 }
 
 :global(#root-container.dark) .screen {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--mc-netherrack);
+  background-image: var(--mc-netherrack);
+}
+
+.screen > *:not([data-backdrop]) {
+  position: relative;
+  z-index: 1;
 }
 
 .hidden {

@@ -11,10 +11,14 @@ async function fetchJson(url) {
   return res.json();
 }
 
+const WANTED = ['assets/minecraft/textures/', 'assets/minecraft/models/'];
+
 if (!process.env.MC_FORCE) {
   try {
-    await import('node:fs').then((fs) => fs.accessSync(join(OUT_DIR, 'textures')));
-    console.log('Minecraft textures already present. Set MC_FORCE=1 to re-download.');
+    const fs = await import('node:fs');
+    fs.accessSync(join(OUT_DIR, 'textures'));
+    fs.accessSync(join(OUT_DIR, 'models'));
+    console.log('Minecraft assets already present. Set MC_FORCE=1 to re-download.');
     process.exit(0);
   } catch {}
 }
@@ -31,13 +35,15 @@ const jar = new AdmZip(Buffer.from(await res.arrayBuffer()));
 
 await rm(OUT_DIR, { recursive: true, force: true });
 
-let count = 0;
+let textures = 0;
+let models = 0;
 for (const e of jar.getEntries()) {
-  if (e.isDirectory || !e.entryName.startsWith('assets/minecraft/textures/')) continue;
+  if (e.isDirectory || !WANTED.some((p) => e.entryName.startsWith(p))) continue;
   const target = join(OUT_DIR, e.entryName.slice('assets/minecraft/'.length));
   await mkdir(dirname(target), { recursive: true });
   await writeFile(target, e.getData());
-  count++;
+  if (e.entryName.endsWith('.png')) textures++;
+  else if (e.entryName.endsWith('.json')) models++;
 }
 
-console.log(`Done. Extracted ${count} textures.`);
+console.log(`Done. Extracted ${textures} textures and ${models} models.`);

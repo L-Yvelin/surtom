@@ -8,6 +8,7 @@ import ButtonRow from '../../ui/ButtonRow/ButtonRow';
 import WorldEntry, { World } from './WorldEntry/WorldEntry';
 import { useFetchWorlds } from '../../hooks/useFetchWorlds';
 import { useWorldsStore } from '../../stores/useWorldsStore';
+import Backdrop from '../../ui/Backdrop/Backdrop';
 
 function buildDescription(t: (key: string, opts?: object) => string, summary: Server.WorldSummary): string {
   return `${t('worldSelection.memberCount', { count: summary.memberCount })} · ${summary.language.toUpperCase()}`;
@@ -41,6 +42,7 @@ function WorldSelection(): JSX.Element {
 
   return (
     <div className={classes.screen}>
+      <Backdrop />
       <h1 className={classes.title}>{t('worldSelection.title')}</h1>
 
       <input

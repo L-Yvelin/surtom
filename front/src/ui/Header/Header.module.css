@@ -1,4 +1,5 @@
 .header {
+  position: relative;
   box-shadow: 0 0.5vh 1.5vh black;
   -webkit-backdrop-filter: saturate(125%);
   backdrop-filter: saturate(125%);
@@ -12,10 +13,18 @@
   background-size: 17dvmin 17dvmin;
   transition: background-image ease 1s;
   z-index: var(--z-header);
+  overflow-x: clip;
+}
+
+.blocks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .logoLink {
   position: relative;
+  z-index: 1;
   max-height: 100%;
   /* padding: 3.5vmin 0; */
   padding: 2vmin 0;

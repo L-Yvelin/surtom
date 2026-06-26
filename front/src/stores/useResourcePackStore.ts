@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { applyTextures, resolveTexture, type TextureKey, type TextureOverrides } from '../mc/textures';
 import { parsePack, revokePack, type ParsedPack } from '../mc/resourcePack';
 import { deletePack, loadPacks, savePack } from '../mc/packStorage';
+import type { ModelOverrides } from '../mc/blockModels';
 
 const SELECTED_STORAGE_KEY = 'mc-resource-packs-selected';
 
@@ -32,6 +33,7 @@ interface ResourcePackState {
   packs: ResourcePack[];
   selectedIds: string[];
   overrides: TextureOverrides;
+  modelOverrides: ModelOverrides;
   ready: boolean;
   init: () => Promise<void>;
   addFromFile: (file: File) => Promise<void>;
@@ -63,6 +65,15 @@ function computeOverrides(packs: ResourcePack[], selectedIds: string[]): Texture
   return overrides;
 }
 
+function computeModelOverrides(packs: ResourcePack[], selectedIds: string[]): ModelOverrides {
+  const overrides: ModelOverrides = {};
+  for (const id of [...selectedIds].reverse()) {
+    const pack = packs.find((p) => p.id === id);
+    if (pack) Object.assign(overrides, pack.models);
+  }
+  return overrides;
+}
+
 function createId(): string {
   return globalThis.crypto?.randomUUID?.() ?? `pack-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
@@ -72,15 +83,17 @@ let initPromise: Promise<void> | null = null;
 export const useResourcePackStore = create<ResourcePackState>()((set, get) => {
   const apply = (packs: ResourcePack[], selectedIds: string[]): void => {
     const overrides = computeOverrides(packs, selectedIds);
+    const modelOverrides = computeModelOverrides(packs, selectedIds);
     applyTextures(overrides);
     persistSelectedIds(selectedIds);
-    set({ packs, selectedIds, overrides });
+    set({ packs, selectedIds, overrides, modelOverrides });
   };
 
   return {
     packs: [],
     selectedIds: [],
     overrides: {},
+    modelOverrides: {},
     ready: false,
 
     init: () => {

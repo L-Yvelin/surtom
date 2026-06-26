@@ -1,14 +1,15 @@
 import { unzipSync, strFromU8 } from 'fflate';
-import { USED_TEXTURE_PATHS } from './textures';
+import type { ModelOverrides, RawModel } from './blockModels';
 
 const TEXTURE_PREFIX = 'assets/minecraft/textures/';
-const usedTextures = new Set<string>(USED_TEXTURE_PATHS);
+const MODEL_PREFIX = 'assets/minecraft/models/';
 
 export interface ParsedPack {
   name: string;
   description: string;
   iconUrl: string | null;
   textures: Record<string, string>;
+  models: ModelOverrides;
 }
 
 interface PackDescriptionComponent {
@@ -44,14 +45,20 @@ export function parsePack(name: string, bytes: Uint8Array): ParsedPack {
   const iconUrl = icon ? toBlobUrl(icon) : null;
 
   const textures: Record<string, string> = {};
+  const models: ModelOverrides = {};
   for (const [fileName, data] of Object.entries(files)) {
-    if (!fileName.startsWith(TEXTURE_PREFIX)) continue;
-    const key = fileName.slice(TEXTURE_PREFIX.length);
-    if (!usedTextures.has(key)) continue;
-    textures[key] = toBlobUrl(data);
+    if (fileName.startsWith(TEXTURE_PREFIX) && fileName.endsWith('.png')) {
+      textures[fileName.slice(TEXTURE_PREFIX.length)] = toBlobUrl(data);
+    } else if (fileName.startsWith(MODEL_PREFIX) && fileName.endsWith('.json')) {
+      try {
+        models[fileName.slice(MODEL_PREFIX.length, -'.json'.length)] = JSON.parse(strFromU8(data)) as RawModel;
+      } catch {
+        continue;
+      }
+    }
   }
 
-  return { name, description, iconUrl, textures };
+  return { name, description, iconUrl, textures, models };
 }
 
 export function revokePack(pack: ParsedPack): void {

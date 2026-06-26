@@ -1,0 +1,53 @@
+.scene {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  transform-style: preserve-3d;
+}
+
+.model {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+
+.cuboid {
+  position: absolute;
+  transform-style: preserve-3d;
+}
+
+.face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: center;
+  overflow: hidden;
+  backface-visibility: hidden;
+  isolation: isolate;
+}
+
+.texture {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+.tint {
+  position: absolute;
+  inset: 0;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  image-rendering: pixelated;
+  mix-blend-mode: multiply;
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+}

@@ -6,6 +6,7 @@ import { UI } from '../ids';
 import { useGameStore } from '../../stores/useGameStore';
 import { useResourcePackStore } from '../../stores/useResourcePackStore';
 import { COSMETIC_MS, isWorldReady } from './utils';
+import Backdrop from '../Backdrop/Backdrop';
 import classes from './WorldLoading.module.css';
 
 function WorldLoading(): JSX.Element {
@@ -24,6 +25,7 @@ function WorldLoading(): JSX.Element {
 
   return (
     <div className={classNames(classes.screen, { [classes.hidden]: ready })}>
+      <Backdrop />
       <div className={classes.label}>{t('worldLoading.label')}</div>
       <div className={classes.bar}>
         <div className={classes.fill} />

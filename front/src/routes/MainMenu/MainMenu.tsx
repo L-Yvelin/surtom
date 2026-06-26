@@ -9,6 +9,7 @@ import Credits from '../../features/Game/Credits/Credits';
 import { UI } from '../../ui/ids';
 import useUIStore from '../../stores/useUIStore';
 import ButtonRow from '../../ui/ButtonRow/ButtonRow';
+import Backdrop from '../../ui/Backdrop/Backdrop';
 
 function MainMenu(): JSX.Element {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ function MainMenu(): JSX.Element {
   return (
     <>
       <div className={classes.menu}>
-        <div data-backdrop className={classes.backdrop}></div>
+        <Backdrop />
 
         <div className={classes.buttons}>
           <Button text={t('mainMenu.daily')} onClick={() => navigate('/quotidien')} className={classes.primaryButton} />

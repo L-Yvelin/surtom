@@ -6,6 +6,7 @@ import classes from './Header.module.css';
 import { Theme } from '../../theme/theme';
 import classNames from 'classnames';
 import Splash from '../../routes/MainMenu/Splash/Splash';
+import { RowBlockModel } from '../BlockModel/RowBlockModel';
 
 interface HeaderProps {
   theme: Theme;
@@ -21,6 +22,7 @@ function Header({ theme }: HeaderProps): JSX.Element {
         [classes.dark]: theme === Theme.DARK,
       })}
     >
+      <RowBlockModel className={classes.blocks} model={theme === Theme.DARK ? 'block/warped_nylium' : 'block/grass_block'} pitch={5} />
       <Link to="/" className={classes.logoLink}>
         <img className={classes.logo} src={logo} alt={t('header.logoAlt')} draggable="false" />
         {route.pathname === '/' && <Splash className={classes.splash} />}

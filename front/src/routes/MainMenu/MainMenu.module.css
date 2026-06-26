@@ -7,14 +7,6 @@
   padding: 10vh 2vh 6vh;
 }
 
-.backdrop {
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25));
-  pointer-events: none;
-  z-index: 0;
-}
-
 .menu > *:not([data-backdrop]) {
   position: relative;
   z-index: 1;
