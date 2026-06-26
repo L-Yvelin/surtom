@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { Theme } from '../theme/theme';
 
 const STORAGE_KEY = 'theme';
-const THROTTLE_MS = 1050;
 
 function isValidTheme(value: string | null): value is Theme {
   return value !== null && Object.values(Theme).includes(value as Theme);
@@ -10,20 +9,16 @@ function isValidTheme(value: string | null): value is Theme {
 
 interface ThemeState {
   theme: Theme;
-  lastSetTime: number;
   setTheme: (newTheme: Theme) => void;
 }
 
 const storedTheme = localStorage.getItem(STORAGE_KEY);
 
-const useThemeStore = create<ThemeState>((set, get) => ({
+const useThemeStore = create<ThemeState>((set) => ({
   theme: isValidTheme(storedTheme) ? storedTheme : Theme.DARK,
-  lastSetTime: 0,
   setTheme: (newTheme) => {
-    const now = Date.now();
-    if (now - get().lastSetTime < THROTTLE_MS) return;
     localStorage.setItem(STORAGE_KEY, newTheme);
-    set({ theme: newTheme, lastSetTime: now });
+    set({ theme: newTheme });
   },
 }));
 

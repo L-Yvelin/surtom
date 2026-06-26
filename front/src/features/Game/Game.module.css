@@ -11,3 +11,17 @@
 .main :not([data-backdrop]) {
   z-index: var(--z-game-content);
 }
+
+.main .light {
+  position: absolute;
+  position-anchor: --lamp;
+  left: anchor(center);
+  top: anchor(center);
+  translate: -50% -50%;
+  width: 100dvh;
+  height: 100dvh;
+  pointer-events: none;
+  z-index: 1;
+  backdrop-filter: brightness(1.7);
+  mask-image: radial-gradient(closest-side, black, gray 50%, transparent);
+}

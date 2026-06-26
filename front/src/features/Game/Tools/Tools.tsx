@@ -76,7 +76,7 @@ function Tools({ tabButtonRef, menuButtonRef, chatButtonRef }: ToolsProps): JSX.
           </button>
         </Tooltip>
         <Tooltip tooltipContent={<MinecraftTooltip title={t('tools.themeTitle')} children={t('tools.themeHint')} />}>
-          <button className={classes.tool} onClick={() => changeTheme()}>
+          <button className={classNames(classes.tool, classes.lampButton)} onClick={() => changeTheme()}>
             <img src={theme === Theme.LIGHT ? tabLampOn : tabLampOff} alt={t('tools.themeAlt')} className={classes.toolImage} />
           </button>
         </Tooltip>

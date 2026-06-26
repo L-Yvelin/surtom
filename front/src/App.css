@@ -8,7 +8,6 @@
   background-repeat: repeat;
   background-size: 17dvmin 17dvmin;
   image-rendering: pixelated;
-  transition: background-image ease 1s;
 }
 
 #root-container.dark {
