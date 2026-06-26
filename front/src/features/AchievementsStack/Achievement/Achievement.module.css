@@ -1,81 +1,61 @@
 .achievement {
+  --size: 6.6vh;
+  --px: calc(var(--size) / 32);
+
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: start;
-  padding: 0.5vh;
-  background-color: rgb(33 33 33);
-  aspect-ratio: 7;
-  height: 6.6vh;
+  height: var(--size);
   max-width: 100vw;
+  box-sizing: border-box;
 
-  --size: 0.6vh;
-  margin: calc(var(--size) * 2);
-  box-shadow:
-  /* Background outline */
-    calc(-0.5 * var(--size)) 0 0 0 rgb(33 33 33),
-    0 calc(-0.5 * var(--size)) 0 0 rgb(33 33 33),
-    calc(0.5 * var(--size)) 0 0 0 rgb(33 33 33),
-    0 calc(0.5 * var(--size)) 0 0 rgb(33 33 33),
-    /* Gray border */ calc(-1.5 * var(--size)) 0 0 0 #555555,
-    0 calc(-1.5 * var(--size)) 0 0 #555555,
-    calc(1.5 * var(--size)) 0 0 0 #555555,
-    0 calc(1.5 * var(--size)) 0 0 #555555,
-    /* Black border */ calc(-2 * var(--size)) 0 0 0 black,
-    0 calc(-2 * var(--size)) 0 0 black,
-    calc(2 * var(--size)) 0 0 0 black,
-    0 calc(2 * var(--size)) 0 0 black,
-    /* Gray angles */ calc(var(--size) * 1) calc(-1 * var(--size)) 0 0 #555555,
-    calc(1.5 * var(--size)) calc(-0.5 * var(--size)) 0 0 #555555,
-    calc(0.5 * var(--size)) calc(-1.5 * var(--size)) 0 0 #555555,
-    calc(-1 * var(--size)) calc(-1 * var(--size)) 0 0 #555555,
-    calc(-1.5 * var(--size)) calc(-0.5 * var(--size)) 0 0 #555555,
-    calc(-0.5 * var(--size)) calc(-1.5 * var(--size)) 0 0 #555555,
-    calc(1 * var(--size)) calc(1 * var(--size)) 0 0 #555555,
-    calc(1.5 * var(--size)) calc(0.5 * var(--size)) 0 0 #555555,
-    calc(0.5 * var(--size)) calc(1.5 * var(--size)) 0 0 #555555,
-    calc(-1 * var(--size)) calc(1 * var(--size)) 0 0 #555555,
-    calc(-1.5 * var(--size)) calc(0.5 * var(--size)) 0 0 #555555,
-    calc(-0.5 * var(--size)) calc(1.5 * var(--size)) 0 0 #555555,
-    /* Black outline */ calc(0.5 * var(--size)) calc(-2 * var(--size)) 0 0 black,
-    calc(1 * var(--size)) calc(-1.5 * var(--size)) 0 0 black,
-    calc(1.5 * var(--size)) calc(-1 * var(--size)) 0 0 black,
-    calc(2 * var(--size)) calc(-0.5 * var(--size)) 0 0 black,
-    calc(-0.5 * var(--size)) calc(-2 * var(--size)) 0 0 black,
-    calc(-1 * var(--size)) calc(-1.5 * var(--size)) 0 0 black,
-    calc(-1.5 * var(--size)) calc(-1 * var(--size)) 0 0 black,
-    calc(-2 * var(--size)) calc(-0.5 * var(--size)) 0 0 black,
-    calc(0.5 * var(--size)) calc(2 * var(--size)) 0 0 black,
-    calc(1 * var(--size)) calc(1.5 * var(--size)) 0 0 black,
-    calc(1.5 * var(--size)) calc(1 * var(--size)) 0 0 black,
-    calc(2 * var(--size)) calc(0.5 * var(--size)) 0 0 black,
-    calc(-0.5 * var(--size)) calc(2 * var(--size)) 0 0 black,
-    calc(-1 * var(--size)) calc(1.5 * var(--size)) 0 0 black,
-    calc(-1.5 * var(--size)) calc(1 * var(--size)) 0 0 black,
-    calc(-2 * var(--size)) calc(0.5 * var(--size)) 0 0 black;
+  padding-left: calc(var(--px) * 8);
+  padding-right: calc(var(--px) * 4);
+  gap: calc(var(--px) * 6);
+}
+
+.achievement::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-style: solid;
+  border-width: calc(var(--px) * 4);
+  border-image-source: var(--mc-advancement);
+  border-image-slice: 4 fill;
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .icon {
+  height: calc(var(--px) * 16);
   aspect-ratio: 1;
   object-fit: contain;
-  height: 85%;
-  padding: 1vh;
+  image-rendering: pixelated;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
   align-items: start;
-  height: 100%;
-  padding: 1vh;
-  gap: auto;
-  font-size: 2.5vh;
+  gap: calc(var(--px) * 3);
+  font-size: calc(var(--px) * 8);
+  min-width: 0;
 }
 
 .title {
   color: #ffff00;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .description {
   color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }

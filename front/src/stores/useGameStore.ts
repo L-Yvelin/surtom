@@ -69,7 +69,7 @@ export const useGameStore = create<GameState>((set) => ({
   setScores: (scores) => set({ scores }),
   addAchievement: (achievement) =>
     set((state) => ({
-      achievements: [...(state.achievements || []), achievement].slice(-5),
+      achievements: [...(state.achievements || []), achievement],
     })),
   removeAchievement: (achievementId) =>
     set((state) => ({

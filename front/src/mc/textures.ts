@@ -26,6 +26,7 @@ import notificationMore from '@mc/textures/gui/sprites/notification/more.png';
 import beaconButton from '@mc/textures/gui/sprites/container/beacon/button.png';
 import beaconButtonHighlighted from '@mc/textures/gui/sprites/container/beacon/button_highlighted.png';
 import beaconButtonSelected from '@mc/textures/gui/sprites/container/beacon/button_selected.png';
+import advancement from '@mc/textures/gui/sprites/toast/advancement.png';
 
 interface TextureEntry {
   default: string;
@@ -53,6 +54,7 @@ export const TEXTURES = {
   'gui/sprites/widget/button.png': { default: button, cssVar: '--mc-button' },
   'gui/sprites/widget/button_highlighted.png': { default: buttonHighlighted, cssVar: '--mc-button-highlighted' },
   'gui/sprites/widget/button_disabled.png': { default: buttonDisabled, cssVar: '--mc-button-disabled' },
+  'gui/sprites/toast/advancement.png': { default: advancement, cssVar: '--mc-advancement' },
   'gui/sprites/hud/experience_bar_background.png': { default: experienceBarBackground },
   'gui/sprites/hud/experience_bar_progress.png': { default: experienceBarProgress },
   'gui/sprites/toast/social_interactions.png': { default: socialInteractions },
