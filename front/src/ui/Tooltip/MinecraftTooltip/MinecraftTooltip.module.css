@@ -1,20 +1,18 @@
 .tooltip {
+  position: relative;
   display: flex;
+  flex-direction: column;
   color: #aaa9a8;
-  background-color: #100010;
-  background-color: rgba(16, 0, 16, 0.94);
-  padding: 0.65em;
+  padding: calc(var(--mc-px) * 12);
   font-size: 2vmin;
   word-spacing: 0.4vh;
   line-height: 1.25em;
   pointer-events: none;
   z-index: 100;
   gap: 0.5em;
-  flex-direction: column;
-
-  width: 20em;
+  width: max-content;
+  max-width: 20em;
   word-break: break-word;
-
   transition: opacity ease-in-out 0.3s;
   opacity: 1;
 }
@@ -22,24 +20,31 @@
 .tooltip::before {
   content: '';
   position: absolute;
-  top: 0.11em;
-  right: -0.11em;
-  bottom: 0.11em;
-  left: -0.11em;
-  border-style: none solid;
-  border-color: rgba(16, 0, 16, 0.94);
+  inset: 0;
+  border-style: solid;
+  border-width: 0;
+  border-image-source: var(--mc-tooltip-bg);
+  border-image-slice: var(--mc-tooltip-bg-slice, 9%) fill;
+  border-image-width: calc(var(--mc-px) * var(--mc-tooltip-bg-border-px, 9));
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
+  z-index: -2;
+  pointer-events: none;
 }
 
 .tooltip::after {
   content: '';
   position: absolute;
-  top: 0.125em;
-  right: 0;
-  bottom: 0.125em;
-  left: 0;
-  border: 0.125em solid #2d0a63;
-  border-image: -webkit-linear-gradient(rgba(80, 0, 255, 0.31), rgba(40, 0, 127, 0.31)) 1;
-  border-image: linear-gradient(rgba(80, 0, 255, 0.31), rgba(40, 0, 127, 0.31)) 1;
+  inset: 0;
+  border-style: solid;
+  border-width: 0;
+  border-image-source: var(--mc-tooltip-frame);
+  border-image-slice: var(--mc-tooltip-frame-slice, 10%);
+  border-image-width: calc(var(--mc-px) * var(--mc-tooltip-frame-border-px, 10));
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .title {
