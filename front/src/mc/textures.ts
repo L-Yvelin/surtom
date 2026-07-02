@@ -27,6 +27,62 @@ import beaconButton from '@mc/textures/gui/sprites/container/beacon/button.png';
 import beaconButtonHighlighted from '@mc/textures/gui/sprites/container/beacon/button_highlighted.png';
 import beaconButtonSelected from '@mc/textures/gui/sprites/container/beacon/button_selected.png';
 import advancement from '@mc/textures/gui/sprites/toast/advancement.png';
+import tooltipBackground from '@mc/textures/gui/sprites/tooltip/background.png';
+import tooltipFrame from '@mc/textures/gui/sprites/tooltip/frame.png';
+
+export interface NineSlicePcts {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+  topPx: number;
+  rightPx: number;
+  bottomPx: number;
+  leftPx: number;
+}
+
+export interface SpriteMcmeta {
+  gui?: {
+    scaling?: {
+      type: string;
+      width: number;
+      height: number;
+      border: number | { left: number; right: number; top: number; bottom: number };
+    };
+  };
+}
+
+export function parseMcmetaNineSlice(meta: SpriteMcmeta): NineSlicePcts | undefined {
+  const s = meta?.gui?.scaling;
+  if (s?.type !== 'nine_slice') return undefined;
+  const { border, width, height } = s;
+  const topPx = typeof border === 'number' ? border : border.top;
+  const rightPx = typeof border === 'number' ? border : border.right;
+  const bottomPx = typeof border === 'number' ? border : border.bottom;
+  const leftPx = typeof border === 'number' ? border : border.left;
+  return {
+    top: (topPx / height) * 100,
+    right: (rightPx / width) * 100,
+    bottom: (bottomPx / height) * 100,
+    left: (leftPx / width) * 100,
+    topPx,
+    rightPx,
+    bottomPx,
+    leftPx,
+  };
+}
+
+const rawMcmetas = import.meta.glob('../../vendors/minecraft/textures/**/*.png.mcmeta', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+function getNineSlice(texturePath: string): NineSlicePcts | undefined {
+  const raw = rawMcmetas[`../../vendors/minecraft/textures/${texturePath}.mcmeta`];
+  if (!raw) return undefined;
+  return parseMcmetaNineSlice(JSON.parse(raw) as SpriteMcmeta);
+}
 
 interface TextureEntry {
   default: string;
@@ -55,6 +111,8 @@ export const TEXTURES = {
   'gui/sprites/widget/button_highlighted.png': { default: buttonHighlighted, cssVar: '--mc-button-highlighted' },
   'gui/sprites/widget/button_disabled.png': { default: buttonDisabled, cssVar: '--mc-button-disabled' },
   'gui/sprites/toast/advancement.png': { default: advancement, cssVar: '--mc-advancement' },
+  'gui/sprites/tooltip/background.png': { default: tooltipBackground, cssVar: '--mc-tooltip-bg' },
+  'gui/sprites/tooltip/frame.png': { default: tooltipFrame, cssVar: '--mc-tooltip-frame' },
   'gui/sprites/hud/experience_bar_background.png': { default: experienceBarBackground },
   'gui/sprites/hud/experience_bar_progress.png': { default: experienceBarProgress },
   'gui/sprites/toast/social_interactions.png': { default: socialInteractions },
@@ -120,11 +178,19 @@ async function applyDerivedColors(overrides: TextureOverrides): Promise<void> {
   root.setProperty('--mc-misplaced-color', `rgb(${misplaced.join(',')})`);
 }
 
-export function applyTextures(overrides: TextureOverrides): void {
+export type McmetaOverrides = Record<string, NineSlicePcts>;
+
+export function applyTextures(overrides: TextureOverrides, mcmetaOverrides: McmetaOverrides = {}): void {
   const rootStyle = document.documentElement.style;
   for (const [path, entry] of Object.entries(TEXTURES) as [string, TextureEntry][]) {
     if (!entry.cssVar) continue;
     rootStyle.setProperty(entry.cssVar, `url("${overrides[path] ?? entry.default}")`);
+    const slice = mcmetaOverrides[path] ?? getNineSlice(path);
+    if (slice) {
+      const { top, right, bottom, left, topPx } = slice;
+      rootStyle.setProperty(`${entry.cssVar}-slice`, `${top}% ${right}% ${bottom}% ${left}%`);
+      rootStyle.setProperty(`${entry.cssVar}-border-px`, String(topPx));
+    }
   }
 
   const favicon = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
