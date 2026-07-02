@@ -2,4 +2,9 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 npx pretty-quick --staged
-npx secretlint $(git diff --cached --name-only --diff-filter=ACMR | xargs)
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
+if [ -n "$STAGED_FILES" ]; then
+  SECRETLINT_EXIT=0
+  npx secretlint $STAGED_FILES || SECRETLINT_EXIT=$?
+  if [ $SECRETLINT_EXIT -eq 1 ]; then exit 1; fi
+fi
