@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { applyTextures, resolveTexture, type TextureKey, type TextureOverrides } from '../mc/textures';
+import { applyTextures, resolveTexture, type McmetaOverrides, type TextureKey, type TextureOverrides } from '../mc/textures';
 import { parsePack, revokePack, type ParsedPack } from '../mc/resourcePack';
 import { deletePack, loadPacks, savePack } from '../mc/packStorage';
 import type { ModelOverrides } from '../mc/blockModels';
@@ -34,6 +34,7 @@ interface ResourcePackState {
   selectedIds: string[];
   overrides: TextureOverrides;
   modelOverrides: ModelOverrides;
+  mcmetaOverrides: McmetaOverrides;
   ready: boolean;
   init: () => Promise<void>;
   addFromFile: (file: File) => Promise<void>;
@@ -74,6 +75,15 @@ function computeModelOverrides(packs: ResourcePack[], selectedIds: string[]): Mo
   return overrides;
 }
 
+function computeMcmetaOverrides(packs: ResourcePack[], selectedIds: string[]): McmetaOverrides {
+  const overrides: McmetaOverrides = {};
+  for (const id of [...selectedIds].reverse()) {
+    const pack = packs.find((p) => p.id === id);
+    if (pack) Object.assign(overrides, pack.mcmetas);
+  }
+  return overrides;
+}
+
 function createId(): string {
   return globalThis.crypto?.randomUUID?.() ?? `pack-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
@@ -84,9 +94,10 @@ export const useResourcePackStore = create<ResourcePackState>()((set, get) => {
   const apply = (packs: ResourcePack[], selectedIds: string[]): void => {
     const overrides = computeOverrides(packs, selectedIds);
     const modelOverrides = computeModelOverrides(packs, selectedIds);
-    applyTextures(overrides);
+    const mcmetaOverrides = computeMcmetaOverrides(packs, selectedIds);
+    applyTextures(overrides, mcmetaOverrides);
     persistSelectedIds(selectedIds);
-    set({ packs, selectedIds, overrides, modelOverrides });
+    set({ packs, selectedIds, overrides, modelOverrides, mcmetaOverrides });
   };
 
   return {
@@ -94,6 +105,7 @@ export const useResourcePackStore = create<ResourcePackState>()((set, get) => {
     selectedIds: [],
     overrides: {},
     modelOverrides: {},
+    mcmetaOverrides: {},
     ready: false,
 
     init: () => {

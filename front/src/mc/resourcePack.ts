@@ -1,5 +1,6 @@
 import { unzipSync, strFromU8 } from 'fflate';
 import type { ModelOverrides, RawModel } from './blockModels';
+import { parseMcmetaNineSlice, type NineSlicePcts, type SpriteMcmeta } from './textures';
 
 const TEXTURE_PREFIX = 'assets/minecraft/textures/';
 const MODEL_PREFIX = 'assets/minecraft/models/';
@@ -10,6 +11,7 @@ export interface ParsedPack {
   iconUrl: string | null;
   textures: Record<string, string>;
   models: ModelOverrides;
+  mcmetas: Record<string, NineSlicePcts>;
 }
 
 interface PackDescriptionComponent {
@@ -46,9 +48,18 @@ export function parsePack(name: string, bytes: Uint8Array): ParsedPack {
 
   const textures: Record<string, string> = {};
   const models: ModelOverrides = {};
+  const mcmetas: Record<string, NineSlicePcts> = {};
   for (const [fileName, data] of Object.entries(files)) {
     if (fileName.startsWith(TEXTURE_PREFIX) && fileName.endsWith('.png')) {
       textures[fileName.slice(TEXTURE_PREFIX.length)] = toBlobUrl(data);
+    } else if (fileName.startsWith(TEXTURE_PREFIX) && fileName.endsWith('.png.mcmeta')) {
+      try {
+        const texturePath = fileName.slice(TEXTURE_PREFIX.length, -'.mcmeta'.length);
+        const slice = parseMcmetaNineSlice(JSON.parse(strFromU8(data)) as SpriteMcmeta);
+        if (slice) mcmetas[texturePath] = slice;
+      } catch {
+        continue;
+      }
     } else if (fileName.startsWith(MODEL_PREFIX) && fileName.endsWith('.json')) {
       try {
         models[fileName.slice(MODEL_PREFIX.length, -'.json'.length)] = JSON.parse(strFromU8(data)) as RawModel;
@@ -58,7 +69,7 @@ export function parsePack(name: string, bytes: Uint8Array): ParsedPack {
     }
   }
 
-  return { name, description, iconUrl, textures, models };
+  return { name, description, iconUrl, textures, models, mcmetas };
 }
 
 export function revokePack(pack: ParsedPack): void {
