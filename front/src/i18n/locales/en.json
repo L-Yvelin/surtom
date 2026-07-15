@@ -42,6 +42,7 @@
     "gamesPlayed": "Games played",
     "solvedIn_one": "Solved in {{count}} try",
     "solvedIn_other": "Solved in {{count}} tries",
+    "notFound": "Not found",
     "gamesCount_one": "{{count}} game",
     "gamesCount_other": "{{count}} games",
     "scoreDistribution": "Score distribution"

@@ -30,8 +30,13 @@ export async function getScoreDistribution(username: string, worldId: string = '
   const rows = result[0] as unknown as Array<{ Attempts: string }>;
   return rows.reduce(
     (acc, row) => {
-      const attempts = JSON.parse(row.Attempts).length;
-      acc[attempts] = (acc[attempts] || 0) + 1;
+      const attempts = JSON.parse(row.Attempts);
+      if (!Array.isArray(attempts) || attempts.length === 0) {
+        return acc;
+      }
+
+      const count = attempts.length;
+      acc[count] = (acc[count] || 0) + 1;
       return acc;
     },
     {} as Record<number, number>,
