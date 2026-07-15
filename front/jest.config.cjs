@@ -2,6 +2,8 @@
 module.exports = {
   testEnvironment: 'node',
   transform: {
+    // Files using Vite-only import.meta.glob get a custom transform that strips those calls first
+    '^.+/src/mc/[^/]+\\.tsx?$': '<rootDir>/jest.importMetaGlobTransform.cjs',
     '^.+\\.[jt]sx?$': [
       'ts-jest',
       {

@@ -2,6 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   passWithNoTests: true,
+  setupFiles: ['./jest.setup.cjs'],
   moduleFileExtensions: ['ts', 'js'],
   transform: {
     '^.+\\.tsx?$': [

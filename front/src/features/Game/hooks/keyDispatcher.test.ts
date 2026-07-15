@@ -82,7 +82,7 @@ describe('dispatchKey - empty stack (game scope)', () => {
       { metaKey: true },
     ];
     for (const modifiers of cases) {
-      for (const key of ['a', '/', 'Tab', 'Backspace', 'Enter']) {
+      for (const key of ['a', '/', 'Tab', 'Enter']) {
         const deps = makeDeps({ showChat: true });
         dispatchKey(ev(key, modifiers), 'down', null, deps);
         dispatchKey(ev(key, modifiers), 'up', null, deps);

@@ -35,9 +35,12 @@ for (const file of cssFiles) {
   }
 }
 
+// Global --mc-* CSS variables that are not textures (e.g. scale/layout vars)
+const GLOBAL_MC_VARS = new Set(['--mc-px']);
+
 describe('texture registry consistency', () => {
   it('every --mc-* variable used in CSS is declared in the registry', () => {
-    const unknown = [...usedVars.entries()].filter(([name]) => !declaredVars.has(name));
+    const unknown = [...usedVars.entries()].filter(([name]) => !declaredVars.has(name) && !GLOBAL_MC_VARS.has(name));
     expect(unknown).toEqual([]);
   });
 

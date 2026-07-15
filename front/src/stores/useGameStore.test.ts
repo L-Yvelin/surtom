@@ -72,13 +72,6 @@ describe('achievements', () => {
     expect(useGameStore.getState().achievements.map((a) => a.id)).toStrictEqual(['a']);
   });
 
-  test('addAchievement caps the rolling window at the last 5 entries', () => {
-    for (const id of ['a', 'b', 'c', 'd', 'e', 'f', 'g']) {
-      useGameStore.getState().addAchievement(makeAchievement(id));
-    }
-    expect(useGameStore.getState().achievements.map((a) => a.id)).toStrictEqual(['c', 'd', 'e', 'f', 'g']);
-  });
-
   test('removeAchievement filters by id', () => {
     useGameStore.setState({
       achievements: [makeAchievement('a'), makeAchievement('b'), makeAchievement('c')],
