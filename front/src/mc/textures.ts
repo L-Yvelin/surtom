@@ -72,12 +72,13 @@ export function parseMcmetaNineSlice(meta: SpriteMcmeta): NineSlicePcts | undefi
   };
 }
 
+const rawMcmetas = import.meta.glob('../../vendors/minecraft/textures/**/*.png.mcmeta', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
 function getNineSlice(texturePath: string): NineSlicePcts | undefined {
-  const rawMcmetas = import.meta.glob('../../vendors/minecraft/textures/**/*.png.mcmeta', {
-    query: '?raw',
-    import: 'default',
-    eager: true,
-  }) as Record<string, string>;
   const raw = rawMcmetas[`../../vendors/minecraft/textures/${texturePath}.mcmeta`];
   if (!raw) return undefined;
   return parseMcmetaNineSlice(JSON.parse(raw) as SpriteMcmeta);

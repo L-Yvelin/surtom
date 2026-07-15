@@ -17,7 +17,8 @@
     "build:back": "npm run build --workspace=back",
     "build:front": "npm run build --workspace=front",
     "test": "npm run test --workspaces",
-    "test:back": "npm run test --workspace=back"
+    "test:back": "npm run test --workspace=back",
+    "check": "npm run build && npx prettier --check . && npm run lint --workspace=front && npm run lint:secrets && npm run test"
   },
   "devDependencies": {
     "@secretlint/secretlint-rule-preset-recommend": "^10.1.1",
