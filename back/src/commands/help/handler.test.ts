@@ -53,7 +53,6 @@ describe('handleHelpCommand', () => {
   it('includes moderator commands when the user is a moderator', () => {
     handleHelpCommand(buildUser(2), ['help']);
     const text = (sendToUser as jest.Mock).mock.calls[0][1].content.content.text;
-    expect(text).toContain('/eval');
     expect(text).toContain('/addtype');
   });
 });

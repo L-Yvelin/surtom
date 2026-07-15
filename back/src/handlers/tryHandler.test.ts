@@ -20,6 +20,10 @@ jest.mock('../repositories/xpRepository.js', () => ({
   __esModule: true,
   getPlayerXp: jest.fn(),
 }));
+jest.mock('../repositories/scoreRepository.js', () => ({
+  __esModule: true,
+  getDailyScore: jest.fn(),
+}));
 jest.mock('../ws/send.js', () => ({
   __esModule: true,
   sendError: jest.fn(),
@@ -31,12 +35,16 @@ import { getPlayerByName } from '../repositories/playerRepository.js';
 import { getOrCreateTodaysWord, getTodaysWordAndHistoryId, getValidWords } from '../repositories/wordRepository.js';
 import { getOrCreateTry, updateTry } from '../repositories/tryRepository.js';
 import { getPlayerXp } from '../repositories/xpRepository.js';
+import { getDailyScore } from '../repositories/scoreRepository.js';
 import { sendError, sendSuccess, sendToUser } from '../ws/send.js';
 import { worldRegistry } from '../state/worldRegistry.js';
+import store from '../state/store.js';
 import { handleTryMessage } from './tryHandler.js';
 
 const EPHEM_ID = 'ephem-test';
 const EPHEM_SOLUTION = 'DIAMANT';
+
+let tryState: { attempts: string[][]; win: boolean };
 
 const fakeWs = {} as never;
 
@@ -59,6 +67,7 @@ const buildUser = (name = 'alice', worldId: string = 'fr') =>
 
 beforeEach(() => {
   jest.clearAllMocks();
+  tryState = { attempts: [], win: false };
   worldRegistry.resetForTests();
   worldRegistry.addEphemeral({
     id: EPHEM_ID,
@@ -67,16 +76,28 @@ beforeEach(() => {
     solution: EPHEM_SOLUTION,
     validWords: [EPHEM_SOLUTION],
   });
+  store.setState({
+    users: {
+      'id-fr': buildUser('alice', 'fr'),
+      'id-ephem': buildUser('alice', EPHEM_ID),
+    },
+  });
   (getPlayerByName as jest.Mock).mockResolvedValue({ id: 7, username: 'alice' });
   (getOrCreateTodaysWord as jest.Mock).mockResolvedValue('grass');
   (getTodaysWordAndHistoryId as jest.Mock).mockResolvedValue({ wordHistoryId: 1, todaysWord: 'GRASS' });
   (getValidWords as jest.Mock).mockResolvedValue([]);
-  (getOrCreateTry as jest.Mock).mockResolvedValue({ attempts: [], win: false });
+  (getOrCreateTry as jest.Mock).mockImplementation(() => Promise.resolve({ ...tryState, attempts: [...tryState.attempts] }));
+  (updateTry as jest.Mock).mockImplementation((_: unknown, __: unknown, attempts: string[][], win: boolean) => {
+    tryState = { attempts, win };
+    return Promise.resolve();
+  });
   (getPlayerXp as jest.Mock).mockResolvedValue(123);
+  (getDailyScore as jest.Mock).mockResolvedValue([]);
   jest.spyOn(console, 'log').mockImplementation(() => {});
 });
 
 afterEach(() => {
+  store.setState({ users: {} });
   (console.log as jest.Mock).mockRestore?.();
 });
 
@@ -128,8 +149,7 @@ describe('handleTryMessage', () => {
   it('records a losing attempt without sending XP if not the last try', async () => {
     await handleTryMessage(buildUser(), 'GRAPE');
     expect(updateTry).toHaveBeenCalledWith(7, 1, [['G', 'R', 'A', 'P', 'E']], false);
-    expect(sendSuccess).toHaveBeenCalledWith(fakeWs, 'Tentative enregistrée !');
-    expect(sendToUser).not.toHaveBeenCalled();
+    expect(sendToUser).not.toHaveBeenCalledWith(fakeWs, expect.objectContaining({ type: Server.MessageType.XP }));
   });
 
   it('sends XP after the 6th non-winning attempt', async () => {

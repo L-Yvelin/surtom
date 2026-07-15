@@ -10,13 +10,12 @@ describe('getAvailableCommands', () => {
 
   it('exposes the moderator-only commands when isModerator=true', () => {
     const cmds = getAvailableCommands(true);
-    expect(Object.keys(cmds)).toEqual(expect.arrayContaining(['/refresh cible?', '/mod mot_de_passe', '/addtype type', '/eval ¿¿¿ ¿¿¿¿']));
+    expect(Object.keys(cmds)).toEqual(expect.arrayContaining(['/refresh cible?', '/mod mot_de_passe', '/addtype type']));
   });
 
   it('does not expose moderator commands to non-moderators', () => {
     const cmds = getAvailableCommands(false);
     expect(cmds['/mod mot_de_passe']).toBeUndefined();
     expect(cmds['/addtype type']).toBeUndefined();
-    expect(cmds['/eval ¿¿¿ ¿¿¿¿']).toBeUndefined();
   });
 });
