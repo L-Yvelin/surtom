@@ -37,7 +37,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/mc/textures.ts'],
+    files: ['**/mc/textures.ts', '**/mc/blockModels.ts'],
     rules: {
       'no-restricted-imports': 'off',
     },

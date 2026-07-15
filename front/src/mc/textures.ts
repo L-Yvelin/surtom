@@ -7,6 +7,9 @@ import sand from '@mc/textures/block/sand.png';
 import gravel from '@mc/textures/block/gravel.png';
 import itemFrame from '@mc/textures/block/item_frame.png';
 import grassBlockSide from '@mc/textures/block/grass_block_side.png';
+import grassBlockTop from '@mc/textures/block/grass_block_top.png';
+import grassBlockSideOverlay from '@mc/textures/block/grass_block_side_overlay.png';
+import warpedNylium from '@mc/textures/block/warped_nylium.png';
 import warpedNyliumSide from '@mc/textures/block/warped_nylium_side.png';
 import redstoneLamp from '@mc/textures/block/redstone_lamp.png';
 import redstoneLampOn from '@mc/textures/block/redstone_lamp_on.png';
@@ -99,6 +102,9 @@ export const TEXTURES = {
   'block/gravel.png': { default: gravel, cssVar: '--mc-gravel' },
   'block/item_frame.png': { default: itemFrame, cssVar: '--mc-item-frame' },
   'block/grass_block_side.png': { default: grassBlockSide, cssVar: '--mc-grass-block-side' },
+  'block/grass_block_top.png': { default: grassBlockTop },
+  'block/grass_block_side_overlay.png': { default: grassBlockSideOverlay },
+  'block/warped_nylium.png': { default: warpedNylium },
   'block/warped_nylium_side.png': { default: warpedNyliumSide, cssVar: '--mc-warped-nylium-side' },
   'block/redstone_lamp.png': { default: redstoneLamp },
   'block/redstone_lamp_on.png': { default: redstoneLampOn },
@@ -130,6 +136,12 @@ export const FAVICON_TEXTURE: TextureKey = 'block/diamond_block.png';
 export const USED_TEXTURE_PATHS = Object.keys(TEXTURES) as TextureKey[];
 
 export type TextureOverrides = Record<string, string>;
+
+const TEXTURES_MAP = TEXTURES as Record<string, TextureEntry | undefined>;
+
+export function getTextureDefault(path: string): string | undefined {
+  return TEXTURES_MAP[path]?.default;
+}
 
 export function resolveTexture(path: string, overrides: TextureOverrides): string {
   const entry = (TEXTURES as Record<string, TextureEntry | undefined>)[path];

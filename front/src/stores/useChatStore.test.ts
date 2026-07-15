@@ -1,4 +1,5 @@
 import { Server } from '@surtom/interfaces';
+import i18n from '../i18n';
 import { defaultPlayer } from './usePlayerStore';
 import { useChatStore } from './useChatStore';
 
@@ -152,7 +153,7 @@ describe('resetWorld', () => {
     const messages = useChatStore.getState().messages;
     expect(messages).toHaveLength(1);
     expect(messages[0].type).toBe(Server.MessageType.TEXT);
-    expect((messages[0] as Server.ChatMessage.Text).content.text).toBe('Loading...');
+    expect((messages[0] as Server.ChatMessage.Text).content.text).toBe(i18n.t('common.loading'));
   });
 
   test('also clears answeringTo (resetWorld is a superset of resetSession for chat)', () => {

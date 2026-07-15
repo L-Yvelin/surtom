@@ -21,27 +21,16 @@ export function BlockModel({ model, size = 64, pitch = -30, yaw = 45, tint = '#7
   const [urls, setUrls] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    let cancelled = false;
-    void resolveModel(model, modelOverrides).then((data) => {
-      if (cancelled) return;
-      setResolved(data);
-      const paths = collectTexturePaths(data.elements, data.textures);
-      void Promise.all(
-        paths.map(async (path) => {
-          const override = overrides[`${path.replace(/^minecraft:/, '')}.png`];
-          const url = override ?? (await loadTextureUrl(path));
-          return [path, url] as const;
-        }),
-      ).then((entries) => {
-        if (cancelled) return;
-        const map: Record<string, string> = {};
-        for (const [path, url] of entries) if (url) map[path] = url;
-        setUrls(map);
-      });
-    });
-    return () => {
-      cancelled = true;
-    };
+    const data = resolveModel(model, modelOverrides);
+    setResolved(data);
+    const paths = collectTexturePaths(data.elements, data.textures);
+    const map: Record<string, string> = {};
+    for (const path of paths) {
+      const override = overrides[`${path.replace(/^minecraft:/, '')}.png`];
+      const url = override ?? loadTextureUrl(path);
+      if (url) map[path] = url;
+    }
+    setUrls(map);
   }, [model, overrides, modelOverrides]);
 
   const elements = useMemo(() => (resolved ? resolved.elements.map((el) => elementGeometry(el, size / 16)) : []), [resolved, size]);

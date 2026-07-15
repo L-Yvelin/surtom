@@ -1,3 +1,11 @@
+import blockJson from '@mc/models/block/block.json';
+import cubeJson from '@mc/models/block/cube.json';
+import cubeBottomTopJson from '@mc/models/block/cube_bottom_top.json';
+import grassBlockJson from '@mc/models/block/grass_block.json';
+import warpedNyliumJson from '@mc/models/block/warped_nylium.json';
+
+import { getTextureDefault } from './textures';
+
 export type Axis = 'x' | 'y' | 'z';
 export type FaceName = 'north' | 'south' | 'east' | 'west' | 'up' | 'down';
 
@@ -24,10 +32,27 @@ export interface ModelElement {
   faces: Partial<Record<FaceName, ElementFace>>;
 }
 
+interface RawElementFace {
+  texture: string;
+  uv?: number[];
+  rotation?: number;
+  cullface?: string;
+  tintindex?: number;
+}
+
+interface RawModelElement {
+  from: number[];
+  to: number[];
+  rotation?: { origin: number[]; axis: string; angle: number; rescale?: boolean };
+  shade?: boolean;
+  faces: Partial<Record<FaceName, RawElementFace>>;
+}
+
 export interface RawModel {
   parent?: string;
   textures?: Record<string, string>;
-  elements?: ModelElement[];
+  elements?: RawModelElement[];
+  [key: string]: unknown;
 }
 
 export type ModelOverrides = Record<string, RawModel>;
@@ -37,68 +62,34 @@ export interface ResolvedModel {
   elements: ModelElement[];
 }
 
-const MODEL_PREFIX = '../../vendors/minecraft/models/';
-const TEXTURE_PREFIX = '../../vendors/minecraft/textures/';
-
-const modelLoaders = import.meta.glob('../../vendors/minecraft/models/**/*.json', {
-  import: 'default',
-}) as Record<string, () => Promise<RawModel>>;
-
-const textureLoaders = import.meta.glob('../../vendors/minecraft/textures/**/*.png', {
-  query: '?url',
-  import: 'default',
-}) as Record<string, () => Promise<string>>;
+const MODELS: Record<string, RawModel> = {
+  'block/block': blockJson,
+  'block/cube': cubeJson,
+  'block/cube_bottom_top': cubeBottomTopJson,
+  'block/grass_block': grassBlockJson,
+  'block/warped_nylium': warpedNyliumJson,
+};
 
 function stripNamespace(ref: string): string {
   const colon = ref.indexOf(':');
   return colon >= 0 ? ref.slice(colon + 1) : ref;
 }
 
-function modelKey(name: string): string {
-  return `${MODEL_PREFIX}${stripNamespace(name)}.json`;
-}
-
-function textureKey(path: string): string {
-  return `${TEXTURE_PREFIX}${stripNamespace(path)}.png`;
-}
-
-export function listBlockModels(): string[] {
-  const offset = `${MODEL_PREFIX}block/`.length;
-  return Object.keys(modelLoaders)
-    .filter((k) => k.startsWith(`${MODEL_PREFIX}block/`))
-    .map((k) => `block/${k.slice(offset, -'.json'.length)}`)
-    .sort();
-}
-
-const baseModelCache = new Map<string, Promise<RawModel | undefined>>();
-
-function loadBaseModel(name: string): Promise<RawModel | undefined> {
-  const cacheKey = stripNamespace(name);
-  let cached = baseModelCache.get(cacheKey);
-  if (!cached) {
-    let loader = modelLoaders[modelKey(name)];
-    if (!loader && !cacheKey.includes('/')) loader = modelLoaders[modelKey(`block/${name}`)];
-    cached = loader ? loader() : Promise.resolve(undefined);
-    baseModelCache.set(cacheKey, cached);
-  }
-  return cached;
-}
-
-async function loadRawModel(name: string, overrides?: ModelOverrides): Promise<RawModel | undefined> {
+function loadRawModel(name: string, overrides?: ModelOverrides): RawModel | undefined {
   const key = stripNamespace(name);
-  return overrides?.[key] ?? loadBaseModel(key);
+  return overrides?.[key] ?? MODELS[key] ?? MODELS[`block/${key}`];
 }
 
-const resolveCache = new Map<string, Promise<ResolvedModel>>();
+const resolveCache = new Map<string, ResolvedModel>();
 
-async function resolve(name: string, overrides?: ModelOverrides): Promise<ResolvedModel> {
+function resolve(name: string, overrides?: ModelOverrides): ResolvedModel {
   const chain: RawModel[] = [];
   const visited = new Set<string>();
   let current: string | undefined = stripNamespace(name);
 
   while (current && !visited.has(current)) {
     visited.add(current);
-    const raw = await loadRawModel(current, overrides);
+    const raw = loadRawModel(current, overrides);
     if (!raw) break;
     chain.push(raw);
     current = raw.parent ? stripNamespace(raw.parent) : undefined;
@@ -108,13 +99,13 @@ async function resolve(name: string, overrides?: ModelOverrides): Promise<Resolv
   let elements: ModelElement[] = [];
   for (let i = chain.length - 1; i >= 0; i--) {
     if (chain[i].textures) Object.assign(textures, chain[i].textures);
-    if (chain[i].elements) elements = chain[i].elements!;
+    if (chain[i].elements) elements = chain[i].elements as unknown as ModelElement[];
   }
 
   return { textures, elements };
 }
 
-export function resolveModel(name: string, overrides?: ModelOverrides): Promise<ResolvedModel> {
+export function resolveModel(name: string, overrides?: ModelOverrides): ResolvedModel {
   const key = stripNamespace(name);
   if (overrides && Object.keys(overrides).length > 0) return resolve(key, overrides);
   let cached = resolveCache.get(key);
@@ -137,15 +128,6 @@ export function resolveTextureRef(textures: Record<string, string>, ref: string)
   return value;
 }
 
-const textureUrlCache = new Map<string, Promise<string | undefined>>();
-
-export function loadTextureUrl(path: string): Promise<string | undefined> {
-  const key = textureKey(path);
-  let cached = textureUrlCache.get(key);
-  if (!cached) {
-    const loader = textureLoaders[key];
-    cached = loader ? loader() : Promise.resolve(undefined);
-    textureUrlCache.set(key, cached);
-  }
-  return cached;
+export function loadTextureUrl(path: string): string | undefined {
+  return getTextureDefault(`${stripNamespace(path)}.png`);
 }
