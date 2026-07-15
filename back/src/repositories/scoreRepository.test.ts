@@ -25,6 +25,13 @@ describe('getScoreDistribution', () => {
     expect(await getScoreDistribution('alice')).toEqual({ 2: 2, 3: 1 });
   });
 
+  it('ignores empty score attempts so the stats do not expose a bogus 0-try bucket', async () => {
+    mock.enqueue([
+      [{ Attempts: JSON.stringify([]) }, { Attempts: JSON.stringify([['G'], ['G']]) }, { Attempts: JSON.stringify([['G'], ['G'], ['G']]) }],
+    ]);
+    expect(await getScoreDistribution('alice')).toEqual({ 2: 1, 3: 1 });
+  });
+
   it('returns an empty object when no scores exist', async () => {
     mock.enqueue([[]]);
     expect(await getScoreDistribution('alice')).toEqual({});
