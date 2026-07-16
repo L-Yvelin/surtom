@@ -14,22 +14,90 @@ beforeEach(() => {
 });
 
 describe('getScoreDistribution', () => {
-  it('counts attempts grouped by attempt count', async () => {
+  it('counts wins grouped by attempt count', async () => {
     mock.enqueue([
       [
-        { Attempts: JSON.stringify([['G'], ['G']]) },
-        { Attempts: JSON.stringify([['G'], ['G'], ['G']]) },
-        { Attempts: JSON.stringify([['G'], ['G']]) },
+        {
+          Attempts: JSON.stringify([
+            ['G', 'R'],
+            ['G', 'O'],
+          ]),
+          Answer: 'GO',
+        }, // gagné en 2
+        {
+          Attempts: JSON.stringify([
+            ['C', 'A', 'R'],
+            ['C', 'O', 'W'],
+            ['C', 'A', 'T'],
+          ]),
+          Answer: 'CAT',
+        }, // gagné en 3
+        {
+          Attempts: JSON.stringify([
+            ['G', 'R'],
+            ['G', 'O'],
+          ]),
+          Answer: 'GO',
+        }, // gagné en 2
       ],
     ]);
     expect(await getScoreDistribution('alice')).toEqual({ 2: 2, 3: 1 });
   });
 
-  it('ignores empty score attempts so the stats do not expose a bogus 0-try bucket', async () => {
+  it('routes empty attempts to the not-found bucket instead of dropping them', async () => {
     mock.enqueue([
-      [{ Attempts: JSON.stringify([]) }, { Attempts: JSON.stringify([['G'], ['G']]) }, { Attempts: JSON.stringify([['G'], ['G'], ['G']]) }],
+      [
+        { Attempts: JSON.stringify([]), Answer: 'CAT' }, // pas trouvé
+        {
+          Attempts: JSON.stringify([
+            ['G', 'R'],
+            ['G', 'O'],
+          ]),
+          Answer: 'GO',
+        }, // gagné en 2
+        {
+          Attempts: JSON.stringify([
+            ['C', 'A', 'R'],
+            ['C', 'O', 'W'],
+            ['C', 'A', 'T'],
+          ]),
+          Answer: 'CAT',
+        }, // gagné en 3
+      ],
     ]);
-    expect(await getScoreDistribution('alice')).toEqual({ 2: 1, 3: 1 });
+    expect(await getScoreDistribution('alice')).toEqual({ 0: 1, 2: 1, 3: 1 });
+  });
+
+  it('does not confuse a loss after 6 attempts with a win on the 6th attempt', async () => {
+    mock.enqueue([
+      [
+        {
+          // 6 tentatives, la dernière ne correspond pas à la réponse -> perdu
+          Attempts: JSON.stringify([
+            ['D', 'O', 'G'],
+            ['D', 'O', 'G'],
+            ['D', 'O', 'G'],
+            ['D', 'O', 'G'],
+            ['D', 'O', 'G'],
+            ['D', 'O', 'G'],
+          ]),
+          Answer: 'CAT',
+        },
+        {
+          // 6 tentatives, la dernière correspond à la réponse -> gagné en 6
+          Attempts: JSON.stringify([
+            ['D', 'O', 'G'],
+            ['D', 'O', 'G'],
+            ['D', 'O', 'G'],
+            ['D', 'O', 'G'],
+            ['D', 'O', 'G'],
+            ['C', 'A', 'T'],
+          ]),
+          Answer: 'CAT',
+        },
+      ],
+    ]);
+    expect(await getScoreDistribution('alice')).toEqual({ 0: 1, 6: 1 });
   });
 
   it('returns an empty object when no scores exist', async () => {

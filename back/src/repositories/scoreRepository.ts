@@ -2,10 +2,11 @@ import { and, eq, sql } from 'drizzle-orm';
 import { db } from '../db/client.js';
 import { message, player, scoreContent } from '../db/schema.js';
 
+// scoreRepository.ts
 export async function getScoreDistribution(username: string, worldId: string = 'fr'): Promise<{ [key: number]: number }> {
-  const result = await db.execute<{ Attempts: string }>(
+  const result = await db.execute<{ Attempts: string; Answer: string }>(
     sql`
-      SELECT sc.Attempts AS Attempts
+      SELECT sc.Attempts AS Attempts, sc.Answer AS Answer
       FROM ${scoreContent} sc
       JOIN ${message} m ON sc.ID = m.ID
       JOIN ${player} p ON m.PlayerID = p.ID
@@ -27,16 +28,22 @@ export async function getScoreDistribution(username: string, worldId: string = '
         )
     `,
   );
-  const rows = result[0] as unknown as Array<{ Attempts: string }>;
+  const rows = result[0] as unknown as Array<{ Attempts: string; Answer: string }>;
+  const NOT_FOUND = 0;
+
   return rows.reduce(
     (acc, row) => {
       const attempts = JSON.parse(row.Attempts);
       if (!Array.isArray(attempts) || attempts.length === 0) {
+        acc[NOT_FOUND] = (acc[NOT_FOUND] || 0) + 1;
         return acc;
       }
 
-      const count = attempts.length;
-      acc[count] = (acc[count] || 0) + 1;
+      const lastAttempt = attempts[attempts.length - 1];
+      const isWin = Array.isArray(lastAttempt) && lastAttempt.join('') === row.Answer;
+
+      const key = isWin ? attempts.length : NOT_FOUND;
+      acc[key] = (acc[key] || 0) + 1;
       return acc;
     },
     {} as Record<number, number>,
