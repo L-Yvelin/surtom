@@ -2,7 +2,6 @@ import { and, eq, sql } from 'drizzle-orm';
 import { db } from '../db/client.js';
 import { message, player, scoreContent } from '../db/schema.js';
 
-// scoreRepository.ts
 export async function getScoreDistribution(username: string, worldId: string = 'fr'): Promise<{ [key: number]: number }> {
   const result = await db.execute<{ Attempts: string; Answer: string }>(
     sql`
