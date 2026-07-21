@@ -20,11 +20,11 @@ export function StatsContent({ onClose, closeLabel }: StatsContentProps): JSX.El
 
   const entries: { label: string; value: number }[] = [
     { label: t('stats.gamesPlayed'), value: total },
-    ...Array.from({ length: 5 }, (_, index) => index + 1).map((tries) => ({
+    ...Array.from({ length: 6 }, (_, index) => index + 1).map((tries) => ({
       label: t('stats.solvedIn', { count: tries }),
       value: scores[tries] ?? 0,
     })),
-    { label: t('stats.notFound'), value: scores[6] ?? 0 },
+    { label: t('stats.notFound'), value: scores[0] ?? 0 },
   ];
 
   return (
