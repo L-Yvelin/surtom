@@ -13,7 +13,8 @@ interface KeyProps {
 }
 
 function Key({ keyLabel, keyColor, pressed, onKeyPressed }: KeyProps): JSX.Element {
-  const handleClick = () => {
+  const handlePointerDown = (e: React.PointerEvent) => {
+    e.preventDefault();
     if (onKeyPressed) {
       const event = new KeyboardEvent('keydown', { key: getButtonKeyEvent(keyLabel) });
       onKeyPressed(event);
@@ -26,7 +27,7 @@ function Key({ keyLabel, keyColor, pressed, onKeyPressed }: KeyProps): JSX.Eleme
         [classes.pressed]: pressed,
       })}
       style={getKeyStyle(keyLabel)}
-      onClick={handleClick}
+      onPointerDown={handlePointerDown}
     >
       {keyLabel}
     </button>
