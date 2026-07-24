@@ -5,6 +5,7 @@ export interface CellProps {
   letter: Letter | undefined;
   confidential?: boolean;
   cellSize?: CSSProperties['width'];
+  as?: 'td' | 'div';
 }
 
 export interface RowProps {

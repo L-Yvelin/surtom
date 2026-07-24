@@ -36,7 +36,7 @@ for (const file of cssFiles) {
 }
 
 // Global --mc-* CSS variables that are not textures (e.g. scale/layout vars)
-const GLOBAL_MC_VARS = new Set(['--mc-px']);
+const GLOBAL_MC_VARS = new Set(['--mc-px', '--mc-miss-color']);
 
 describe('texture registry consistency', () => {
   it('every --mc-* variable used in CSS is declared in the registry', () => {

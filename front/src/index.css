@@ -3,6 +3,8 @@
 :root {
   --button-height: min(8.5vw, 5vh);
   --mc-px: calc(2vmin / 8);
+
+  --mc-miss-color: #808080;
 }
 
 #root {

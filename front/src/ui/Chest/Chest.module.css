@@ -1,0 +1,96 @@
+.chest {
+  --chest-width: calc(18 * var(--chest-cols, 9) + 14);
+  flex: 1;
+  aspect-ratio: var(--chest-width) / 132;
+  max-width: 95%;
+  align-self: center;
+}
+
+.inner {
+  container-type: inline-size;
+  width: 100%;
+  height: 100%;
+}
+
+.top {
+  --chest-s: calc(100cqw / var(--chest-width, 176));
+  position: relative;
+  overflow: hidden;
+  padding-right: calc(8 * var(--chest-s));
+  background-image: var(--mc-generic-54);
+  background-position: 0 0;
+  background-size: calc(256 * var(--chest-s));
+  background-repeat: no-repeat;
+  background-clip: content-box;
+  height: calc(125 * var(--chest-s));
+}
+
+.top::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(8 * var(--chest-s));
+  background-image: var(--mc-generic-54);
+  background-position: calc(-168 * var(--chest-s)) 0;
+  background-size: calc(256 * var(--chest-s));
+  background-repeat: no-repeat;
+}
+
+.title {
+  position: absolute;
+  left: calc(8 * var(--chest-s));
+  top: calc(6 * var(--chest-s));
+  font-family: minecraft;
+  font-size: calc(8 * var(--chest-s));
+  color: var(--mc-label-color, #404040);
+  line-height: 1;
+  image-rendering: auto;
+  z-index: 1;
+}
+
+.grid {
+  position: absolute;
+  left: calc(8 * var(--chest-s));
+  top: calc(18 * var(--chest-s));
+  display: grid;
+  gap: calc(2 * var(--chest-s));
+  z-index: 1;
+}
+
+.slot {
+  width: calc(16 * var(--chest-s));
+  height: calc(16 * var(--chest-s));
+  overflow: hidden;
+}
+
+.slot:hover {
+  background-color: var(--mc-slot-hover, rgba(255, 255, 255, 0.4));
+}
+
+.bottom {
+  --chest-s: calc(100cqw / var(--chest-width, 176));
+  position: relative;
+  overflow: hidden;
+  padding-right: calc(8 * var(--chest-s));
+  background-image: var(--mc-generic-54);
+  background-position: 0 calc(-215 * var(--chest-s));
+  background-size: calc(256 * var(--chest-s));
+  background-repeat: no-repeat;
+  background-clip: content-box;
+  height: calc(7 * var(--chest-s));
+}
+
+.bottom::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(8 * var(--chest-s));
+  background-image: var(--mc-generic-54);
+  background-position: calc(-168 * var(--chest-s)) calc(-215 * var(--chest-s));
+  background-size: calc(256 * var(--chest-s));
+  background-repeat: no-repeat;
+}

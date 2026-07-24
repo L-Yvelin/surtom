@@ -32,6 +32,7 @@ import beaconButtonSelected from '@mc/textures/gui/sprites/container/beacon/butt
 import advancement from '@mc/textures/gui/sprites/toast/advancement.png';
 import tooltipBackground from '@mc/textures/gui/sprites/tooltip/background.png';
 import tooltipFrame from '@mc/textures/gui/sprites/tooltip/frame.png';
+import generic54 from '@mc/textures/gui/container/generic_54.png';
 
 export interface NineSlicePcts {
   top: number;
@@ -127,6 +128,7 @@ export const TEXTURES = {
   'gui/sprites/container/beacon/button.png': { default: beaconButton, cssVar: '--mc-beacon-button' },
   'gui/sprites/container/beacon/button_highlighted.png': { default: beaconButtonHighlighted, cssVar: '--mc-beacon-button-highlighted' },
   'gui/sprites/container/beacon/button_selected.png': { default: beaconButtonSelected, cssVar: '--mc-beacon-button-selected' },
+  'gui/container/generic_54.png': { default: generic54, cssVar: '--mc-generic-54' },
 } satisfies Record<string, TextureEntry>;
 
 export type TextureKey = keyof typeof TEXTURES;

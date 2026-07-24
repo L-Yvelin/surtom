@@ -5,29 +5,15 @@
 .cell {
   font-family: minecraft;
   text-transform: capitalize;
-  --border-size: 0.3vh;
   text-align: center;
   font-size: clamp(0vh, 5vh, calc((100vw / (var(--squares) + 1)) - 1vh));
   width: 6vh;
   height: 6vh;
   max-width: calc(100vw / (var(--squares) + 1) - 4vh / var(--squares));
   max-height: calc(100vw / (var(--squares) + 1) - 4vh / var(--squares));
-  background-color: #8b8b8b;
-  border-bottom: var(--border-size) white solid;
-  border-right: var(--border-size) white solid;
-  border-top: var(--border-size) rgb(55 55 55 / 80%) solid;
-  border-left: var(--border-size) rgb(55 55 55 / 80%) solid;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.noBorder {
-  border: #4c4c4c 0.5px solid;
-}
-
-.cell:hover {
-  background-color: #a1a1a1;
 }
 
 .correct {
@@ -45,7 +31,7 @@
 }
 
 .missed {
-  color: color-mix(in srgb, #808080, black 60%);
+  color: color-mix(in srgb, var(--mc-miss-color), black 60%);
   background-image: var(--mc-stone);
   background-size: cover;
   image-rendering: pixelated;

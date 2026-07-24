@@ -6,6 +6,8 @@
   flex-wrap: nowrap;
   justify-content: space-evenly;
   flex-grow: 1;
+  gap: 1.5vh;
+  padding-block: 1vh;
 }
 
 .main :not([data-backdrop]) {
