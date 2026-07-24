@@ -10,7 +10,7 @@ interface SuggestionDropdownProps {
 
 function SuggestionDropdown({ active, onSelect, selectedIndex }: SuggestionDropdownProps): JSX.Element {
   return (
-    <div className={classes.dropdown}>
+    <div className={classes.dropdown} data-ignore-click-outside="true">
       {active.suggestions.map((suggestion, i) => (
         <div
           key={suggestion.value + i}
