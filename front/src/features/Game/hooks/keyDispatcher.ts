@@ -9,7 +9,7 @@ export interface KeyDispatchDeps {
   gameKeyDown: (event: KeyboardEvent) => void;
 }
 
-export const isGameKey = (event: KeyboardEvent): boolean => ['Enter', 'Backspace'].includes(event.key) || /^[a-z]$/.test(event.key);
+export const isGameKey = (event: KeyboardEvent): boolean => ['Enter', 'Backspace'].includes(event.key) || /^[a-zA-Z]$/.test(event.key);
 
 export function dispatchKey(event: KeyboardEvent, state: 'up' | 'down', topScope: InputScope | null, deps: KeyDispatchDeps): void {
   if (topScope?.policy === 'block-all') return;
