@@ -1,4 +1,4 @@
-import { Server } from '@surtom/interfaces';
+import { Server, Word } from '@surtom/interfaces';
 import Cookies from 'js-cookie';
 import { useGameStore } from './useGameStore';
 import usePlayerStore from './usePlayerStore';
@@ -7,7 +7,7 @@ import { useCursorsStore } from './useCursorsStore';
 import { useWorldsStore } from './useWorldsStore';
 import { useWebSocketStore } from './useWebSocketStore';
 import useUIStore from './useUIStore';
-import { getValidatedWords, isGameFinished } from '../features/Game/utils/gameLogic';
+import { getValidatedWords, isGameFinished, isWinningWord } from '../features/Game/utils/gameLogic';
 import { UI } from '../ui/ids';
 import i18n from '../i18n';
 import { Achievement } from '../features/AchievementsStack/Achievement/Achievement';
@@ -18,6 +18,47 @@ const COOKIE_SESSION_HASH = 'modHash';
 
 function isChatVisible(): boolean {
   return !!useUIStore.getState().visibility[UI.CHAT];
+}
+
+function addIncomingMessage(message: Server.ChatMessage.Type, selfName: string): void {
+  const chat = useChatStore.getState();
+  chat.addMessage(message);
+  chat.scrollToBottom?.();
+  if (!isChatVisible() && isOthersChatMessage(message, selfName)) {
+    chat.setHasUnread(true);
+  }
+}
+
+function revealFinish(lastTry: Word, awardedXp?: number): void {
+  const game = useGameStore.getState();
+  if (!isGameFinished(game.tries)) return;
+
+  if (awardedXp !== undefined) {
+    usePlayerStore.getState().setXP(awardedXp);
+  }
+
+  const win = isWinningWord(lastTry);
+  game.setLetters([]);
+  useUIStore.getState().setVisibility(UI.CHAT, true);
+  game.addAchievement(
+    new Achievement(
+      i18n.t(win ? 'achievements.winTitle' : 'achievements.lossTitle'),
+      i18n.t(win ? 'achievements.winSubtitle' : 'achievements.lossSubtitle'),
+      AchievementIcon.BOOK,
+    ),
+  );
+  addIncomingMessage(
+    {
+      type: Server.MessageType.GAME_FINISHED,
+      content: {
+        win,
+        attempts: game.tries.map((word) => word.map((letter) => letter.letter)),
+        hasSharedScore: game.hasSharedScore,
+        timestamp: new Date().toISOString(),
+      },
+    },
+    usePlayerStore.getState().player.name,
+  );
 }
 
 export interface MessageHandlerDeps {
@@ -67,25 +108,9 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
     }
     case Server.MessageType.MESSAGE:
       if (data.content.type === Server.MessageType.GAME_FINISHED) {
-        const { win } = data.content.content;
         game.setHasSharedScore(data.content.content.hasSharedScore);
-        if (!game.wasFinishedOnLoad) {
-          game.setLetters([]);
-          useUIStore.getState().setVisibility(UI.CHAT, true);
-          game.addAchievement(
-            new Achievement(
-              i18n.t(win ? 'achievements.winTitle' : 'achievements.lossTitle'),
-              i18n.t(win ? 'achievements.winSubtitle' : 'achievements.lossSubtitle'),
-              AchievementIcon.BOOK,
-            ),
-          );
-        }
       }
-      chat.addMessage(data.content);
-      useChatStore.getState().scrollToBottom?.();
-      if (!isChatVisible() && isOthersChatMessage(data.content, player.player.name)) {
-        chat.setHasUnread(true);
-      }
+      addIncomingMessage(data.content, player.player.name);
       break;
     case Server.MessageType.DAILY_WORDS: {
       const solution = data.content.words[data.content.words.length - 1];
@@ -95,7 +120,11 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
         data.content.attempts.map((a: string) => a.split('')),
         solution,
       );
+      const isSingleNewTry = game.hasLoaded && validatedTries.length === (game.tries?.length ?? 0) + 1;
       game.setTries(validatedTries);
+      if (isSingleNewTry && isGameFinished(validatedTries)) {
+        revealFinish(validatedTries[validatedTries.length - 1], data.content.xp);
+      }
       if (!game.hasLoaded && isGameFinished(validatedTries)) {
         game.setShowProgression(false);
         game.setWasFinishedOnLoad(true);

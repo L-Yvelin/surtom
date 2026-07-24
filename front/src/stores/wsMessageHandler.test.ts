@@ -1,5 +1,7 @@
 import { Server } from '@surtom/interfaces';
 
+jest.mock('../i18n', () => ({ __esModule: true, default: { t: (k: string) => k } }));
+
 const cookiesSet = jest.fn();
 jest.mock('js-cookie', () => ({
   __esModule: true,
@@ -21,6 +23,8 @@ import { useGameStore } from './useGameStore';
 import usePlayerStore, { defaultPlayer } from './usePlayerStore';
 import { useChatStore } from './useChatStore';
 import { useCursorsStore } from './useCursorsStore';
+import useUIStore from './useUIStore';
+import { UI } from '../ui/ids';
 import { handleServerMessage, MessageHandlerDeps } from './wsMessageHandler';
 
 const makeDeps = (): MessageHandlerDeps & { setLastMessageTimestamp: jest.Mock } => ({
@@ -238,6 +242,77 @@ describe('DAILY_WORDS', () => {
     );
     expect(useGameStore.getState().hasLoaded).toBe(true);
     expect(useGameStore.getState().tries).toStrictEqual([]);
+  });
+
+  test('shows achievement and opens chat when a live winning try arrives', () => {
+    useGameStore.setState({ hasLoaded: true, tries: [] });
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
+    expect(useGameStore.getState().achievements).toHaveLength(1);
+    expect(useUIStore.getState().visibility[UI.CHAT]).toBe(true);
+  });
+
+  test('does NOT show achievement on initial load of a finished game', () => {
+    // hasLoaded starts false (beforeEach)
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
+    expect(useGameStore.getState().achievements).toHaveLength(0);
+    expect(useGameStore.getState().wasFinishedOnLoad).toBe(true);
+  });
+
+  test('does NOT re-fire when a second DAILY_WORDS arrives with the same tries after a live win', () => {
+    useGameStore.setState({ hasLoaded: true, tries: [] });
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
+    const achievementsAfterWin = useGameStore.getState().achievements.length;
+    // Simulate reconnect: same tries, game still finished
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
+    expect(useGameStore.getState().achievements).toHaveLength(achievementsAfterWin);
+  });
+
+  test('sets player XP when xp is present on a live finishing try', () => {
+    usePlayerStore.setState({ player: { ...baseUser, xp: 0 } });
+    useGameStore.setState({ hasLoaded: true, tries: [] });
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'], xp: 42 } }, makeDeps());
+    expect(usePlayerStore.getState().player.xp).toBe(42);
+  });
+
+  test('does not touch player XP when xp is absent (non-persistent world or mid-game try)', () => {
+    usePlayerStore.setState({ player: { ...baseUser, xp: 7 } });
+    useGameStore.setState({ hasLoaded: true, tries: [] });
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['ZZZZ'] } }, makeDeps());
+    expect(usePlayerStore.getState().player.xp).toBe(7);
+  });
+
+  test('clears letter inputs on live finish', () => {
+    useGameStore.setState({ hasLoaded: true, tries: [], letters: [{ letter: 'C', state: undefined }] });
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
+    expect(useGameStore.getState().letters).toStrictEqual([]);
+  });
+
+  test('adds a GAME_FINISHED chat message with win=true on live win', () => {
+    useGameStore.setState({ hasLoaded: true, tries: [] });
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
+    const msg = useChatStore.getState().messages.find((m) => m.type === Server.MessageType.GAME_FINISHED) as
+      | Server.ChatMessage.GameFinished
+      | undefined;
+    expect(msg?.content.win).toBe(true);
+  });
+
+  test('adds a GAME_FINISHED chat message with win=false on live loss (6th attempt)', () => {
+    useGameStore.setState({ hasLoaded: true, tries: [] });
+    const losing = ['ZZZZ', 'ZZZZ', 'ZZZZ', 'ZZZZ', 'ZZZZ'];
+    // Feed 5 non-winning tries so the store is in sync
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: losing } }, makeDeps());
+    // 6th try arrives — game over, loss
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: [...losing, 'ZZZZ'] } }, makeDeps());
+    const msg = useChatStore.getState().messages.find((m) => m.type === Server.MessageType.GAME_FINISHED) as
+      | Server.ChatMessage.GameFinished
+      | undefined;
+    expect(msg?.content.win).toBe(false);
+  });
+
+  test('does NOT add a GAME_FINISHED chat message on initial load of a finished game', () => {
+    // hasLoaded starts false (beforeEach)
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
+    expect(useChatStore.getState().messages.some((m) => m.type === Server.MessageType.GAME_FINISHED)).toBe(false);
   });
 });
 

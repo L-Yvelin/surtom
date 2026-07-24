@@ -133,32 +133,47 @@ describe('handleTryMessage', () => {
     expect(sendError).toHaveBeenCalledWith(fakeWs, "Vous avez déjà trouvé le mot aujourd'hui !");
   });
 
-  it('records a winning attempt, sends GAME_FINISHED and pushes XP', async () => {
+  it('records a winning attempt and echoes the tries with the awarded XP', async () => {
     await handleTryMessage(buildUser(), 'grass');
     expect(updateTry).toHaveBeenCalledWith(7, 1, [['G', 'R', 'A', 'S', 'S']], true);
     expect(sendToUser).toHaveBeenCalledWith(
       fakeWs,
       expect.objectContaining({
-        type: Server.MessageType.MESSAGE,
+        type: Server.MessageType.DAILY_WORDS,
+        content: expect.objectContaining({ attempts: ['GRASS'], xp: 123 }),
+      }),
+    );
+    expect(sendToUser).not.toHaveBeenCalledWith(fakeWs, expect.objectContaining({ type: Server.MessageType.XP }));
+    expect(sendToUser).not.toHaveBeenCalledWith(
+      fakeWs,
+      expect.objectContaining({
         content: expect.objectContaining({ type: Server.MessageType.GAME_FINISHED }),
       }),
     );
-    expect(sendToUser).toHaveBeenCalledWith(fakeWs, { type: Server.MessageType.XP, content: 123 });
   });
 
-  it('records a losing attempt without sending XP if not the last try', async () => {
+  it('records a losing attempt without XP if not the last try', async () => {
     await handleTryMessage(buildUser(), 'GRAPE');
     expect(updateTry).toHaveBeenCalledWith(7, 1, [['G', 'R', 'A', 'P', 'E']], false);
-    expect(sendToUser).not.toHaveBeenCalledWith(fakeWs, expect.objectContaining({ type: Server.MessageType.XP }));
+    expect(sendToUser).toHaveBeenCalledWith(
+      fakeWs,
+      expect.objectContaining({
+        type: Server.MessageType.DAILY_WORDS,
+        content: expect.not.objectContaining({ xp: expect.anything() }),
+      }),
+    );
   });
 
-  it('sends XP after the 6th non-winning attempt', async () => {
-    (getOrCreateTry as jest.Mock).mockResolvedValue({
-      attempts: Array.from({ length: 5 }, () => ['G', 'X', 'X', 'X', 'X']),
-      win: false,
-    });
+  it('includes the awarded XP after the 6th non-winning attempt', async () => {
+    tryState = { attempts: Array.from({ length: 5 }, () => ['G', 'X', 'X', 'X', 'X']), win: false };
     await handleTryMessage(buildUser(), 'GRAPE');
-    expect(sendToUser).toHaveBeenCalledWith(fakeWs, { type: Server.MessageType.XP, content: 123 });
+    expect(sendToUser).toHaveBeenCalledWith(
+      fakeWs,
+      expect.objectContaining({
+        type: Server.MessageType.DAILY_WORDS,
+        content: expect.objectContaining({ xp: 123 }),
+      }),
+    );
   });
 
   it('forwards repository errors via sendError when the player is missing on recordTry', async () => {
@@ -182,8 +197,8 @@ describe('handleTryMessage — ephemeral in-memory world', () => {
     expect(sendToUser).toHaveBeenCalledWith(
       fakeWs,
       expect.objectContaining({
-        type: Server.MessageType.MESSAGE,
-        content: expect.objectContaining({ type: Server.MessageType.GAME_FINISHED }),
+        type: Server.MessageType.DAILY_WORDS,
+        content: expect.objectContaining({ attempts: ['DIAMANT'] }),
       }),
     );
   });

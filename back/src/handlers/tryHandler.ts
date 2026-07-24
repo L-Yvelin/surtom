@@ -11,7 +11,7 @@ async function broadcastDailyWords(playerName: string, worldId: string, world: W
 
   const tries = await world.getTries(playerName);
   const isGameOver = tries.win || tries.attempts.length >= MAX_TRIES_PER_GAME;
-  const hasSharedScore = isGameOver ? await world.hasSharedScore(playerName) : false;
+  const xp = world.persistent && isGameOver ? await getPlayerXp(playerName) : undefined;
 
   const connections = Object.values(store.getState().users).filter((u) => u.privateUser.name === playerName && u.worldId === worldId);
 
@@ -21,23 +21,9 @@ async function broadcastDailyWords(playerName: string, worldId: string, world: W
       content: {
         words: game.validWords,
         attempts: tries.attempts.map((letters) => letters.join('')),
+        ...(xp !== undefined && { xp }),
       },
     });
-
-    if (isGameOver) {
-      sendToUser(conn.connection, {
-        type: Server.MessageType.MESSAGE,
-        content: {
-          type: Server.MessageType.GAME_FINISHED,
-          content: {
-            win: tries.win,
-            attempts: tries.attempts,
-            hasSharedScore,
-            timestamp: new Date().toISOString(),
-          },
-        },
-      });
-    }
   }
 }
 
@@ -80,17 +66,6 @@ export async function handleTryMessage(user: FullUser, content: string): Promise
     await world.recordTry(user.privateUser.name, attemptLetters, isWin);
 
     await broadcastDailyWords(user.privateUser.name, user.worldId, world);
-
-    const isGameOver = isWin || attempts.length + 1 >= MAX_TRIES_PER_GAME;
-    if (world.persistent && isGameOver) {
-      const xp = await getPlayerXp(user.privateUser.name);
-      const connections = Object.values(store.getState().users).filter(
-        (u) => u.privateUser.name === user.privateUser.name && u.worldId === user.worldId,
-      );
-      for (const conn of connections) {
-        sendToUser(conn.connection, { type: Server.MessageType.XP, content: xp });
-      }
-    }
   } catch (err) {
     sendError(user.connection, (err as Error).message);
   }

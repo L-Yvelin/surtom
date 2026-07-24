@@ -3,15 +3,13 @@ import i18n from '../../../i18n';
 import { Achievement } from '../../AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../../AchievementsStack/Achievement/utils';
 import { LetterState } from '@surtom/interfaces';
-import { isGuessValid, validateWord, isGameFinished } from '../utils/gameLogic';
+import { isGuessValid, isGameFinished } from '../utils/gameLogic';
 import { useGameStore } from '../../../stores/useGameStore';
 import { useWebSocketStore } from '../../../stores/useWebSocketStore';
 import { Client } from '@surtom/interfaces';
-
 const useGameLogic = () => {
   const letters = useGameStore((s) => s.letters);
   const setLetters = useGameStore((s) => s.setLetters);
-  const addTry = useGameStore((s) => s.addTry);
   const solution = useGameStore((s) => s.solution);
   const addAchievement = useGameStore((s) => s.addAchievement);
   const validWords = useGameStore((s) => s.validWords);
@@ -56,9 +54,6 @@ const useGameLogic = () => {
 
     if (isGuessValid(guess, solution) && validWords.includes(guess)) {
       sendMessage({ type: Client.MessageType.TRY, content: guess });
-      const guessColors = validateWord(guess, solution);
-      const newTry = letters.map((l, i) => ({ ...l, state: guessColors[i] }));
-      addTry(newTry);
       resetLetters();
     } else {
       addAchievement(

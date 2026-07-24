@@ -101,7 +101,7 @@ export namespace Server {
     | { type: MessageType.USER_LIST; content: User[] }
     | {
         type: MessageType.DAILY_WORDS;
-        content: { words: string[]; attempts: string[] };
+        content: { words: string[]; attempts: string[]; xp?: number };
       }
     | { type: MessageType.ATTEMPT; content: string }
     | { type: MessageType.XP; content: number }

@@ -62,7 +62,14 @@ export const useChatStore = create<ChatStore>((set) => ({
         isSavedChatMessage(m) && m.content.id === messageId ? ({ ...m, content: { ...m.content, deleted } } as Server.ChatMessage.Type) : m,
       ),
     })),
-  addMessage: (message) => set((state) => ({ messages: [...(state.messages || []), message] })),
+  addMessage: (message) =>
+    set((state) => {
+      const base =
+        message.type === Server.MessageType.GAME_FINISHED
+          ? (state.messages || []).filter((m) => m.type !== Server.MessageType.GAME_FINISHED)
+          : state.messages || [];
+      return { messages: [...base, message] };
+    }),
   scrollToBottom: () => {},
   setScrollToBottom: (fn) => set({ scrollToBottom: fn }),
   scrollToFirstUnread: () => {},

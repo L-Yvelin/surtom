@@ -31,12 +31,28 @@ beforeEach(() => {
   });
 });
 
+const makeGameFinished = (win: boolean): Server.ChatMessage.GameFinished => ({
+  type: Server.MessageType.GAME_FINISHED,
+  content: { win, attempts: [], hasSharedScore: false, timestamp: new Date().toISOString() },
+});
+
 describe('messages', () => {
   test('addMessage appends', () => {
     useChatStore.getState().addMessage(makeText('1'));
     useChatStore.getState().addMessage(makeText('2'));
     const ids = useChatStore.getState().messages.map((m) => (m as Server.ChatMessage.Text).content.id);
     expect(ids).toStrictEqual(['1', '2']);
+  });
+
+  test('addMessage replaces an existing GAME_FINISHED instead of appending a second one', () => {
+    useChatStore.getState().addMessage(makeText('1'));
+    useChatStore.getState().addMessage(makeGameFinished(true));
+    useChatStore.getState().addMessage(makeText('2'));
+    useChatStore.getState().addMessage(makeGameFinished(false));
+    const messages = useChatStore.getState().messages;
+    const gameFinished = messages.filter((m) => m.type === Server.MessageType.GAME_FINISHED);
+    expect(gameFinished).toHaveLength(1);
+    expect((gameFinished[0] as Server.ChatMessage.GameFinished).content.win).toBe(false);
   });
 
   test('removeMessage drops the matching id from saved messages', () => {
