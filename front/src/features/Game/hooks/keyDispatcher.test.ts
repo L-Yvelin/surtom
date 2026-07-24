@@ -18,7 +18,7 @@ describe('isGameKey', () => {
   test.each([
     ['a', true],
     ['z', true],
-    ['A', false],
+    ['A', true],
     ['Enter', true],
     ['Backspace', true],
     ['Escape', false],
