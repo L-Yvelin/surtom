@@ -179,6 +179,10 @@ export async function handleNewConnection(connection: WS, req: IncomingMessage):
     const isAlive = { value: true };
     const heartbeat = setupHeartbeat(user, isAlive);
 
+    connection.on('pong', () => {
+      isAlive.value = true;
+    });
+
     connection.on('message', (raw: WS.RawData) => {
       isAlive.value = true;
 
