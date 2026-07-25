@@ -16,7 +16,7 @@
   --chest-s: calc(100cqw / var(--chest-width, 176));
   position: relative;
   overflow: hidden;
-  padding-right: calc(8 * var(--chest-s));
+  padding-right: max(calc((var(--chest-width, 176) - 152) * var(--chest-s)), calc(8 * var(--chest-s)));
   background-image: var(--mc-generic-54);
   background-position: 0 0;
   background-size: calc(256 * var(--chest-s));
@@ -31,9 +31,9 @@
   right: 0;
   top: 0;
   bottom: 0;
-  width: calc(8 * var(--chest-s));
+  width: max(calc((var(--chest-width, 176) - 152) * var(--chest-s)), calc(8 * var(--chest-s)));
   background-image: var(--mc-generic-54);
-  background-position: calc(-168 * var(--chest-s)) 0;
+  background-position: max(calc((var(--chest-width, 176) - 328) * var(--chest-s)), calc(-168 * var(--chest-s))) 0;
   background-size: calc(256 * var(--chest-s));
   background-repeat: no-repeat;
 }
@@ -73,7 +73,7 @@
   --chest-s: calc(100cqw / var(--chest-width, 176));
   position: relative;
   overflow: hidden;
-  padding-right: calc(8 * var(--chest-s));
+  padding-right: max(calc((var(--chest-width, 176) - 152) * var(--chest-s)), calc(8 * var(--chest-s)));
   background-image: var(--mc-generic-54);
   background-position: 0 calc(-215 * var(--chest-s));
   background-size: calc(256 * var(--chest-s));
@@ -88,9 +88,9 @@
   right: 0;
   top: 0;
   bottom: 0;
-  width: calc(8 * var(--chest-s));
+  width: max(calc((var(--chest-width, 176) - 152) * var(--chest-s)), calc(8 * var(--chest-s)));
   background-image: var(--mc-generic-54);
-  background-position: calc(-168 * var(--chest-s)) calc(-215 * var(--chest-s));
+  background-position: max(calc((var(--chest-width, 176) - 328) * var(--chest-s)), calc(-168 * var(--chest-s))) calc(-215 * var(--chest-s));
   background-size: calc(256 * var(--chest-s));
   background-repeat: no-repeat;
 }
