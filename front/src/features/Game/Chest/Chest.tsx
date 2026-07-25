@@ -60,7 +60,7 @@ function Chest(): JSX.Element {
 
   const title = (
     <>
-      {getChestLabel(shownSolution.length)}{' '}
+      <span className={classes.titleText}>{getChestLabel(shownSolution.length)}</span>
       {gameFinished && <EyeToggle open={showProgression} onClick={() => setShowProgression(!showProgression)} />}
     </>
   );

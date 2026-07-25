@@ -1,4 +1,11 @@
 .eyeToggle {
   all: unset;
   cursor: pointer;
+  flex-shrink: 0;
+}
+
+.titleText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
