@@ -51,13 +51,22 @@ export default function useKeyboardLayout({ fallback, valueInStorage, setValueIn
       if (e.ctrlKey || e.altKey || e.metaKey || !codes.has(e.code)) return;
       samples[e.code] = e.key.toLowerCase();
       const detected = score(samples);
-      setValueInStorage?.(detected);
-      setLayout(detected);
+
+      if (!valueInStorage) {
+        setValueInStorage?.(detected);
+        setLayout(detected);
+      }
     };
 
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [setValueInStorage]);
+  }, [setValueInStorage, valueInStorage]);
+
+  useEffect(() => {
+    if (valueInStorage) {
+      setLayout(valueInStorage);
+    }
+  }, [valueInStorage]);
 
   return layout;
 }
