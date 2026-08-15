@@ -67,10 +67,15 @@ function computeOverrides(packs: ResourcePack[], selectedIds: string[]): Texture
 }
 
 function computeModelOverrides(packs: ResourcePack[], selectedIds: string[]): ModelOverrides {
+  // Override textures and models as long as both are present in the pack.
+  // This mediates cases where a prioritized pack overrides texture but as no model, which may collide
+  // with the parent packs models not providing the required default minecraft model.
   const overrides: ModelOverrides = {};
   for (const id of [...selectedIds].reverse()) {
     const pack = packs.find((p) => p.id === id);
-    if (pack) Object.assign(overrides, pack.models);
+    if (pack && Object.keys(pack.textures).length > 0) {
+      Object.assign(overrides, pack.models);
+    }
   }
   return overrides;
 }
