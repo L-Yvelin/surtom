@@ -18,6 +18,7 @@ beforeEach(() => {
     solution: undefined,
     validWords: [],
     tries: [],
+    hasPendingTry: false,
     letters: [],
     showProgression: true,
     playerList: [],
@@ -63,6 +64,25 @@ describe('tries', () => {
     expect(useGameStore.getState().tries).toStrictEqual([word]);
     useGameStore.getState().addTry(word);
     expect(useGameStore.getState().tries).toHaveLength(2);
+  });
+});
+
+describe('hasPendingTry', () => {
+  test('defaults to false', () => {
+    expect(useGameStore.getState().hasPendingTry).toBe(false);
+  });
+
+  test('setHasPendingTry toggles the flag', () => {
+    useGameStore.getState().setHasPendingTry(true);
+    expect(useGameStore.getState().hasPendingTry).toBe(true);
+    useGameStore.getState().setHasPendingTry(false);
+    expect(useGameStore.getState().hasPendingTry).toBe(false);
+  });
+
+  test('resetWorld clears a pending flag left over from an in-flight guess', () => {
+    useGameStore.getState().setHasPendingTry(true);
+    useGameStore.getState().resetWorld();
+    expect(useGameStore.getState().hasPendingTry).toBe(false);
   });
 });
 

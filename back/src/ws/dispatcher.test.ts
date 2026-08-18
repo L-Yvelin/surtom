@@ -153,4 +153,34 @@ describe('rate limiting', () => {
     expect(handleChatMessage).toHaveBeenCalled();
     expect(user.messageCooldown).toBe(COOLDOWN_INITIAL_SECONDS);
   });
+
+  it('keeps multiplying the cooldown on each consecutive throttled attempt (exponential backoff, not a single bump)', async () => {
+    const user = buildUser();
+    const message = { type: Client.MessageType.CHAT_MESSAGE, content: { text: 'spam' } } as Client.ChatMessage;
+
+    for (let i = 0; i < RATE_LIMIT_FREE_MESSAGES; i++) {
+      await handleMessage(user, message);
+    }
+
+    user.lastMessageTimestamp = new Date().toISOString();
+    await handleMessage(user, message); // 1st throttled attempt
+    expect(user.messageCooldown).toBe(COOLDOWN_INITIAL_SECONDS * user.cooldownMultiplier);
+
+    user.lastMessageTimestamp = new Date().toISOString();
+    await handleMessage(user, message); // 2nd throttled attempt while still within the (now longer) cooldown
+    expect(user.messageCooldown).toBe(COOLDOWN_INITIAL_SECONDS * user.cooldownMultiplier * user.cooldownMultiplier);
+
+    // Both throttled attempts must have been dropped — only the free-quota messages got through.
+    expect((handleChatMessage as jest.Mock).mock.calls.length).toBe(RATE_LIMIT_FREE_MESSAGES);
+  });
+
+  it('does not rate-limit slash commands (they are dispatched before the rate limiter runs)', async () => {
+    const user = buildUser();
+    for (let i = 0; i < RATE_LIMIT_FREE_MESSAGES + 5; i++) {
+      await handleMessage(user, { type: Client.MessageType.CHAT_MESSAGE, content: { text: '/help' } });
+    }
+    expect(handleCommand).toHaveBeenCalledTimes(RATE_LIMIT_FREE_MESSAGES + 5);
+    expect(user.messageCount).toBe(0);
+    expect(user.messageCooldown).toBe(COOLDOWN_INITIAL_SECONDS);
+  });
 });

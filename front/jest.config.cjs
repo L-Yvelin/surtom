@@ -4,6 +4,8 @@ module.exports = {
   transform: {
     // Files using Vite-only import.meta.glob get a custom transform that strips those calls first
     '^.+/src/mc/[^/]+\\.tsx?$': '<rootDir>/jest.importMetaGlobTransform.cjs',
+    // Files reading Vite-only import.meta.env get a custom transform that rewrites to process.env
+    '^.+/src/stores/useWebSocketStore\\.ts$': '<rootDir>/jest.importMetaEnvTransform.cjs',
     '^.+\\.[jt]sx?$': [
       'ts-jest',
       {

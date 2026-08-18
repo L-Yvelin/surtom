@@ -26,6 +26,7 @@ import { useCursorsStore } from './useCursorsStore';
 import useUIStore from './useUIStore';
 import { UI } from '../ui/ids';
 import { handleServerMessage, MessageHandlerDeps } from './wsMessageHandler';
+import { getValidatedWords } from '../features/Game/utils/gameLogic';
 
 const makeDeps = (): MessageHandlerDeps & { setLastMessageTimestamp: jest.Mock } => ({
   setLastMessageTimestamp: jest.fn(),
@@ -47,6 +48,7 @@ beforeEach(() => {
     solution: undefined,
     validWords: [],
     tries: [],
+    hasPendingTry: false,
     letters: [],
     showProgression: true,
     playerList: [],
@@ -313,6 +315,57 @@ describe('DAILY_WORDS', () => {
     // hasLoaded starts false (beforeEach)
     handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
     expect(useChatStore.getState().messages.some((m) => m.type === Server.MessageType.GAME_FINISHED)).toBe(false);
+  });
+});
+
+describe('DAILY_WORDS reconciling an optimistic pending try', () => {
+  // Mirrors what useGameLogic.processGuess does on Enter: append the guess row and flag it as
+  // pending BEFORE the server confirms it, so `tries.length` already includes it when the
+  // DAILY_WORDS response for that guess arrives.
+  const submitOptimisticGuess = (word: string) => {
+    const solution = useGameStore.getState().solution!;
+    const states = getValidatedWords([word.split('')], solution)[0].map((l) => l.state);
+    useGameStore.getState().addTry(word.split('').map((letter, i) => ({ letter, state: states[i] })));
+    useGameStore.getState().setHasPendingTry(true);
+  };
+
+  test('fires the win reveal exactly once when the server confirms an accepted winning guess', () => {
+    useGameStore.setState({ hasLoaded: true, tries: [], solution: 'CHAT', validWords: ['CHAT'] });
+    submitOptimisticGuess('CHAT');
+    expect(useGameStore.getState().tries).toHaveLength(1);
+
+    // Server confirms: same attempt count as the client already has optimistically.
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
+
+    expect(useGameStore.getState().hasPendingTry).toBe(false);
+    expect(useGameStore.getState().achievements).toHaveLength(1);
+    expect(useChatStore.getState().messages.some((m) => m.type === Server.MessageType.GAME_FINISHED)).toBe(true);
+  });
+
+  test('rolls back a rejected guess without firing the reveal (e.g. max tries reached in a race)', () => {
+    useGameStore.setState({ hasLoaded: true, tries: [], solution: 'CHAT', validWords: ['CHAT'] });
+    submitOptimisticGuess('ZZZZ');
+    expect(useGameStore.getState().tries).toHaveLength(1);
+
+    // Server rejected the guess and echoes back the unchanged (empty) tries list.
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: [] } }, makeDeps());
+
+    expect(useGameStore.getState().tries).toHaveLength(0);
+    expect(useGameStore.getState().hasPendingTry).toBe(false);
+    expect(useGameStore.getState().achievements).toHaveLength(0);
+    expect(useChatStore.getState().messages.some((m) => m.type === Server.MessageType.GAME_FINISHED)).toBe(false);
+  });
+
+  test('rolls back a rejected non-final guess and still allows a later live win to reveal normally', () => {
+    useGameStore.setState({ hasLoaded: true, tries: [], solution: 'CHAT', validWords: ['CHAT'] });
+    submitOptimisticGuess('ZZZZ');
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: [] } }, makeDeps());
+    expect(useGameStore.getState().hasPendingTry).toBe(false);
+
+    submitOptimisticGuess('CHAT');
+    handleServerMessage({ type: Server.MessageType.DAILY_WORDS, content: { words: ['CHAT'], attempts: ['CHAT'] } }, makeDeps());
+
+    expect(useGameStore.getState().achievements).toHaveLength(1);
   });
 });
 

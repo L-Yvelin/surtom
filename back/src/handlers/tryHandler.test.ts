@@ -119,18 +119,35 @@ describe('handleTryMessage', () => {
   });
 
   it('rejects when the user has already used 6 tries', async () => {
-    (getOrCreateTry as jest.Mock).mockResolvedValue({
-      attempts: Array.from({ length: 6 }, () => ['G', 'X', 'X', 'X', 'X']),
-      win: false,
-    });
+    const existingAttempts = Array.from({ length: 6 }, () => ['G', 'X', 'X', 'X', 'X']);
+    (getOrCreateTry as jest.Mock).mockResolvedValue({ attempts: existingAttempts, win: false });
     await handleTryMessage(buildUser(), 'GRASS');
     expect(sendError).toHaveBeenCalledWith(fakeWs, 'Nombre maximum de tentatives atteint.');
+    // The rejection must still re-broadcast the UNCHANGED tries, so an optimistically-added
+    // guess row on the client gets rolled back by the authoritative DAILY_WORDS replace.
+    expect(updateTry).not.toHaveBeenCalled();
+    expect(sendToUser).toHaveBeenCalledWith(
+      fakeWs,
+      expect.objectContaining({
+        type: Server.MessageType.DAILY_WORDS,
+        content: expect.objectContaining({ attempts: existingAttempts.map((letters) => letters.join('')) }),
+      }),
+    );
   });
 
   it('rejects when the user has already won', async () => {
-    (getOrCreateTry as jest.Mock).mockResolvedValue({ attempts: [['G', 'R', 'A', 'S', 'S']], win: true });
+    const existingAttempts = [['G', 'R', 'A', 'S', 'S']];
+    (getOrCreateTry as jest.Mock).mockResolvedValue({ attempts: existingAttempts, win: true });
     await handleTryMessage(buildUser(), 'GRASS');
     expect(sendError).toHaveBeenCalledWith(fakeWs, "Vous avez déjà trouvé le mot aujourd'hui !");
+    expect(updateTry).not.toHaveBeenCalled();
+    expect(sendToUser).toHaveBeenCalledWith(
+      fakeWs,
+      expect.objectContaining({
+        type: Server.MessageType.DAILY_WORDS,
+        content: expect.objectContaining({ attempts: ['GRASS'], xp: 123 }),
+      }),
+    );
   });
 
   it('records a winning attempt and echoes the tries with the awarded XP', async () => {
