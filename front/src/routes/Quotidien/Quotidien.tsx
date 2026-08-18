@@ -5,12 +5,12 @@ import Main from '../../features/Game/Game';
 import { useGlobalKeyPress } from '../../features/Game/hooks/useKeyPress';
 import AchievementsStack from '../../features/AchievementsStack/AchievementsStack';
 import Tab from '../../features/Tab/Tab';
-import Chat from '../../features/Chat/Chat';
 import Cursors from '../../features/Cursors/Cursors';
 import OwnCursorNameTag from '../../features/Cursors/OwnCursorNameTag/OwnCursorNameTag';
 import WorldLoading from '../../ui/WorldLoading/WorldLoading';
 import { useGameSession } from '../../hooks/useGameSession';
 import { useJoinWorld } from '../../hooks/useJoinWorld';
+import classes from './Quotidien.module.css';
 
 function Quotidien(): JSX.Element {
   const tabButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -31,10 +31,7 @@ function Quotidien(): JSX.Element {
 
       <Cursors />
 
-      <div className="windows">
-        <Chat chatButtonRef={chatButtonRef} />
-        <Tab tabButtonRef={tabButtonRef} />
-      </div>
+      <Tab tabButtonRef={tabButtonRef} className={classes.tab} />
 
       <AchievementsStack lifeTime={4} transitionDuration={0.5} />
 

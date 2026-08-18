@@ -13,7 +13,3 @@
 #root-container.dark {
   background-image: var(--mc-netherrack);
 }
-
-.windows {
-  z-index: var(--z-popups);
-}

@@ -6,6 +6,7 @@
   flex-wrap: nowrap;
   justify-content: space-evenly;
   flex-grow: 1;
+  min-height: 0;
   gap: 1.5vh;
   padding-block: 1vh;
 }
@@ -26,4 +27,20 @@
   z-index: 1;
   backdrop-filter: brightness(1.7);
   mask-image: radial-gradient(closest-side, black, gray 50%, transparent);
+}
+
+.contentWrapper {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: minmax(0, 1fr);
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+  gap: 1.5vh;
 }

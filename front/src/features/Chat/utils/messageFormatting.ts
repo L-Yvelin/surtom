@@ -69,6 +69,12 @@ export function getPlayerColor(moderatorLevel: number, pseudo: string): string {
   }
 }
 
+export function getMessageKey(message: Server.ChatMessage.Type): string {
+  const timestamp = 'timestamp' in message.content ? message.content.timestamp : 'no-ts';
+  const id = 'id' in message.content ? message.content.id : 'no-id';
+  return `${timestamp}-${message.type}-${id}`;
+}
+
 export function isTextMessage(message: Server.ChatMessage.Type): message is Server.ChatMessage.Text {
   return (
     message.type === Server.MessageType.TEXT ||

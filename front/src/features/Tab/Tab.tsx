@@ -5,16 +5,16 @@ import { JSX } from 'react';
 import { useGameStore } from '../../stores/useGameStore';
 import useScreen from '../../hooks/useScreen';
 
-interface TabProps {
+interface TabProps extends React.HTMLAttributes<HTMLDivElement> {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
-function Tab({ tabButtonRef }: TabProps): JSX.Element {
+function Tab({ tabButtonRef, className, ...rest }: TabProps): JSX.Element {
   const playerList = useGameStore((s) => s.playerList);
   const { screenRef, visible } = useScreen('tab', tabButtonRef);
 
   return (
-    <div className={classNames(classes.tab, { [classes.hidden]: !visible })} ref={screenRef}>
+    <div {...rest} className={classNames(classes.tab, className, { [classes.hidden]: !visible })} ref={screenRef}>
       {playerList.map((user) => (
         <div key={user.name}>
           <TabItem user={user} />

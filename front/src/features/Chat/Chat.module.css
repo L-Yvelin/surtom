@@ -19,6 +19,12 @@
   visibility: hidden;
 }
 
+.backgrounded {
+  visibility: hidden;
+  z-index: var(--z-popups-background);
+  /* width: 70%; */
+}
+
 .messagesWrapper {
   display: flex;
   position: relative;

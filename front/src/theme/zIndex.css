@@ -1,6 +1,7 @@
 :root {
   --z-game-backdrop: 0;
   --z-game-content: 10;
+  --z-popups-background: 20;
   --z-popups: 30;
   --z-route-overlay: 40;
   --z-header: 50;

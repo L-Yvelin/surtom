@@ -1,0 +1,27 @@
+.root {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1vh;
+  overflow: hidden;
+  opacity: 0.8;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.message {
+  animation: fadeOut 10s forwards;
+}
+
+@keyframes fadeOut {
+  0%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

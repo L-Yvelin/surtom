@@ -10,6 +10,7 @@ import { useChatStore } from '../../stores/useChatStore';
 import { useWebSocketStore } from '../../stores/useWebSocketStore';
 import arrowImage from '../../assets/images/ui/arrow.png';
 import Button from '../../ui/Button/Button';
+import { isMobile } from 'react-device-detect';
 
 interface MessageContent {
   text?: string;
@@ -64,7 +65,10 @@ function Chat({ chatButtonRef }: ChatProps): JSX.Element {
   }, [visible, sendMessage]);
 
   return (
-    <div className={classNames(classes.chat, { [classes.hidden]: !visible })} ref={screenRef}>
+    <div
+      className={classNames(classes.chat, { [classes.hidden]: !visible && isMobile, [classes.backgrounded]: !visible && !isMobile })}
+      ref={screenRef}
+    >
       <div className={classes.messagesWrapper}>
         <MessagesBox messages={messages} onCloseToBottom={setIsNearBottom} />
         <div className={classes.scrollToBottom}>

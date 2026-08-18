@@ -6,15 +6,17 @@ import classes from './Messages.module.css';
 import { useChatStore } from '../../../stores/useChatStore';
 import usePlayerStore from '../../../stores/usePlayerStore';
 import { findFirstUnreadId } from '../utils/unread';
+import { getMessageKey } from '../utils/messageFormatting';
+import classNames from 'classnames';
 
-interface MessagesBoxProps {
+type MessagesBoxProps = React.HTMLAttributes<HTMLDivElement> & {
   messages: Server.ChatMessage.Type[];
   onCloseToBottom?: (isNearBottom: boolean) => void;
-}
+};
 
 const NEAR_BOTTOM_THRESHOLD = 150;
 
-function MessagesBox({ messages, onCloseToBottom }: MessagesBoxProps): JSX.Element {
+function MessagesBox({ messages, onCloseToBottom, className, ...props }: MessagesBoxProps): JSX.Element {
   const { t, i18n } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const setScrollToBottom = useChatStore((state) => state.setScrollToBottom);
@@ -44,6 +46,9 @@ function MessagesBox({ messages, onCloseToBottom }: MessagesBoxProps): JSX.Eleme
       target.scrollIntoView({ behavior: 'instant', block: 'center' });
     } else {
       scrollToBottom();
+      setTimeout(() => {
+        scrollToBottom();
+      }, 1000);
     }
   };
 
@@ -69,7 +74,7 @@ function MessagesBox({ messages, onCloseToBottom }: MessagesBoxProps): JSX.Eleme
   for (let i = 0; i < reversed.length; i++) {
     const msg = reversed[i];
     const hasTimestamp = 'timestamp' in msg.content;
-    const id = `${hasTimestamp ? msg.content.timestamp : 'no-ts'}-${msg.type}-${'id' in msg.content ? msg.content.id : 'no-id'}`;
+    const id = getMessageKey(msg);
 
     let dateSeparator: JSX.Element | null = null;
 
@@ -116,7 +121,7 @@ function MessagesBox({ messages, onCloseToBottom }: MessagesBoxProps): JSX.Eleme
   }
 
   return (
-    <div ref={containerRef} className={classes.messages} onScroll={handleScroll}>
+    <div ref={containerRef} className={classNames(classes.messages, className)} onScroll={handleScroll} {...props}>
       {renderedMessages}
     </div>
   );

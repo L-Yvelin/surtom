@@ -5,6 +5,7 @@ import Credits from './Credits/Credits';
 import Keyboard from './Keyboard/Keyboard';
 import ExperienceBar from './ExperienceBar/ExperienceBar';
 import Chest from './Chest/Chest';
+import Chat from '../Chat/Chat';
 import usePlayerStore from '../../stores/usePlayerStore';
 import useKeyboardLayout from './hooks/useKeyboardLayout';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -13,6 +14,10 @@ import GameMenu from '../../ui/GameMenu/GameMenu';
 import Backdrop from '../../ui/Backdrop/Backdrop';
 import useTheme from '../../hooks/useTheme';
 import { Theme } from '../../theme/theme';
+import BackgroundChat from '../Chat/BackgroundChat/BackgroundChat';
+import { isDesktop } from 'react-device-detect';
+import { useVisibility } from '../../stores/useUIStore';
+import { UI } from '../../ui/ids';
 
 interface GameProps {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;
@@ -30,16 +35,24 @@ function Game({ tabButtonRef, menuButtonRef, chatButtonRef }: GameProps): JSX.El
   });
   const player = usePlayerStore((s) => s.player);
   const { theme } = useTheme();
+  const chatVisible = useVisibility(UI.CHAT);
 
   return (
     <main className={classes.main}>
       <Backdrop />
       {theme === Theme.LIGHT && <div className={classes.light} aria-hidden />}
       <Tools tabButtonRef={tabButtonRef} menuButtonRef={menuButtonRef} chatButtonRef={chatButtonRef} />
-      <Chest />
-      <ExperienceBar xp={player?.xp} />
-      <Keyboard layout={layout} />
-      <Credits />
+
+      <div className={classes.contentWrapper}>
+        <BackgroundChat hidden={!isDesktop || chatVisible} />
+        <div className={classes.content}>
+          <Chest />
+          <ExperienceBar xp={player?.xp} />
+          <Keyboard layout={layout} />
+          <Credits />
+        </div>
+        <Chat chatButtonRef={chatButtonRef} />
+      </div>
 
       <GameMenu menuButtonRef={menuButtonRef} />
     </main>
