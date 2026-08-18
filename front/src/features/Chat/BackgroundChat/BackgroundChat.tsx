@@ -9,6 +9,7 @@ const FADE_OUT_MS = 10000;
 
 type BackgroundChatProps = {
   className?: string;
+  messageClassName?: string;
   hidden?: boolean;
 };
 
@@ -17,7 +18,7 @@ type FadingMessage = {
   message: Server.ChatMessage.Type;
 };
 
-function BackgroundChat({ className, hidden }: BackgroundChatProps): JSX.Element {
+function BackgroundChat({ className, messageClassName, hidden }: BackgroundChatProps): JSX.Element {
   const liveMessage = useChatStore((s) => s.liveMessage);
   const [fading, setFading] = useState<FadingMessage[]>([]);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -41,7 +42,7 @@ function BackgroundChat({ className, hidden }: BackgroundChatProps): JSX.Element
     <div className={classNames(classes.root, className, { [classes.hidden]: hidden })} aria-hidden>
       {fading.map(({ key, message }) => (
         <div key={key} className={classes.message}>
-          <Message message={message} />
+          <Message message={message} className={messageClassName} />
         </div>
       ))}
     </div>

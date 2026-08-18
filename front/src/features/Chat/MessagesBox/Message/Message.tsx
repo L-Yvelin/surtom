@@ -1,4 +1,4 @@
-import { JSX } from 'react';
+import { HTMLAttributes, JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Message.module.css';
 import { Server, Client } from '@surtom/interfaces';
@@ -52,7 +52,11 @@ const MessageContent = ({ message }: { message: Server.ChatMessage.Type }): JSX.
   }
 };
 
-function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element {
+type MessageProps = HTMLAttributes<HTMLDivElement> & {
+  message: Server.ChatMessage.Type;
+};
+
+function Message({ message, className, ...rest }: MessageProps): JSX.Element {
   const { t } = useTranslation();
   const setAnsweringTo = useChatStore((s) => s.setAnsweringTo);
   const focusInput = useChatStore((s) => s.focusInput);
@@ -124,7 +128,8 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
       {isMobile ? (
         <SwipeActions direction="left" onSwipeOne={() => handleRespond(id)} onSwipeTwo={() => handleDelete(id)}>
           <div
-            className={classNames(classes.message, { [classes.mention]: isMention, [classes.deleted]: deleted })}
+            {...rest}
+            className={classNames(classes.message, { [classes.mention]: isMention, [classes.deleted]: deleted }, className)}
             id={id}
             data-replyId={isTextMessage(message) ? message.content.replyId : undefined}
           >
@@ -139,7 +144,8 @@ function Message({ message }: { message: Server.ChatMessage.Type }): JSX.Element
         </SwipeActions>
       ) : (
         <div
-          className={classNames(classes.message, { [classes.mention]: isMention, [classes.deleted]: deleted })}
+          {...rest}
+          className={classNames(classes.message, { [classes.mention]: isMention, [classes.deleted]: deleted }, className)}
           id={id}
           data-replyId={isTextMessage(message) ? message.content.replyId : undefined}
         >

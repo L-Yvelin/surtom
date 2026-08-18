@@ -49,7 +49,10 @@ function Game({ tabButtonRef, menuButtonRef, chatButtonRef }: GameProps): JSX.El
           <Chest />
           <ExperienceBar xp={player?.xp} />
           <Keyboard layout={layout} />
-          <Credits />
+          <div className={classes.creditsSlot}>
+            <BackgroundChat hidden={isDesktop || chatVisible} className={classes.creditsChat} messageClassName={classes.creditsMessage} />
+            <Credits />
+          </div>
         </div>
         <Chat chatButtonRef={chatButtonRef} />
       </div>

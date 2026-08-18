@@ -44,3 +44,22 @@
   justify-content: space-evenly;
   gap: 1.5vh;
 }
+
+.creditsSlot {
+  position: relative;
+  align-self: center;
+  width: fit-content;
+}
+
+.creditsChat {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+}
+
+.creditsMessage {
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 0.8vh;
+}
