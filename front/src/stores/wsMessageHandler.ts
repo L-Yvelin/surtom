@@ -13,6 +13,7 @@ import i18n from '../i18n';
 import { Achievement } from '../features/AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../features/AchievementsStack/Achievement/utils';
 import { hasUnreadMessages, isOthersChatMessage } from '../features/Chat/utils/unread';
+import { isSavedChatMessage } from '../features/Chat/utils/messageFormatting';
 
 const COOKIE_SESSION_HASH = 'modHash';
 
@@ -111,7 +112,9 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
         game.setHasSharedScore(data.content.content.hasSharedScore);
       }
       addIncomingMessage(data.content, player.player.name);
-      chat.emitLiveMessage(data.content);
+      if (isSavedChatMessage(data.content)) {
+        chat.emitLiveMessage(data.content);
+      }
       break;
     case Server.MessageType.DAILY_WORDS: {
       const solution = data.content.words[data.content.words.length - 1];
