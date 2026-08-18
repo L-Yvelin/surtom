@@ -30,7 +30,7 @@ export interface WorldStore {
   toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<number | null>;
 
   getTries(playerName: string): Promise<{ attempts: string[][]; win: boolean }>;
-  recordTry(playerName: string, attempt: string[], win: boolean): Promise<void>;
+  recordTry(playerName: string, attempt: string[], win: boolean): Promise<{ attempts: string[][]; win: boolean }>;
 
   hasSharedScore(playerName: string): Promise<boolean>;
   markScoreShared(playerName: string): Promise<void>;
@@ -73,7 +73,7 @@ export class DbWorldStore implements WorldStore {
     return getOrCreateTry(player.id, wordHistoryId);
   }
 
-  async recordTry(playerName: string, attempt: string[], win: boolean): Promise<void> {
+  async recordTry(playerName: string, attempt: string[], win: boolean): Promise<{ attempts: string[][]; win: boolean }> {
     const player = await getPlayerByName(playerName);
     if (!player) throw new Error('Utilisateur introuvable.');
     const { wordHistoryId } = await getTodaysWordAndHistoryId(this.worldId);
@@ -81,6 +81,7 @@ export class DbWorldStore implements WorldStore {
     const newAttempts = [...existing.attempts, attempt];
     const newWin = existing.win || win;
     await updateTry(player.id, wordHistoryId, newAttempts, newWin);
+    return { attempts: newAttempts, win: newWin };
   }
 
   async hasSharedScore(playerName: string): Promise<boolean> {
@@ -180,12 +181,14 @@ export class MemoryWorldStore implements WorldStore {
     return this.tries.get(playerName) ?? { attempts: [], win: false };
   }
 
-  async recordTry(playerName: string, attempt: string[], win: boolean): Promise<void> {
+  async recordTry(playerName: string, attempt: string[], win: boolean): Promise<{ attempts: string[][]; win: boolean }> {
     const current = this.tries.get(playerName) ?? { attempts: [], win: false };
-    this.tries.set(playerName, {
+    const updated = {
       attempts: [...current.attempts, attempt],
       win: current.win || win,
-    });
+    };
+    this.tries.set(playerName, updated);
+    return updated;
   }
 
   async hasSharedScore(playerName: string): Promise<boolean> {

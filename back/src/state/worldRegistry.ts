@@ -16,7 +16,7 @@ export interface World {
   saveMessage(user: Server.PrivateUser, message: Client.ChatMessage, scoreSolution?: string): Promise<Server.Message>;
   toggleMessageDeleted(messageId: number, user: Server.PrivateUser): Promise<number | null>;
   getTries(playerName: string): Promise<{ attempts: string[][]; win: boolean }>;
-  recordTry(playerName: string, attempt: string[], win: boolean): Promise<void>;
+  recordTry(playerName: string, attempt: string[], win: boolean): Promise<{ attempts: string[][]; win: boolean }>;
   hasSharedScore(playerName: string): Promise<boolean>;
   markScoreShared(playerName: string): Promise<void>;
 

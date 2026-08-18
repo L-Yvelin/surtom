@@ -5,11 +5,13 @@ import { worldRegistry, World } from '../state/worldRegistry.js';
 import { sendError, sendToUser } from '../ws/send.js';
 import store from '../state/store.js';
 
-async function broadcastDailyWords(playerName: string, worldId: string, world: World): Promise<void> {
-  const game = await world.getGameState();
-  if (!game.solution) return;
-
-  const tries = await world.getTries(playerName);
+async function broadcastDailyWords(
+  playerName: string,
+  worldId: string,
+  world: World,
+  validWords: string[],
+  tries: { attempts: string[][]; win: boolean },
+): Promise<void> {
   const isGameOver = tries.win || tries.attempts.length >= MAX_TRIES_PER_GAME;
   const xp = world.persistent && isGameOver ? await getPlayerXp(playerName) : undefined;
 
@@ -19,7 +21,7 @@ async function broadcastDailyWords(playerName: string, worldId: string, world: W
     sendToUser(conn.connection, {
       type: Server.MessageType.DAILY_WORDS,
       content: {
-        words: game.validWords,
+        words: validWords,
         attempts: tries.attempts.map((letters) => letters.join('')),
         ...(xp !== undefined && { xp }),
       },
@@ -63,9 +65,9 @@ export async function handleTryMessage(user: FullUser, content: string): Promise
 
     const attemptLetters = attempt.toUpperCase().split('');
     const isWin = attempt.toUpperCase() === solution;
-    await world.recordTry(user.privateUser.name, attemptLetters, isWin);
+    const newTries = await world.recordTry(user.privateUser.name, attemptLetters, isWin);
 
-    await broadcastDailyWords(user.privateUser.name, user.worldId, world);
+    await broadcastDailyWords(user.privateUser.name, user.worldId, world, game.validWords, newTries);
   } catch (err) {
     sendError(user.connection, (err as Error).message);
   }
