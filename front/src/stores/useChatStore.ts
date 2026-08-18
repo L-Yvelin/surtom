@@ -4,9 +4,18 @@ import { defaultPlayer } from './usePlayerStore';
 import { isSavedChatMessage } from '../features/Chat/utils/messageFormatting';
 import i18n from '../i18n';
 
+export interface LiveMessage {
+  message: Server.ChatMessage.Type;
+  id: number;
+}
+
+let liveMessageSeq = 0;
+
 interface ChatStore {
   messages: Server.ChatMessage.Type[];
   setMessages: (messages: Server.ChatMessage.Type[]) => void;
+  liveMessage: LiveMessage | null;
+  emitLiveMessage: (message: Server.ChatMessage.Type) => void;
   answeringTo: string | null;
   setAnsweringTo: (id: string | null) => void;
   removeMessage: (messageId: string) => void;
@@ -43,6 +52,7 @@ const initialSession = {
 
 const initialWorld = {
   messages: [defaultMessage] as Server.ChatMessage.Type[],
+  liveMessage: null as LiveMessage | null,
   ...initialSession,
 };
 
@@ -51,6 +61,7 @@ export const useChatStore = create<ChatStore>((set) => ({
   lastReadAt: null,
   hasUnread: false,
   setMessages: (messages) => set({ messages }),
+  emitLiveMessage: (message) => set({ liveMessage: { message, id: (liveMessageSeq += 1) } }),
   setAnsweringTo: (id) => set({ answeringTo: id }),
   removeMessage: (messageId) =>
     set((state) => ({

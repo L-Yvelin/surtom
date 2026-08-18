@@ -111,6 +111,7 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
         game.setHasSharedScore(data.content.content.hasSharedScore);
       }
       addIncomingMessage(data.content, player.player.name);
+      chat.emitLiveMessage(data.content);
       break;
     case Server.MessageType.DAILY_WORDS: {
       const solution = data.content.words[data.content.words.length - 1];
