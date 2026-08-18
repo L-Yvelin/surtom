@@ -120,8 +120,12 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
         data.content.attempts.map((a: string) => a.split('')),
         solution,
       );
-      const isSingleNewTry = game.hasLoaded && validatedTries.length === (game.tries?.length ?? 0) + 1;
+      const previousTriesCount = game.tries?.length ?? 0;
+      const isSingleNewTry = game.hasPendingTry
+        ? validatedTries.length === previousTriesCount
+        : game.hasLoaded && validatedTries.length === previousTriesCount + 1;
       game.setTries(validatedTries);
+      game.setHasPendingTry(false);
       if (isSingleNewTry && isGameFinished(validatedTries)) {
         revealFinish(validatedTries[validatedTries.length - 1], data.content.xp);
       }

@@ -3,7 +3,7 @@ import i18n from '../../../i18n';
 import { Achievement } from '../../AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../../AchievementsStack/Achievement/utils';
 import { LetterState } from '@surtom/interfaces';
-import { isGuessValid, isGameFinished } from '../utils/gameLogic';
+import { isGuessValid, isGameFinished, validateWord } from '../utils/gameLogic';
 import { useGameStore } from '../../../stores/useGameStore';
 import { useWebSocketStore } from '../../../stores/useWebSocketStore';
 import { Client } from '@surtom/interfaces';
@@ -12,6 +12,8 @@ const useGameLogic = () => {
   const setLetters = useGameStore((s) => s.setLetters);
   const solution = useGameStore((s) => s.solution);
   const addAchievement = useGameStore((s) => s.addAchievement);
+  const addTry = useGameStore((s) => s.addTry);
+  const setHasPendingTry = useGameStore((s) => s.setHasPendingTry);
   const validWords = useGameStore((s) => s.validWords);
   const gameFinished = useGameStore((s) => isGameFinished(s.tries));
 
@@ -53,6 +55,9 @@ const useGameLogic = () => {
       .toUpperCase();
 
     if (isGuessValid(guess, solution) && validWords.includes(guess)) {
+      const states = validateWord(guess, solution);
+      addTry(guess.split('').map((letter, i) => ({ letter, state: states[i] })));
+      setHasPendingTry(true);
       sendMessage({ type: Client.MessageType.TRY, content: guess });
       resetLetters();
     } else {

@@ -56,10 +56,12 @@ export async function handleTryMessage(user: FullUser, content: string): Promise
 
     if (attempts.length >= MAX_TRIES_PER_GAME) {
       sendError(user.connection, 'Nombre maximum de tentatives atteint.');
+      await broadcastDailyWords(user.privateUser.name, user.worldId, world, game.validWords, { attempts, win });
       return;
     }
     if (win) {
       sendError(user.connection, world.persistent ? "Vous avez déjà trouvé le mot aujourd'hui !" : 'Vous avez déjà trouvé le mot !');
+      await broadcastDailyWords(user.privateUser.name, user.worldId, world, game.validWords, { attempts, win });
       return;
     }
 

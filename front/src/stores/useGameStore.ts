@@ -11,6 +11,8 @@ interface GameState {
   tries: Tries;
   setTries: (tries: Tries) => void;
   addTry: (word: Word) => void;
+  hasPendingTry: boolean;
+  setHasPendingTry: (hasPendingTry: boolean) => void;
   letters: Word;
   showProgression: boolean;
   setShowProgression: (showProgression: boolean) => void;
@@ -43,6 +45,7 @@ const initialWorld = {
   solution: undefined as string | undefined,
   validWords: [] as string[],
   tries: [] as Tries,
+  hasPendingTry: false,
   showProgression: true,
   playerList: [] as Server.User[],
   scores: {} as ScoreStats,
@@ -58,6 +61,7 @@ export const useGameStore = create<GameState>((set) => ({
   setValidWords: (validWords) => set({ validWords }),
   setTries: (tries) => set({ tries }),
   addTry: (word) => set((state) => ({ tries: [...(state.tries || []), word] })),
+  setHasPendingTry: (hasPendingTry) => set({ hasPendingTry }),
   setShowProgression: (showProgression) => set({ showProgression }),
   setLetters: (letters) => set({ letters }),
   setPlayerList: (players) => set({ playerList: players }),
