@@ -1,8 +1,8 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import fr from './locales/fr.json';
-import en from './locales/en.json';
+import { en } from './locales/en';
+import { fr } from './locales/fr';
 
 export const SUPPORTED_LOCALES = ['fr', 'en'] as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
@@ -17,9 +17,9 @@ void i18n
       fr: { translation: fr },
       en: { translation: en },
     },
-    fallbackLng: DEFAULT_LOCALE,
-    supportedLngs: SUPPORTED_LOCALES as unknown as string[],
-    nonExplicitSupportedLngs: true,
+    lng: DEFAULT_LOCALE,
+    fallbackLng: false,
+    supportedLngs: [...SUPPORTED_LOCALES],
     interpolation: { escapeValue: false },
     detection: {
       order: ['localStorage', 'navigator'],
@@ -27,6 +27,9 @@ void i18n
       caches: ['localStorage'],
     },
     returnNull: false,
+    parseMissingKeyHandler: (key) => {
+      throw new Error(`Missing translation key: ${key}`);
+    },
   });
 
 export default i18n;
