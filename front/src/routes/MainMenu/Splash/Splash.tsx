@@ -8,8 +8,8 @@ interface SplashProps {
 }
 
 function pickSplashLine(t: (key: string, opts?: object) => string): string {
-  const lines = t('splash.lines', { returnObjects: true }) as string[];
-  if (!Array.isArray(lines) || lines.length === 0) return '';
+  const lines = Object.values(t('splash', { returnObjects: true }) as Record<string, string>);
+  if (lines.length === 0) return '';
   return lines[Math.floor(Math.random() * lines.length)];
 }
 

@@ -1,19 +1,7 @@
-type DeepStringify<T> = T extends readonly string[]
-  ? readonly string[]
-  : T extends string
-    ? string
-    : T extends object
-      ? { [K in keyof T]: DeepStringify<T[K]> }
-      : never;
-
-const splashLines = [
-  'NAN NAN!',
-  '🗣️SUTOM! 🤖SURTOM?',
-  'Tah la mondialisation',
-  'Coded in France',
-  '100% gluten-free',
-  'Inspired, not plagiarized',
-] as const;
+/**
+ * Keeps keys structure but avoids `as const` to enforce the values
+ */
+type LocaleValue<T> = T extends string ? string : T extends object ? { [K in keyof T]: LocaleValue<T[K]> } : never;
 
 export const en = {
   common: {
@@ -36,7 +24,10 @@ export const en = {
     quit: 'Quit Game',
   },
   splash: {
-    lines: splashLines,
+    line1: 'NAN NAN!',
+    line2: '🗣️SUTOM! 🤖SUR TOM?',
+    line3: '« Surtom, what a fucking empire »',
+    line4: '3236B033382733362E37224E313036B033382732302E362245',
   },
   worldSelection: {
     title: 'Select World',
@@ -197,4 +188,4 @@ export const en = {
   },
 } as const;
 
-export type Translation = DeepStringify<typeof en>;
+export type Translation = LocaleValue<typeof en>;

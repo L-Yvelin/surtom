@@ -1,14 +1,5 @@
 import type { Translation } from './en';
 
-const splashLines = [
-  'NAN NAN!',
-  '🗣️SUTOM! 🤖SURTOM?',
-  'Tah la mondialisation',
-  'Coded in France',
-  '100% gluten-free',
-  'Inspired, not plagiarized',
-] as const;
-
 export const fr: Translation = {
   common: {
     appName: 'SURTOM',
@@ -30,7 +21,10 @@ export const fr: Translation = {
     quit: 'Quitter le jeu',
   },
   splash: {
-    lines: splashLines,
+    line1: 'NAN NAN!',
+    line2: '🗣️SUTOM! 🤖SUR TOM?',
+    line3: "« C'est un putain d'empire Surtom »",
+    line4: '3236B033382733362E37224E313036B033382732302E362245',
   },
   worldSelection: {
     title: 'Choix du monde',
