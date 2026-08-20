@@ -9,7 +9,7 @@ function winningAttemptCount(attemptsJson: string, answer: string): number {
   if (!Array.isArray(attempts) || attempts.length === 0) return UNSOLVED;
 
   const lastAttempt = attempts[attempts.length - 1];
-  const isWin = Array.isArray(lastAttempt) && lastAttempt.join('') === answer;
+  const isWin = Array.isArray(lastAttempt) && lastAttempt.join('').toUpperCase() === answer.toUpperCase();
 
   return isWin ? attempts.length : UNSOLVED;
 }

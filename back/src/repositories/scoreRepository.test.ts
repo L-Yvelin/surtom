@@ -94,6 +94,20 @@ describe('getScoreDistribution', () => {
     expect(await getScoreDistribution('alice')).toEqual({ 0: 1, 6: 1 });
   });
 
+  it('counts a win when the stored answer is lowercase but attempts are uppercase', async () => {
+    mock.enqueue([
+      {
+        attempts: JSON.stringify([
+          ['C', 'A', 'R', 'R', 'O', 'T', 'S'],
+          ['C', 'R', 'E', 'A', 'T', 'I', 'N'],
+          ['C', 'R', 'A', 'F', 'T', 'E', 'R'],
+        ]),
+        answer: 'crafter',
+      },
+    ]);
+    expect(await getScoreDistribution('alice')).toEqual({ 3: 1 });
+  });
+
   it('returns an empty object when no scores exist', async () => {
     mock.enqueue([]);
     expect(await getScoreDistribution('alice')).toEqual({});
