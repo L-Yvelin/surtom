@@ -1,9 +1,21 @@
 import { Server, MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 import FullUser from '../models/FullUser.js';
 import { getPlayerXp } from '../repositories/xpRepository.js';
+import { getScoreDistribution } from '../repositories/scoreRepository.js';
 import { worldRegistry, World } from '../state/worldRegistry.js';
 import { sendError, sendToUser } from '../ws/send.js';
 import store from '../state/store.js';
+
+function connectionsForPlayer(playerName: string, worldId: string): FullUser[] {
+  return Object.values(store.getState().users).filter((u) => u.privateUser.name === playerName && u.worldId === worldId);
+}
+
+async function sendStatsToPlayer(playerName: string, worldId: string): Promise<void> {
+  const distribution = await getScoreDistribution(playerName, worldId);
+  for (const conn of connectionsForPlayer(playerName, worldId)) {
+    sendToUser(conn.connection, { type: Server.MessageType.STATS, content: distribution });
+  }
+}
 
 async function broadcastDailyWords(
   playerName: string,
@@ -15,9 +27,7 @@ async function broadcastDailyWords(
   const isGameOver = tries.win || tries.attempts.length >= MAX_TRIES_PER_GAME;
   const xp = world.persistent && isGameOver ? await getPlayerXp(playerName) : undefined;
 
-  const connections = Object.values(store.getState().users).filter((u) => u.privateUser.name === playerName && u.worldId === worldId);
-
-  for (const conn of connections) {
+  for (const conn of connectionsForPlayer(playerName, worldId)) {
     sendToUser(conn.connection, {
       type: Server.MessageType.DAILY_WORDS,
       content: {
@@ -70,6 +80,11 @@ export async function handleTryMessage(user: FullUser, content: string): Promise
     const newTries = await world.recordTry(user.privateUser.name, attemptLetters, isWin);
 
     await broadcastDailyWords(user.privateUser.name, user.worldId, world, game.validWords, newTries);
+
+    const isGameOver = newTries.win || newTries.attempts.length >= MAX_TRIES_PER_GAME;
+    if (world.persistent && isGameOver) {
+      await sendStatsToPlayer(user.privateUser.name, user.worldId);
+    }
   } catch (err) {
     sendError(user.connection, (err as Error).message);
   }

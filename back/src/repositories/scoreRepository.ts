@@ -1,41 +1,27 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, gte, or } from 'drizzle-orm';
+import { MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 import { db } from '../db/client.js';
-import { message, player, scoreContent } from '../db/schema.js';
+import { message, player, scoreContent, tryTable, wordHistory } from '../db/schema.js';
 
 const UNSOLVED = 0;
 
-function winningAttemptCount(attemptsJson: string, answer: string): number {
-  const attempts = JSON.parse(attemptsJson);
-  if (!Array.isArray(attempts) || attempts.length === 0) return UNSOLVED;
-
-  const lastAttempt = attempts[attempts.length - 1];
-  const isWin = Array.isArray(lastAttempt) && lastAttempt.join('').toUpperCase() === answer.toUpperCase();
-
-  return isWin ? attempts.length : UNSOLVED;
-}
-
 export async function getScoreDistribution(username: string, worldId: string = 'fr'): Promise<{ [key: number]: number }> {
-  const isUserScore = and(eq(message.type, 'SCORE'), eq(player.username, username), eq(message.worldId, worldId));
+  const finishedGames = await db
+    .select({ win: tryTable.win, attemptCount: tryTable.attemptCount })
+    .from(tryTable)
+    .innerJoin(player, eq(tryTable.playerId, player.id))
+    .innerJoin(wordHistory, eq(tryTable.wordHistoryId, wordHistory.id))
+    .where(
+      and(
+        eq(player.username, username),
+        eq(wordHistory.worldId, worldId),
+        or(eq(tryTable.win, 1), gte(tryTable.attemptCount, MAX_TRIES_PER_GAME)),
+      ),
+    );
 
-  const firstScorePerDay = db
-    .select({ firstScoreTime: sql<Date>`MIN(${message.timestamp})`.as('first_score_time') })
-    .from(message)
-    .innerJoin(player, eq(message.playerId, player.id))
-    .where(isUserScore)
-    .groupBy(sql`DATE(${message.timestamp})`)
-    .as('first_score_per_day');
-
-  const dailyScores = await db
-    .select({ attempts: scoreContent.attempts, answer: scoreContent.answer })
-    .from(scoreContent)
-    .innerJoin(message, eq(scoreContent.id, message.id))
-    .innerJoin(player, eq(message.playerId, player.id))
-    .innerJoin(firstScorePerDay, eq(message.timestamp, firstScorePerDay.firstScoreTime))
-    .where(isUserScore);
-
-  return dailyScores.reduce<Record<number, number>>((gamesByAttemptCount, { attempts, answer }) => {
-    const attemptCount = winningAttemptCount(attempts, answer);
-    gamesByAttemptCount[attemptCount] = (gamesByAttemptCount[attemptCount] ?? 0) + 1;
+  return finishedGames.reduce<Record<number, number>>((gamesByAttemptCount, { win, attemptCount }) => {
+    const key = win ? attemptCount : UNSOLVED;
+    gamesByAttemptCount[key] = (gamesByAttemptCount[key] ?? 0) + 1;
     return gamesByAttemptCount;
   }, {});
 }

@@ -23,6 +23,7 @@ jest.mock('../repositories/xpRepository.js', () => ({
 jest.mock('../repositories/scoreRepository.js', () => ({
   __esModule: true,
   getDailyScore: jest.fn(),
+  getScoreDistribution: jest.fn(),
 }));
 jest.mock('../ws/send.js', () => ({
   __esModule: true,
@@ -35,7 +36,7 @@ import { getPlayerByName } from '../repositories/playerRepository.js';
 import { getOrCreateTodaysWord, getTodaysWordAndHistoryId, getValidWords } from '../repositories/wordRepository.js';
 import { getOrCreateTry, updateTry } from '../repositories/tryRepository.js';
 import { getPlayerXp } from '../repositories/xpRepository.js';
-import { getDailyScore } from '../repositories/scoreRepository.js';
+import { getDailyScore, getScoreDistribution } from '../repositories/scoreRepository.js';
 import { sendError, sendSuccess, sendToUser } from '../ws/send.js';
 import { worldRegistry } from '../state/worldRegistry.js';
 import store from '../state/store.js';
@@ -93,6 +94,7 @@ beforeEach(() => {
   });
   (getPlayerXp as jest.Mock).mockResolvedValue(123);
   (getDailyScore as jest.Mock).mockResolvedValue([]);
+  (getScoreDistribution as jest.Mock).mockResolvedValue({ 1: 2 });
   jest.spyOn(console, 'log').mockImplementation(() => {});
 });
 
@@ -179,6 +181,18 @@ describe('handleTryMessage', () => {
         content: expect.not.objectContaining({ xp: expect.anything() }),
       }),
     );
+  });
+
+  it('pushes a fresh STATS message once the game is finished', async () => {
+    await handleTryMessage(buildUser(), 'grass');
+    expect(getScoreDistribution).toHaveBeenCalledWith('alice', 'fr');
+    expect(sendToUser).toHaveBeenCalledWith(fakeWs, { type: Server.MessageType.STATS, content: { 1: 2 } });
+  });
+
+  it('does not push STATS while the game is still ongoing', async () => {
+    await handleTryMessage(buildUser(), 'GRAPE');
+    expect(getScoreDistribution).not.toHaveBeenCalled();
+    expect(sendToUser).not.toHaveBeenCalledWith(fakeWs, expect.objectContaining({ type: Server.MessageType.STATS }));
   });
 
   it('includes the awarded XP after the 6th non-winning attempt', async () => {
