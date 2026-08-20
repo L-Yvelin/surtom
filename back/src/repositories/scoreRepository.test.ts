@@ -41,9 +41,9 @@ describe('getScoreDistribution', () => {
     expect(await getScoreDistribution('alice')).toEqual({ 0: 1, 6: 1 });
   });
 
-  it('ignores unfinished games that were abandoned before winning or exhausting tries', async () => {
+  it('counts unfinished games abandoned before winning in the unsolved bucket', async () => {
     mock.enqueue([game('GRASS', 'CRANE', 'BREAD'), game('GRASS', 'CRANE', 'GRASS')]);
-    expect(await getScoreDistribution('alice')).toEqual({ 2: 1 });
+    expect(await getScoreDistribution('alice')).toEqual({ 0: 1, 2: 1 });
   });
 
   it('counts a win when the stored answer is lowercase but attempts are uppercase', async () => {

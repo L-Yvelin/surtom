@@ -1,5 +1,4 @@
 import { and, eq } from 'drizzle-orm';
-import { MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 import { db } from '../db/client.js';
 import { message, minecraftSolution, player, scoreContent, tryTable, wordHistory } from '../db/schema.js';
 
@@ -18,9 +17,7 @@ function parseAttempts(raw: string): string[] {
 function scoreBucket(attempts: string[], answer: string): number | null {
   if (attempts.length === 0) return null;
   const won = attempts[attempts.length - 1].toUpperCase() === answer.toUpperCase();
-  if (won) return attempts.length;
-  if (attempts.length >= MAX_TRIES_PER_GAME) return UNSOLVED;
-  return null;
+  return won ? attempts.length : UNSOLVED;
 }
 
 export async function getScoreDistribution(username: string, worldId: string = 'fr'): Promise<{ [key: number]: number }> {
