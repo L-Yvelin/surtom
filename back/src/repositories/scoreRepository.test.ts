@@ -16,97 +16,91 @@ beforeEach(() => {
 describe('getScoreDistribution', () => {
   it('counts wins grouped by attempt count', async () => {
     mock.enqueue([
-      [
-        {
-          Attempts: JSON.stringify([
-            ['G', 'R'],
-            ['G', 'O'],
-          ]),
-          Answer: 'GO',
-        }, // gagné en 2
-        {
-          Attempts: JSON.stringify([
-            ['C', 'A', 'R'],
-            ['C', 'O', 'W'],
-            ['C', 'A', 'T'],
-          ]),
-          Answer: 'CAT',
-        }, // gagné en 3
-        {
-          Attempts: JSON.stringify([
-            ['G', 'R'],
-            ['G', 'O'],
-          ]),
-          Answer: 'GO',
-        }, // gagné en 2
-      ],
+      {
+        attempts: JSON.stringify([
+          ['G', 'R'],
+          ['G', 'O'],
+        ]),
+        answer: 'GO',
+      }, // gagné en 2
+      {
+        attempts: JSON.stringify([
+          ['C', 'A', 'R'],
+          ['C', 'O', 'W'],
+          ['C', 'A', 'T'],
+        ]),
+        answer: 'CAT',
+      }, // gagné en 3
+      {
+        attempts: JSON.stringify([
+          ['G', 'R'],
+          ['G', 'O'],
+        ]),
+        answer: 'GO',
+      }, // gagné en 2
     ]);
     expect(await getScoreDistribution('alice')).toEqual({ 2: 2, 3: 1 });
   });
 
   it('routes empty attempts to the not-found bucket instead of dropping them', async () => {
     mock.enqueue([
-      [
-        { Attempts: JSON.stringify([]), Answer: 'CAT' }, // pas trouvé
-        {
-          Attempts: JSON.stringify([
-            ['G', 'R'],
-            ['G', 'O'],
-          ]),
-          Answer: 'GO',
-        }, // gagné en 2
-        {
-          Attempts: JSON.stringify([
-            ['C', 'A', 'R'],
-            ['C', 'O', 'W'],
-            ['C', 'A', 'T'],
-          ]),
-          Answer: 'CAT',
-        }, // gagné en 3
-      ],
+      { attempts: JSON.stringify([]), answer: 'CAT' }, // pas trouvé
+      {
+        attempts: JSON.stringify([
+          ['G', 'R'],
+          ['G', 'O'],
+        ]),
+        answer: 'GO',
+      }, // gagné en 2
+      {
+        attempts: JSON.stringify([
+          ['C', 'A', 'R'],
+          ['C', 'O', 'W'],
+          ['C', 'A', 'T'],
+        ]),
+        answer: 'CAT',
+      }, // gagné en 3
     ]);
     expect(await getScoreDistribution('alice')).toEqual({ 0: 1, 2: 1, 3: 1 });
   });
 
   it('does not confuse a loss after 6 attempts with a win on the 6th attempt', async () => {
     mock.enqueue([
-      [
-        {
-          // 6 tentatives, la dernière ne correspond pas à la réponse -> perdu
-          Attempts: JSON.stringify([
-            ['D', 'O', 'G'],
-            ['D', 'O', 'G'],
-            ['D', 'O', 'G'],
-            ['D', 'O', 'G'],
-            ['D', 'O', 'G'],
-            ['D', 'O', 'G'],
-          ]),
-          Answer: 'CAT',
-        },
-        {
-          // 6 tentatives, la dernière correspond à la réponse -> gagné en 6
-          Attempts: JSON.stringify([
-            ['D', 'O', 'G'],
-            ['D', 'O', 'G'],
-            ['D', 'O', 'G'],
-            ['D', 'O', 'G'],
-            ['D', 'O', 'G'],
-            ['C', 'A', 'T'],
-          ]),
-          Answer: 'CAT',
-        },
-      ],
+      {
+        // 6 tentatives, la dernière ne correspond pas à la réponse -> perdu
+        attempts: JSON.stringify([
+          ['D', 'O', 'G'],
+          ['D', 'O', 'G'],
+          ['D', 'O', 'G'],
+          ['D', 'O', 'G'],
+          ['D', 'O', 'G'],
+          ['D', 'O', 'G'],
+        ]),
+        answer: 'CAT',
+      },
+      {
+        // 6 tentatives, la dernière correspond à la réponse -> gagné en 6
+        attempts: JSON.stringify([
+          ['D', 'O', 'G'],
+          ['D', 'O', 'G'],
+          ['D', 'O', 'G'],
+          ['D', 'O', 'G'],
+          ['D', 'O', 'G'],
+          ['C', 'A', 'T'],
+        ]),
+        answer: 'CAT',
+      },
     ]);
     expect(await getScoreDistribution('alice')).toEqual({ 0: 1, 6: 1 });
   });
 
   it('returns an empty object when no scores exist', async () => {
-    mock.enqueue([[]]);
+    mock.enqueue([]);
     expect(await getScoreDistribution('alice')).toEqual({});
   });
 
   it('accepts a worldId without throwing', async () => {
-    mock.enqueue([[]]);
+    mock.enqueue([]);
     await expect(getScoreDistribution('alice', 'en')).resolves.toEqual({});
   });
 });
