@@ -1,27 +1,41 @@
-import { and, eq, gte, or } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { MAX_TRIES_PER_GAME } from '@surtom/interfaces';
 import { db } from '../db/client.js';
-import { message, player, scoreContent, tryTable, wordHistory } from '../db/schema.js';
+import { message, minecraftSolution, player, scoreContent, tryTable, wordHistory } from '../db/schema.js';
 
 const UNSOLVED = 0;
 
+function parseAttempts(raw: string): string[] {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((attempt) => (Array.isArray(attempt) ? attempt.join('') : String(attempt)));
+  } catch {
+    return [];
+  }
+}
+
+function scoreBucket(attempts: string[], answer: string): number | null {
+  if (attempts.length === 0) return null;
+  const won = attempts[attempts.length - 1].toUpperCase() === answer.toUpperCase();
+  if (won) return attempts.length;
+  if (attempts.length >= MAX_TRIES_PER_GAME) return UNSOLVED;
+  return null;
+}
+
 export async function getScoreDistribution(username: string, worldId: string = 'fr'): Promise<{ [key: number]: number }> {
-  const finishedGames = await db
-    .select({ win: tryTable.win, attemptCount: tryTable.attemptCount })
+  const games = await db
+    .select({ attempts: tryTable.attempts, answer: minecraftSolution.word })
     .from(tryTable)
     .innerJoin(player, eq(tryTable.playerId, player.id))
     .innerJoin(wordHistory, eq(tryTable.wordHistoryId, wordHistory.id))
-    .where(
-      and(
-        eq(player.username, username),
-        eq(wordHistory.worldId, worldId),
-        or(eq(tryTable.win, 1), gte(tryTable.attemptCount, MAX_TRIES_PER_GAME)),
-      ),
-    );
+    .innerJoin(minecraftSolution, eq(wordHistory.wordId, minecraftSolution.id))
+    .where(and(eq(player.username, username), eq(wordHistory.worldId, worldId)));
 
-  return finishedGames.reduce<Record<number, number>>((gamesByAttemptCount, { win, attemptCount }) => {
-    const key = win ? attemptCount : UNSOLVED;
-    gamesByAttemptCount[key] = (gamesByAttemptCount[key] ?? 0) + 1;
+  return games.reduce<Record<number, number>>((gamesByAttemptCount, { attempts, answer }) => {
+    const bucket = scoreBucket(parseAttempts(attempts), answer);
+    if (bucket === null) return gamesByAttemptCount;
+    gamesByAttemptCount[bucket] = (gamesByAttemptCount[bucket] ?? 0) + 1;
     return gamesByAttemptCount;
   }, {});
 }

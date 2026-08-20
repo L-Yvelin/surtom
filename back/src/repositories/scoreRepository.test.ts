@@ -13,31 +13,42 @@ beforeEach(() => {
   mock.reset();
 });
 
+const game = (answer: string, ...words: string[]) => ({
+  answer,
+  attempts: JSON.stringify(words.map((word) => word.split(''))),
+});
+
 describe('getScoreDistribution', () => {
-  it('counts wins grouped by their attempt count', async () => {
-    mock.enqueue([
-      { win: 1, attemptCount: 2 },
-      { win: 1, attemptCount: 3 },
-      { win: 1, attemptCount: 2 },
-    ]);
+  it('counts wins grouped by their attempt count derived from the attempts', async () => {
+    mock.enqueue([game('GRASS', 'CRANE', 'GRASS'), game('GRASS', 'CRANE', 'BREAD', 'GRASS'), game('GRASS', 'BLAST', 'GRASS')]);
     expect(await getScoreDistribution('alice')).toEqual({ 2: 2, 3: 1 });
   });
 
   it('counts finished losses in the unsolved bucket', async () => {
     mock.enqueue([
-      { win: 0, attemptCount: 6 },
-      { win: 1, attemptCount: 2 },
-      { win: 1, attemptCount: 3 },
+      game('GRASS', 'AAAAA', 'BBBBB', 'CCCCC', 'DDDDD', 'EEEEE', 'FFFFF'),
+      game('GRASS', 'CRANE', 'GRASS'),
+      game('GRASS', 'CRANE', 'BREAD', 'GRASS'),
     ]);
     expect(await getScoreDistribution('alice')).toEqual({ 0: 1, 2: 1, 3: 1 });
   });
 
   it('does not confuse a loss on the 6th attempt with a win on the 6th attempt', async () => {
     mock.enqueue([
-      { win: 0, attemptCount: 6 },
-      { win: 1, attemptCount: 6 },
+      game('GRASS', 'AAAAA', 'BBBBB', 'CCCCC', 'DDDDD', 'EEEEE', 'FFFFF'),
+      game('GRASS', 'AAAAA', 'BBBBB', 'CCCCC', 'DDDDD', 'EEEEE', 'GRASS'),
     ]);
     expect(await getScoreDistribution('alice')).toEqual({ 0: 1, 6: 1 });
+  });
+
+  it('ignores unfinished games that were abandoned before winning or exhausting tries', async () => {
+    mock.enqueue([game('GRASS', 'CRANE', 'BREAD'), game('GRASS', 'CRANE', 'GRASS')]);
+    expect(await getScoreDistribution('alice')).toEqual({ 2: 1 });
+  });
+
+  it('counts a win when the stored answer is lowercase but attempts are uppercase', async () => {
+    mock.enqueue([game('grass', 'GRASS')]);
+    expect(await getScoreDistribution('alice')).toEqual({ 1: 1 });
   });
 
   it('returns an empty object when no finished games exist', async () => {
