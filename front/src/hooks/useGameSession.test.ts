@@ -78,6 +78,7 @@ describe('resetGameWorld', () => {
     useCursorsStore.setState({
       cursors: [{ user: { ...defaultPlayer, name: 'Bob' }, cursor: { x: 1, y: 2 } }],
     });
+    useChatStore.getState().emitLiveMessage(message);
   });
 
   test('clears every World-tier field across stores', () => {
@@ -90,6 +91,7 @@ describe('resetGameWorld', () => {
     expect(useGameStore.getState().wasFinishedOnLoad).toBe(false);
     expect(useChatStore.getState().messages).toHaveLength(1);
     expect(useChatStore.getState().messages[0].type).toBe(Server.MessageType.TEXT);
+    expect(useChatStore.getState().liveMessage).toBeNull();
     expect(useCursorsStore.getState().cursors).toStrictEqual([]);
   });
 

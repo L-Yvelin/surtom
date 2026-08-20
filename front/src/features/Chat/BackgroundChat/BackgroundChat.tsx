@@ -24,7 +24,12 @@ function BackgroundChat({ className, messageClassName, hidden }: BackgroundChatP
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
-    if (!liveMessage) return;
+    if (!liveMessage) {
+      timersRef.current.forEach(clearTimeout);
+      timersRef.current = [];
+      setFading([]);
+      return;
+    }
 
     const key = `live-${liveMessage.id}`;
     const entry = { key, message: liveMessage.message };
