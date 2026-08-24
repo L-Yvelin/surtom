@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tspc -b"
+    "build": "tspc -b",
+    "test": "npm run build && node --test __tests__"
   },
   "files": [
     "dist"
