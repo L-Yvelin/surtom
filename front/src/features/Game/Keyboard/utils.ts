@@ -1,3 +1,5 @@
+import type { BeaconKeyVariant } from '@surtom/design-system';
+import { LetterState } from '@surtom/interfaces';
 import classes from './Keyboard.module.css';
 
 export enum KeyboardLayouts {
@@ -55,6 +57,19 @@ export function getKeyboardClass(layout: KeyboardLayouts) {
       return classes.qwerty;
     default:
       return classes.qwerty;
+  }
+}
+
+export function getKeyVariant(state: LetterState | undefined): BeaconKeyVariant {
+  switch (state) {
+    case LetterState.Correct:
+      return 'diamond';
+    case LetterState.Misplaced:
+      return 'gold';
+    case LetterState.Miss:
+      return 'inactive';
+    default:
+      return 'default';
   }
 }
 

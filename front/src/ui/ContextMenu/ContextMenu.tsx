@@ -1,6 +1,6 @@
 import { JSX, ReactNode, useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { getTooltipPosition, Coordinates, Anchor } from '../Tooltip/utils';
+import { getTooltipPosition, type Coordinates, Anchor } from '@surtom/design-system';
 import classes from './ContextMenu.module.css';
 import classNames from 'classnames';
 

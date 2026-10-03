@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "interfaces",
+    "surtom-design-system",
     "front",
     "back"
   ],
@@ -12,13 +13,15 @@
     "prepare": "husky install || true",
     "dev": "concurrently \"npm:dev:*\"",
     "dev:back": "npm run dev --workspace=back",
+    "dev:design-system": "npm run dev --workspace=surtom-design-system",
     "dev:front": "npm run dev --workspace=front",
     "build": "npm run build --workspaces",
     "build:back": "npm run build --workspace=back",
     "build:front": "npm run build --workspace=front",
+    "build:design-system": "npm run build --workspace=surtom-design-system",
     "test": "npm run test --workspaces --if-present",
     "test:back": "npm run test --workspace=back",
-    "check": "npm run build && npx prettier --check . && npm run lint --workspace=front && npm run lint:secrets && npm run test"
+    "check": "npm run build && npx prettier --check . && npm run lint --workspace=surtom-design-system && npm run lint --workspace=front && npm run lint:secrets && npm run test"
   },
   "devDependencies": {
     "@secretlint/secretlint-rule-preset-recommend": "^10.1.1",

@@ -1,15 +1,15 @@
+import type { BlockTileMaterial } from '@surtom/design-system';
 import { LetterState } from '@surtom/interfaces';
-import rowClasses from './Row/Cell/Cell.module.css';
 
-export function getClassForState(state: LetterState | undefined): string {
+export function getMaterialForState(state: LetterState | undefined): BlockTileMaterial | undefined {
   switch (state) {
     case LetterState.Miss:
-      return rowClasses.missed;
+      return 'stone';
     case LetterState.Misplaced:
-      return rowClasses.misplaced;
+      return 'gold';
     case LetterState.Correct:
-      return rowClasses.correct;
+      return 'diamond';
     default:
-      return rowClasses.empty;
+      return undefined;
   }
 }

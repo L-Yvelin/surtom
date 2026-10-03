@@ -2,11 +2,9 @@ import { JSX, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import classes from './ResourcePacks.module.css';
-import Button from '../Button/Button';
+import { Button, useResourcePackStore, type ResourcePack, TEXTURES } from '@surtom/design-system';
 import Screen from '../Screen/Screen';
 import useUIStore from '../../stores/useUIStore';
-import { useResourcePackStore, type ResourcePack } from '../../stores/useResourcePackStore';
-import { TEXTURES } from '../../mc/textures';
 
 import { UI } from '../ids';
 

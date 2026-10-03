@@ -41,6 +41,8 @@ React front and Node back, connected via WebSocket.
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
+The `surtom-design-system` workspace (`@surtom/design-system`) is a prebuilt React library that holds everything Minecraft-looking: components, textures, resource packs, fonts and sounds. `front` consumes its `dist/`. See [`surtom-design-system/README.md`](surtom-design-system/README.md).
+
 ## Prerequisites
 
 - Node.js 22+
@@ -74,6 +76,7 @@ VITE_WEBSOCKET_PATH=
 ```bash
 npm install
 npm run build --workspace=interfaces
+npm run build --workspace=surtom-design-system
 ```
 
 ### 3. Start MySQL
@@ -97,14 +100,12 @@ That creates all tables (via Drizzle migrations in `back/src/db/migrations/`) an
 - the system / funny-name `Player` rows,
 - the word lists (`Dictionary`, `MinecraftWord`, `MinecraftSolution`) for both languages, loaded from the checked-in text files in `back/data/seed-output/<lang>/`.
 
-### 5. Fetch Minecraft textures
+### 5. Minecraft textures
 
-The frontend requires Minecraft textures that are not committed to the repository (they are downloaded from Mojang's servers and stored in `front/vendors/minecraft/`, which is gitignored).
-
-They are fetched automatically as a `predev`/`prebuild` hook, so you usually don't need to run this manually. If you need to force a re-download (e.g. after a version bump):
+The Minecraft textures, models, fonts and sounds live in the design system (`surtom-design-system/`). The textures are not committed to the repository: they are downloaded from Mojang's servers into `surtom-design-system/vendors/minecraft/` (gitignored) as a `prebuild` hook of the design system, so you usually don't need to run this manually. To force a re-download (e.g. after a version bump):
 
 ```bash
-MC_FORCE=1 npm run mc:assets --workspace=front
+MC_FORCE=1 npm run assets --workspace=surtom-design-system
 ```
 
 ### 6. Run dev servers
@@ -114,7 +115,7 @@ MC_FORCE=1 npm run mc:assets --workspace=front
 npm run dev
 ```
 
-Backend on port 27020, frontend on the Vite dev server.
+Backend on port 27020, frontend on the Vite dev server, and the design system rebuilt on change (the frontend consumes its `dist/`, so build it once before the first run as shown in step 2).
 
 ---
 

@@ -4,9 +4,8 @@ import classNames from 'classnames';
 import { useBlockInput } from '../../stores/useInputStore';
 import { UI } from '../ids';
 import { useGameStore } from '../../stores/useGameStore';
-import { useResourcePackStore } from '../../stores/useResourcePackStore';
+import { Backdrop, useResourcePackStore } from '@surtom/design-system';
 import { COSMETIC_MS, isWorldReady } from './utils';
-import Backdrop from '../Backdrop/Backdrop';
 import classes from './WorldLoading.module.css';
 
 function WorldLoading(): JSX.Element {

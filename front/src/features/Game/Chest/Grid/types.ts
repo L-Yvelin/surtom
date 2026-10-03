@@ -27,16 +27,3 @@ export function getLetterColor(letter: LetterState): string {
       return '⬜';
   }
 }
-
-export function getKeyColorClassName(state: LetterState): string {
-  switch (state) {
-    case LetterState.Correct:
-      return 'correct';
-    case LetterState.Misplaced:
-      return 'misplaced';
-    case LetterState.Miss:
-      return 'miss';
-    default:
-      return '';
-  }
-}

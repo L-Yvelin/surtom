@@ -1,0 +1,26 @@
+.tile {
+  font-family: minecraft;
+  text-transform: capitalize;
+  text-align: center;
+}
+
+.diamond {
+  color: color-mix(in srgb, var(--mc-diamond-color, #16617a), black 60%);
+  background-image: var(--mc-diamond-block);
+  background-size: cover;
+  image-rendering: pixelated;
+}
+
+.gold {
+  color: color-mix(in srgb, var(--mc-gold-color, #6e6e23), black 60%);
+  background-image: var(--mc-gold-block);
+  background-size: cover;
+  image-rendering: pixelated;
+}
+
+.stone {
+  color: color-mix(in srgb, var(--mc-stone-color), black 60%);
+  background-image: var(--mc-stone);
+  background-size: cover;
+  image-rendering: pixelated;
+}

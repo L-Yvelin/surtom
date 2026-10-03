@@ -6,7 +6,7 @@ import classes from './Header.module.css';
 import { Theme } from '../../theme/theme';
 import classNames from 'classnames';
 import Splash from '../../routes/MainMenu/Splash/Splash';
-import { RowBlockModel } from '../BlockModel/RowBlockModel';
+import { RowBlockModel } from '@surtom/design-system';
 
 interface HeaderProps {
   theme: Theme;

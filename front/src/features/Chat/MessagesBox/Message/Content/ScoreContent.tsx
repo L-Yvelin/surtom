@@ -4,7 +4,7 @@ import { Server } from '@surtom/interfaces';
 import classes from '../Message.module.css';
 import { getValidatedWords, isGameFinished } from '../../../../Game/utils/gameLogic';
 import PlayerName from '../PlayerName/PlayerName';
-import Tooltip from '../../../../../ui/Tooltip/Tooltip';
+import { Tooltip } from '@surtom/design-system';
 import Grid from '../../../../Game/Chest/Grid/Grid';
 import { useGameStore } from '../../../../../stores/useGameStore';
 

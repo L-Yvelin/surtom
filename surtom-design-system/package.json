@@ -1,0 +1,71 @@
+{
+  "name": "@surtom/design-system",
+  "version": "1.0.0",
+  "description": "Minecraft-inspired design system for Surtom: components, textures, resource packs, fonts and sounds.",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./fonts.css": "./dist/fonts.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "assets": "node scripts/fetch-mc-assets.mjs",
+    "prebuild": "npm run assets",
+    "clean": "node scripts/clean.mjs",
+    "build": "npm run clean && npm run build:js && npm run build:types && npm run build:static",
+    "build:js": "vite build",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:static": "node scripts/copy-static.mjs",
+    "dev": "npm run assets && npm run build:types && npm run build:static && concurrently \"vite build --watch\" \"tsc -p tsconfig.build.json --watch --preserveWatchOutput\"",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "jest"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "classnames": "^2.5.1",
+    "fflate": "^0.8.3",
+    "react-device-detect": "^2.2.3",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.13.4",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.7.0",
+    "adm-zip": "^0.5.17",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-compiler": "^19.1.0-rc.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "jest": "^30.0.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "ts-jest": "^29.4.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.4.3"
+  },
+  "license": "ISC"
+}

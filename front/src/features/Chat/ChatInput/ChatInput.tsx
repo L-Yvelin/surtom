@@ -13,7 +13,7 @@ import { compressImageToLimit } from '../utils/imageCompression';
 import { useGameStore } from '../../../stores/useGameStore';
 import { Achievement } from '../../AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../../AchievementsStack/Achievement/utils';
-import { useTexture } from '../../../stores/useResourcePackStore';
+import { useTexture } from '@surtom/design-system';
 
 interface ChatInputProps {
   onSend: () => void;

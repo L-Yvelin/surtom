@@ -11,7 +11,7 @@ import useKeyboardLayout from './hooks/useKeyboardLayout';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { KeyboardLayouts } from './Keyboard/utils';
 import GameMenu from '../../ui/GameMenu/GameMenu';
-import Backdrop from '../../ui/Backdrop/Backdrop';
+import { Backdrop } from '@surtom/design-system';
 import useTheme from '../../hooks/useTheme';
 import { Theme } from '../../theme/theme';
 import BackgroundChat from '../Chat/BackgroundChat/BackgroundChat';

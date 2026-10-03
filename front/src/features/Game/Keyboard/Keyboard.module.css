@@ -6,10 +6,10 @@
 }
 
 .keyboard {
-  --keySize: min(6vh, calc((100vw / 10) - 0.5vh));
+  --mc-key-size: min(6vh, calc((100vw / 10) - 0.5vh));
   display: grid;
-  grid-template-columns: repeat(10, var(--keySize));
-  grid-template-rows: repeat(3, var(--keySize));
+  grid-template-columns: repeat(10, var(--mc-key-size));
+  grid-template-rows: repeat(3, var(--mc-key-size));
   gap: 0.4vh;
 }
 

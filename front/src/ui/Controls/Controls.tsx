@@ -1,7 +1,7 @@
 import { JSX, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Controls.module.css';
-import Button from '../Button/Button';
+import { Button } from '@surtom/design-system';
 import Screen from '../Screen/Screen';
 import useUIStore from '../../stores/useUIStore';
 import { useSettingsStore, KEYBIND_ACTIONS, type KeybindAction } from '../../stores/useSettingsStore';

@@ -1,7 +1,7 @@
 import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Settings.module.css';
-import Button from '../Button/Button';
+import { Button } from '@surtom/design-system';
 import Screen from '../Screen/Screen';
 import useUIStore from '../../stores/useUIStore';
 import { SUPPORTED_LOCALES, type Locale } from '../../i18n';

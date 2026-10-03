@@ -1,8 +1,7 @@
 import { JSX, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './GameMenu.module.css';
-import Button from '../Button/Button';
-import ButtonRow from '../ButtonRow/ButtonRow';
+import { Button, ButtonRow } from '@surtom/design-system';
 import Screen from '../Screen/Screen';
 import useUIStore, { useVisibility } from '../../stores/useUIStore';
 import { useNavigate } from 'react-router-dom';

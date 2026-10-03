@@ -3,5 +3,8 @@ back/node_modules
 back/dist
 front/node_modules
 front/dist
+surtom-design-system/node_modules
+surtom-design-system/dist
+surtom-design-system/vendors
 .git
 .vscode

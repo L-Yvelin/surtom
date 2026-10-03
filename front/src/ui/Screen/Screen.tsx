@@ -1,10 +1,7 @@
 import { JSX, ReactNode } from 'react';
-import classNames from 'classnames';
-import classes from './Screen.module.css';
+import { Screen as DesignSystemScreen, type ScreenVariant } from '@surtom/design-system';
 import useScreen from '../../hooks/useScreen';
 import type { UIId } from '../ids';
-
-type ScreenVariant = 'panel' | 'dim';
 
 interface ScreenProps {
   id: UIId;
@@ -19,9 +16,9 @@ function Screen({ id, variant = 'panel', anchorRef, className, onEscape, childre
   const { screenRef, visible } = useScreen(id, anchorRef, onEscape);
 
   return (
-    <div ref={screenRef} className={classNames(classes.screen, classes[variant], className, { [classes.hidden]: !visible })}>
+    <DesignSystemScreen ref={screenRef} visible={visible} variant={variant} className={className}>
       {children}
-    </div>
+    </DesignSystemScreen>
   );
 }
 

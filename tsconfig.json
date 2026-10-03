@@ -9,6 +9,9 @@
     },
     {
       "path": "interfaces"
+    },
+    {
+      "path": "surtom-design-system"
     }
   ],
   "compilerOptions": {

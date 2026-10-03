@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Server } from '@surtom/interfaces';
 import classes from './WorldSelection.module.css';
-import Button from '../../ui/Button/Button';
-import ButtonRow from '../../ui/ButtonRow/ButtonRow';
+import { Button, ButtonRow, Backdrop } from '@surtom/design-system';
 import WorldEntry, { World } from './WorldEntry/WorldEntry';
 import { useFetchWorlds } from '../../hooks/useFetchWorlds';
 import { useWorldsStore } from '../../stores/useWorldsStore';
-import Backdrop from '../../ui/Backdrop/Backdrop';
 
 function buildDescription(t: (key: string, opts?: object) => string, summary: Server.WorldSummary): string {
   return `${t('worldSelection.memberCount', { count: summary.memberCount })} · ${summary.language.toUpperCase()}`;

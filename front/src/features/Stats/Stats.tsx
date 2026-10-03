@@ -1,7 +1,7 @@
 import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Stats.module.css';
-import Button from '../../ui/Button/Button';
+import { Button } from '@surtom/design-system';
 import Screen from '../../ui/Screen/Screen';
 import { useGameStore } from '../../stores/useGameStore';
 import useUIStore from '../../stores/useUIStore';

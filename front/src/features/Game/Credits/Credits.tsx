@@ -1,8 +1,7 @@
 import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Credits.module.css';
-import Tooltip from '../../../ui/Tooltip/Tooltip';
-import MinecraftTooltip from '../../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
+import { Tooltip, MinecraftTooltip } from '@surtom/design-system';
 
 function Credits(): JSX.Element {
   const { t } = useTranslation();

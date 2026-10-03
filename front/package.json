@@ -4,19 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "mc:assets": "node scripts/fetch-mc-assets.mjs",
-    "predev": "npm run mc:assets",
     "dev": "vite",
-    "prebuild": "npm run mc:assets",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "jest"
   },
   "dependencies": {
+    "@surtom/design-system": "1.0.0",
     "@surtom/interfaces": "1.0.0",
     "classnames": "^2.5.1",
-    "fflate": "^0.8.3",
     "i18next": "^26.0.10",
     "i18next-browser-languagedetector": "^8.2.1",
     "immer": "^10.1.1",
@@ -36,7 +33,6 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
-    "adm-zip": "^0.5.17",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.21.0",
     "eslint-plugin-react-compiler": "^19.1.0-rc.2",

@@ -1,11 +1,12 @@
 import React, { use, useEffect } from 'react';
 import classNames from 'classnames';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { DesignSystemProvider } from '@surtom/design-system';
 import './App.css';
 import { useWebSocketStore } from './stores/useWebSocketStore';
+import { useSettingsStore } from './stores/useSettingsStore';
 import WebSocketPingHandler from './utils/webSocketPingHandler';
 import twemoji from './assets/fonts/TwemojiMozilla-Regular.ttf';
-import { TooltipProvider } from './ui/Tooltip/TooltipProvider';
 import Header from './ui/Header/Header';
 import { Theme } from './theme/theme';
 import useTheme from './hooks/useTheme';
@@ -37,6 +38,7 @@ interface AppProp {
 
 const App: React.FC<AppProp> = ({ onLoad }) => {
   const { theme } = useTheme();
+  const sound = useSettingsStore((s) => s.sound);
 
   useEffect(() => {
     useWebSocketStore.getState().connect();
@@ -50,7 +52,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
 
   return (
     <div id="root-container" className={classNames({ dark: theme === Theme.DARK })}>
-      <TooltipProvider>
+      <DesignSystemProvider soundEnabled={sound}>
         <ErrorBoundary>
           <Header theme={theme} />
           <Routes>
@@ -68,7 +70,7 @@ const App: React.FC<AppProp> = ({ onLoad }) => {
           <Controls />
           <WebSocketPingHandler />
         </ErrorBoundary>
-      </TooltipProvider>
+      </DesignSystemProvider>
     </div>
   );
 };

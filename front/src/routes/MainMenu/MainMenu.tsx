@@ -2,14 +2,10 @@ import { JSX, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import classes from './MainMenu.module.css';
-import Button from '../../ui/Button/Button';
-import Tooltip from '../../ui/Tooltip/Tooltip';
-import MinecraftTooltip from '../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
+import { Button, ButtonRow, Backdrop, Tooltip, MinecraftTooltip } from '@surtom/design-system';
 import Credits from '../../features/Game/Credits/Credits';
 import { UI } from '../../ui/ids';
 import useUIStore from '../../stores/useUIStore';
-import ButtonRow from '../../ui/ButtonRow/ButtonRow';
-import Backdrop from '../../ui/Backdrop/Backdrop';
 
 function MainMenu(): JSX.Element {
   const navigate = useNavigate();

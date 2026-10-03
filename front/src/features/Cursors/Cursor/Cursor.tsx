@@ -2,7 +2,7 @@ import { Server } from '@surtom/interfaces';
 import classes from './Cursor.module.css';
 import classNames from 'classnames';
 import NameTag from '../../../ui/NameTag/NameTag';
-import { useTexture } from '../../../stores/useResourcePackStore';
+import { useTexture } from '@surtom/design-system';
 
 interface CursorProps extends React.HTMLAttributes<HTMLDivElement> {
   user: Server.User;

@@ -13,6 +13,9 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       'react-hooks': reactHooks,
@@ -23,23 +26,6 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       'react-compiler/react-compiler': 'error',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: ['@mc', '@mc/**'],
-              message: 'Import Minecraft textures through src/mc/textures.ts so they stay resource-pack overridable.',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    files: ['**/mc/textures.ts', '**/mc/blockModels.ts'],
-    rules: {
-      'no-restricted-imports': 'off',
     },
   },
 );

@@ -1,8 +1,7 @@
 import { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import classes from './Tools.module.css';
-import MinecraftTooltip from '../../../ui/Tooltip/MinecraftTooltip/MinecraftTooltip';
-import Tooltip from '../../../ui/Tooltip/Tooltip';
+import { Button, Tooltip, MinecraftTooltip, useTexture } from '@surtom/design-system';
 import classNames from 'classnames';
 import { useGameStore } from '../../../stores/useGameStore';
 import useUIStore, { useVisibility } from '../../../stores/useUIStore';
@@ -10,8 +9,6 @@ import { useChatStore } from '../../../stores/useChatStore';
 import useTheme from '../../../hooks/useTheme';
 import { Theme } from '../../../theme/theme';
 import { UI } from '../../../ui/ids';
-import { useTexture } from '../../../stores/useResourcePackStore';
-import Button from '../../../ui/Button/Button';
 
 interface ToolsProps {
   tabButtonRef: React.RefObject<HTMLButtonElement | null>;

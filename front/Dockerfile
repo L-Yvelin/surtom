@@ -3,20 +3,25 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY interfaces/package*.json ./interfaces/
+COPY surtom-design-system/package*.json ./surtom-design-system/
 COPY front/package*.json ./front/
 
 RUN npm ci
 
-COPY front/scripts/fetch-mc-assets.mjs ./front/scripts/
+COPY surtom-design-system/scripts/ ./surtom-design-system/scripts/
 
-WORKDIR /app/front
-RUN npm run mc:assets
+WORKDIR /app/surtom-design-system
+RUN npm run assets
 
 WORKDIR /app
 COPY interfaces/ ./interfaces/
+COPY surtom-design-system/ ./surtom-design-system/
 COPY front/ ./front/
 
 WORKDIR /app/interfaces
+RUN npm run build
+
+WORKDIR /app/surtom-design-system
 RUN npm run build
 
 WORKDIR /app/front

@@ -1,0 +1,48 @@
+.key {
+  all: unset;
+  position: relative;
+  clip-path: inset(0);
+  font-size: calc(var(--mc-key-size) * 0.38);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  cursor: pointer;
+  text-transform: uppercase;
+
+  border-style: solid;
+  border-width: calc(var(--mc-key-size) * 0.135);
+  border-image-source: var(--mc-beacon-button);
+  border-image-slice: 13.7% fill;
+  border-image-repeat: stretch;
+}
+
+.key:not(.inactive):hover {
+  border-image-source: var(--mc-beacon-button-highlighted);
+}
+
+.key:active,
+.key.pressed {
+  border-image-source: var(--mc-beacon-button-selected);
+}
+
+.diamond::after,
+.gold::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--mc-key-size) * -0.135);
+  pointer-events: none;
+}
+
+.diamond::after {
+  background: linear-gradient(to top, var(--mc-diamond-glow, rgba(60, 140, 255, 0.5)) 0%, transparent 55%);
+}
+
+.gold::after {
+  background: linear-gradient(to top, var(--mc-gold-glow, rgba(255, 190, 20, 0.5)) 0%, transparent 55%);
+}
+
+.inactive {
+  border-image-source: var(--mc-beacon-button-selected);
+  filter: brightness(70%);
+}

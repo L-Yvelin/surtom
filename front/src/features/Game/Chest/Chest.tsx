@@ -4,7 +4,7 @@ import { useGameStore } from '../../../stores/useGameStore';
 import { isGameFinished } from '../utils/gameLogic';
 import EyeOpen from '../../../assets/images/ui/eye_open.svg?react';
 import EyeClosed from '../../../assets/images/ui/eye_closed.svg?react';
-import UIChest from '../../../ui/Chest/Chest';
+import { Chest as UIChest } from '@surtom/design-system';
 import Cell from './Grid/Row/Cell/Cell';
 import classes from './Chest.module.css';
 

@@ -9,7 +9,7 @@ import useScreen from '../../hooks/useScreen';
 import { useChatStore } from '../../stores/useChatStore';
 import { useWebSocketStore } from '../../stores/useWebSocketStore';
 import arrowImage from '../../assets/images/ui/arrow.png';
-import Button from '../../ui/Button/Button';
+import { Button } from '@surtom/design-system';
 import { isMobile } from 'react-device-detect';
 
 interface MessageContent {
