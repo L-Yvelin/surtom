@@ -9,6 +9,7 @@ class FullUser {
   messageCount: number;
   lastMessageTimestamp: string | null;
   messageCooldown: number;
+  lastTypingAt: number;
   cooldownMultiplier: number;
   listeningTypes: string[];
   ip: string;
@@ -22,6 +23,7 @@ class FullUser {
     this.messageCount = 0;
     this.lastMessageTimestamp = null;
     this.messageCooldown = COOLDOWN_INITIAL_SECONDS;
+    this.lastTypingAt = 0;
     this.cooldownMultiplier = COOLDOWN_MULTIPLIER;
     this.listeningTypes = [];
     this.ip = ip;

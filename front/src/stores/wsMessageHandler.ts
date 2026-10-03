@@ -5,6 +5,7 @@ import usePlayerStore from './usePlayerStore';
 import { useChatStore } from './useChatStore';
 import { useCursorsStore } from './useCursorsStore';
 import { useWorldsStore } from './useWorldsStore';
+import { useTypingStore } from './useTypingStore';
 import { useWebSocketStore } from './useWebSocketStore';
 import useUIStore from './useUIStore';
 import { getValidatedWords, isGameFinished, isWinningWord } from '../features/Game/utils/gameLogic';
@@ -25,6 +26,9 @@ function addIncomingMessage(message: Server.ChatMessage.Type, selfName: string):
   const chat = useChatStore.getState();
   chat.addMessage(message);
   chat.scrollToBottom?.();
+  if (isSavedChatMessage(message)) {
+    useTypingStore.getState().clearTyper(message.content.user.name);
+  }
   if (!isChatVisible() && isOthersChatMessage(message, selfName)) {
     chat.setHasUnread(true);
   }
@@ -145,6 +149,11 @@ export function handleServerMessage(data: Server.Message, deps: MessageHandlerDe
       break;
     case Server.MessageType.CURSOR_POSITION:
       cursors.addOrUpdateCursor(data.content);
+      break;
+    case Server.MessageType.IS_TYPING:
+      if (data.content !== player.player.name) {
+        useTypingStore.getState().markTyping(data.content);
+      }
       break;
     case Server.MessageType.WORLD_LIST:
       useWorldsStore.getState().setWorlds(data.content);

@@ -1,0 +1,20 @@
+.typing {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0 0.8vh;
+  color: #cacaca;
+  font-size: max(12px, 1.6vh);
+  line-height: 1.6;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.typing:empty {
+  display: none;
+}

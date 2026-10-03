@@ -23,6 +23,7 @@ import { useGameStore } from './useGameStore';
 import usePlayerStore, { defaultPlayer } from './usePlayerStore';
 import { useChatStore } from './useChatStore';
 import { useCursorsStore } from './useCursorsStore';
+import { useTypingStore } from './useTypingStore';
 import useUIStore from './useUIStore';
 import { UI } from '../ui/ids';
 import { handleServerMessage, MessageHandlerDeps } from './wsMessageHandler';
@@ -59,6 +60,7 @@ beforeEach(() => {
   });
   useChatStore.setState({ messages: [], answeringTo: null });
   useCursorsStore.setState({ cursors: [] });
+  useTypingStore.getState().resetWorld();
   wsState.isReady = false;
 });
 
@@ -379,6 +381,28 @@ describe('CURSOR_POSITION', () => {
       makeDeps(),
     );
     expect(useCursorsStore.getState().cursors).toStrictEqual([{ user: baseUser, cursor: { x: 10, y: 20 } }]);
+  });
+});
+
+describe('IS_TYPING', () => {
+  test('marks another player as typing', () => {
+    handleServerMessage({ type: Server.MessageType.IS_TYPING, content: 'Bob' }, makeDeps());
+    expect(useTypingStore.getState().typers).toStrictEqual(['Bob']);
+  });
+
+  test('ignores the echo of our own typing', () => {
+    usePlayerStore.setState({ player: baseUser });
+    handleServerMessage({ type: Server.MessageType.IS_TYPING, content: 'Alice' }, makeDeps());
+    expect(useTypingStore.getState().typers).toStrictEqual([]);
+  });
+
+  test('stops showing a player as typing once their message arrives', () => {
+    useTypingStore.getState().markTyping('Alice');
+    handleServerMessage(
+      { type: Server.MessageType.MESSAGE, content: { type: Server.MessageType.TEXT, content: { ...baseMessageMeta, text: 'hi' } } },
+      makeDeps(),
+    );
+    expect(useTypingStore.getState().typers).toStrictEqual([]);
   });
 });
 

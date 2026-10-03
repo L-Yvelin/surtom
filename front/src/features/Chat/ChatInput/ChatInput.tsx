@@ -14,6 +14,8 @@ import { useGameStore } from '../../../stores/useGameStore';
 import { Achievement } from '../../AchievementsStack/Achievement/Achievement';
 import { AchievementIcon } from '../../AchievementsStack/Achievement/utils';
 import { useTexture } from '@surtom/design-system';
+import { TypingIndicator } from '../TypingIndicator/TypingIndicator';
+import { TYPING_SEND_INTERVAL_MS } from '../../../stores/useTypingStore';
 
 interface ChatInputProps {
   onSend: () => void;
@@ -55,6 +57,7 @@ function ChatInput({ onSend, onImagePaste, display }: ChatInputProps): JSX.Eleme
     handleKeyDown: handleHistoryKeyDown,
     reset: resetHistory,
   } = useChatInputHistory({ getCurrentInput: () => keyboardRef.current?.value ?? '' });
+  const lastTypingSentAt = useRef(0);
   const [cursorPos, setCursorPos] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const active = useInputSuggestions(input, cursorPos);
@@ -79,7 +82,16 @@ function ChatInput({ onSend, onImagePaste, display }: ChatInputProps): JSX.Eleme
     }
   }, [display]);
 
+  function notifyTyping(value: string) {
+    if (!value.trim() || value.startsWith('/')) return;
+    const now = Date.now();
+    if (now - lastTypingSentAt.current < TYPING_SEND_INTERVAL_MS) return;
+    lastTypingSentAt.current = now;
+    sendWebSocketMessage({ type: Client.MessageType.IS_TYPING });
+  }
+
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    notifyTyping(event.target.value);
     setInputValue(event.target.value);
     setCursorPos(event.target.selectionStart ?? event.target.value.length);
     setSelectedIndex(0);
@@ -158,6 +170,7 @@ function ChatInput({ onSend, onImagePaste, display }: ChatInputProps): JSX.Eleme
     if (trimmed) pushHistory(trimmed);
     setInputValue('');
     setImageData(null);
+    lastTypingSentAt.current = 0;
     focusInput();
   }
 
@@ -193,6 +206,7 @@ function ChatInput({ onSend, onImagePaste, display }: ChatInputProps): JSX.Eleme
 
   return (
     <div className={classes.chatInput}>
+      {!answeringTo && <TypingIndicator />}
       <button className={classes.button} onClick={sendMessage}>
         &gt;
       </button>
