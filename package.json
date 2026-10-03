@@ -11,6 +11,7 @@
     "format": "npx pretty-quick",
     "lint:secrets": "secretlint \"**/*\"",
     "prepare": "husky install || true",
+    "predev": "npm run build --workspace=surtom-design-system",
     "dev": "concurrently \"npm:dev:*\"",
     "dev:back": "npm run dev --workspace=back",
     "dev:design-system": "npm run dev --workspace=surtom-design-system",

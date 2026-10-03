@@ -115,7 +115,7 @@ MC_FORCE=1 npm run assets --workspace=surtom-design-system
 npm run dev
 ```
 
-Backend on port 27020, frontend on the Vite dev server, and the design system rebuilt on change (the frontend consumes its `dist/`, so build it once before the first run as shown in step 2).
+Backend on port 27020, frontend on the Vite dev server, and the design system rebuilt on change. A `predev` hook builds the design system first, since the frontend consumes its `dist/`.
 
 ---
 
