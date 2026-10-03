@@ -120,6 +120,7 @@ export const en = {
   tab: {
     deviceAlt: "User's device",
     connectivityAlt: 'Connectivity',
+    messageAlt: 'Private message',
   },
   boot: {
     logoAlt: 'Surtom Studios logo',

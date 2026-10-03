@@ -117,6 +117,7 @@ export const fr: Translation = {
   tab: {
     deviceAlt: "Appareil de l'utilisateur",
     connectivityAlt: 'Connectivité',
+    messageAlt: 'Message privé',
   },
   boot: {
     logoAlt: 'Logo Surtom Studios',

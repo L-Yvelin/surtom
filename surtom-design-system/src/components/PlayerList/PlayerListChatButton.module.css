@@ -1,0 +1,26 @@
+.button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  height: calc(var(--unit, var(--mc-px)) * 8);
+  aspect-ratio: 6 / 7;
+  cursor: pointer;
+}
+
+.button:focus-visible {
+  outline: var(--unit, var(--mc-px)) solid white;
+  outline-offset: calc(var(--unit, var(--mc-px)) * -1);
+}
+
+.icon {
+  flex-shrink: 0;
+  height: 100%;
+  aspect-ratio: 1;
+  scale: calc(10 / 7);
+  image-rendering: pixelated;
+  pointer-events: none;
+}

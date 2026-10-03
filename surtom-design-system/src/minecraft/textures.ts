@@ -25,6 +25,12 @@ import experienceBarBackground from '@mc/textures/gui/sprites/hud/experience_bar
 import experienceBarProgress from '@mc/textures/gui/sprites/hud/experience_bar_progress.png';
 import socialInteractions from '@mc/textures/gui/sprites/toast/social_interactions.png';
 import friends from '@mc/textures/gui/sprites/friends/friends.png';
+import ping1 from '@mc/textures/gui/sprites/icon/ping_1.png';
+import ping2 from '@mc/textures/gui/sprites/icon/ping_2.png';
+import ping3 from '@mc/textures/gui/sprites/icon/ping_3.png';
+import ping4 from '@mc/textures/gui/sprites/icon/ping_4.png';
+import ping5 from '@mc/textures/gui/sprites/icon/ping_5.png';
+import pingUnknown from '@mc/textures/gui/sprites/icon/ping_unknown.png';
 import notificationMore from '@mc/textures/gui/sprites/notification/more.png';
 import beaconButton from '@mc/textures/gui/sprites/container/beacon/button.png';
 import beaconButtonHighlighted from '@mc/textures/gui/sprites/container/beacon/button_highlighted.png';
@@ -125,6 +131,12 @@ export const TEXTURES = {
   'gui/sprites/toast/social_interactions.png': { default: socialInteractions },
   'gui/sprites/friends/friends.png': { default: friends },
   'gui/sprites/notification/more.png': { default: notificationMore },
+  'gui/sprites/icon/ping_1.png': { default: ping1 },
+  'gui/sprites/icon/ping_2.png': { default: ping2 },
+  'gui/sprites/icon/ping_3.png': { default: ping3 },
+  'gui/sprites/icon/ping_4.png': { default: ping4 },
+  'gui/sprites/icon/ping_5.png': { default: ping5 },
+  'gui/sprites/icon/ping_unknown.png': { default: pingUnknown },
   'gui/sprites/container/beacon/button.png': { default: beaconButton, cssVar: '--mc-beacon-button' },
   'gui/sprites/container/beacon/button_highlighted.png': { default: beaconButtonHighlighted, cssVar: '--mc-beacon-button-highlighted' },
   'gui/sprites/container/beacon/button_selected.png': { default: beaconButtonSelected, cssVar: '--mc-beacon-button-selected' },

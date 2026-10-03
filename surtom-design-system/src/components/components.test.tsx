@@ -6,6 +6,9 @@ import { BlockTile } from './BlockTile/BlockTile';
 import { Button } from './Button/Button';
 import { ButtonRow } from './ButtonRow/ButtonRow';
 import { Chest } from './Chest/Chest';
+import { PlayerList } from './PlayerList/PlayerList';
+import { PlayerListChatButton } from './PlayerList/PlayerListChatButton';
+import { PlayerListRow } from './PlayerList/PlayerListRow';
 import { Screen } from './Screen/Screen';
 
 describe('BlockTile', () => {
@@ -90,5 +93,72 @@ describe('Chest', () => {
   it('renders rows times cols slots', () => {
     const html = renderToStaticMarkup(<Chest title="Chest" slots={[]} rows={2} cols={3} />);
     expect(html.match(/class="slot"/g)).toHaveLength(6);
+  });
+});
+
+describe('PlayerList', () => {
+  it('renders its rows and merges the custom class name', () => {
+    const html = renderToStaticMarkup(
+      <PlayerList className="custom">
+        <PlayerListRow name="Alex" />
+      </PlayerList>,
+    );
+    expect(html).toContain('class="list custom"');
+    expect(html).toContain('Alex');
+  });
+});
+
+describe('PlayerListRow', () => {
+  it('renders an empty cell when there is no name', () => {
+    expect(renderToStaticMarkup(<PlayerListRow />)).toBe('<div class="row"></div>');
+  });
+
+  it('renders the name colour, the suffix and the ping icon', () => {
+    const html = renderToStaticMarkup(<PlayerListRow name="Alex" nameColor="red" suffix="[Admin]" ping={5} pingAlt="Ping" />);
+    expect(html).toContain('style="color:red"');
+    expect(html).toContain('[Admin]');
+    expect(html).toContain('alt="Ping"');
+  });
+
+  it('omits the ping icon and the suffix when not given', () => {
+    const html = renderToStaticMarkup(<PlayerListRow name="Alex" />);
+    expect(html).not.toContain('<img');
+    expect(html).not.toContain('suffix');
+  });
+});
+
+describe('PlayerList minRows', () => {
+  it('pads a short list with empty cells up to the minimum height', () => {
+    const html = renderToStaticMarkup(
+      <PlayerList minRows={5}>
+        <PlayerListRow name="Alex" />
+        <PlayerListRow name="Steve" />
+      </PlayerList>,
+    );
+    expect(html.match(/<div class="row"><\/div>/g)).toHaveLength(3);
+  });
+
+  it('does not add cells to a list that is already taller than the minimum', () => {
+    const rows = Array.from({ length: 8 }, (_, index) => <PlayerListRow key={index} name={`p${index}`} />);
+    const html = renderToStaticMarkup(<PlayerList minRows={5}>{rows}</PlayerList>);
+    expect(html.match(/class="row"/g)).toHaveLength(8);
+    expect(html.match(/<div class="row"><\/div>/g)).toBeNull();
+  });
+});
+
+describe('PlayerListChatButton', () => {
+  it('renders an accessible button that forwards button props', () => {
+    const html = renderToStaticMarkup(<PlayerListChatButton label="Message" disabled />);
+    expect(html).toContain('<button type="button"');
+    expect(html).toContain('aria-label="Message"');
+    expect(html).toContain('disabled=""');
+  });
+
+  it('is rendered inside the row before the ping icon', () => {
+    const html = renderToStaticMarkup(
+      <PlayerListRow name="Alex" ping={5} pingAlt="Ping" actions={<PlayerListChatButton label="Message" />} />,
+    );
+    expect(html.indexOf('aria-label="Message"')).toBeGreaterThan(-1);
+    expect(html.indexOf('aria-label="Message"')).toBeLessThan(html.indexOf('alt="Ping"'));
   });
 });

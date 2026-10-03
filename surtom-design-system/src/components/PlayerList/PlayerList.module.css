@@ -1,0 +1,23 @@
+.list {
+  --unit: max(var(--mc-px), 2px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--unit);
+  width: calc(var(--unit) * 128);
+  max-width: calc(100vw - 1rem);
+  max-height: min(calc(var(--unit) * 181), calc(75dvh - 1rem));
+  box-sizing: border-box;
+  padding: var(--unit);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: calc(var(--unit) * 8);
+  line-height: calc(var(--unit) * 8);
+  text-shadow: var(--unit) var(--unit) 0 #3f3f3f;
+}
+
+.list::-webkit-scrollbar {
+  display: none;
+}
